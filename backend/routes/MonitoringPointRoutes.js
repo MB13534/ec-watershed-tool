@@ -31,13 +31,18 @@ router.post('/', (req, res, next) => {
 })
 
 /**
- * GET /api/monitoring-point/table
+ * POST /api/monitoring-point/table
  */
-router.get('/table/:id', (req, res, next) => {
+router.post('/table/:id', (req, res, next) => {
+  const where = {};
+
+  where.location_index = req.params.id;
+  where.parameter_index = {
+    [Op.in]: req.body.parameters,
+  };
+
   DynamicFinalForPortalTableModel.findAll({
-    where: {
-      location_index: req.params.id,
-    }
+    where: where
   })
     .then((data) => {
       res.json(data)

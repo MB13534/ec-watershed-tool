@@ -6,6 +6,7 @@ const parseGeoJSON = (path) => {
 
 const counties = parseGeoJSON('./layers/Counties.geojson');
 const cdpheLakes2020 = parseGeoJSON('./layers/CDPHE_Lakes_2020.geojson');
+const cdpheStreams2020 = parseGeoJSON('./layers/CDPHE_StreamSegment_2020.geojson');
 const landuse = parseGeoJSON('./layers/Landuse_EagleCounty.geojson');
 const hucs = parseGeoJSON('./layers/HUC12.geojson');
 
@@ -65,7 +66,24 @@ const Layers = [
     paint: {
       ...defaultFillStyles,
       'fill-opacity':1.0,
-      'fill-color':'#ff0000'
+      'fill-color':'#0090ff'
+    },
+  },
+  {
+    name: 'Streams',
+    geometry_type: 'line',
+    drawOrder: 2,
+    legendOrder: 2,
+    enabled: true,
+    visible: true,
+    popupType: 'none',
+    geometry_type_ndx: 1,
+    layer_categories: [2],
+    spatial_data: cdpheStreams2020,
+    paint: {
+      ...defaultLineStyles,
+      "line-color": "#6380b5",
+      "line-width": 2,
     },
   },
   {

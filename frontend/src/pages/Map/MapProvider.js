@@ -225,6 +225,8 @@ export const MapProvider = (props) => {
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
   const [analyticsResults, setAnalyticsResults] = useState(null);
+  const [lastLocationId, setLastLocationId] = useState(null);
+  const [monitoringPointData, setMonitoringPointData] = useState(null);
   const [filterActive, setFilterActive] = useState(false);
   const [activeZoomToLayer, setActiveZoomToLayer] = useState(null);
   const [activeBasemap, setActiveBasemap] = useState({
@@ -495,6 +497,7 @@ export const MapProvider = (props) => {
         };
       });
     }
+    fetchMonitoringPointData();
   };
 
   const handleControlsSubmit = () => {
@@ -525,6 +528,36 @@ export const MapProvider = (props) => {
     send();
   }
 
+  function fetchAnalyticsTableForLocation(location_index) {
+    if (!location_index) location_index = lastLocationId;
+    if (!location_index) return;
+
+    console.log('wtf why is params this', parameters);
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const { data: results } = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table/${location_index}`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers });
+
+        setAnalyticsResults(results);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+
+    send();
+  }
+
   const fetchMonitoringPointData = () => {
     async function send() {
       try {
@@ -537,15 +570,9 @@ export const MapProvider = (props) => {
           },
           { headers }
         );
-
-        recolorPointsForLayers([
-          'Stream Stations',
-          'Reservoir Stations',
-          'Effluent Stations',
-          'Mine Discharge Stations',
-          'Spring Stations',
-          'Groundwater Stations',
-        ], query.data);
+        setMonitoringPointData(query.data);
+        recolorPointsForLayers(query.data);
+        //fetchAnalyticsTableForLocation();
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -575,7 +602,22 @@ export const MapProvider = (props) => {
     }
   }
 
-  const recolorPointsForLayers = (layerIds, data) => {
+  const recolorPointsForLayers = (data = null) => {
+    const layerIds = [
+      'Stream Stations',
+      'Reservoir Stations',
+      'Effluent Stations',
+      'Mine Discharge Stations',
+      'Spring Stations',
+      'Groundwater Stations',
+    ];
+
+    if (data === null) {
+      data = monitoringPointData;
+    }
+    if (data === null) {
+      return;
+    }
     // sort by location_index ascending
     data.sort((a,b) => (a.location_index > b.location_index) ? 1 : ((b.location_index > a.location_index) ? -1 : 0));
 
@@ -605,6 +647,14 @@ export const MapProvider = (props) => {
     }
 
     layerIds.forEach(id => {
+      map.setFilter(id, [
+        'match',
+        ['get', 'location_i'],
+        Object.keys(locationValues).map(x => parseInt(x)),
+        true,
+        false
+      ]);
+
       map.setPaintProperty(id, 'circle-color', [
         'interpolate',
         ['linear'],
@@ -614,26 +664,11 @@ export const MapProvider = (props) => {
     })
   }
 
+  useEffect(() => {
+    console.log('parameters changed to', parameters);
+  }, [parameters]);
 
-  const fetchAnalyticsTableForLocation = (location_index) => {
-    async function send() {
-      try {
-        const token = await getTokenSilently();
-        const headers = { Authorization: `Bearer ${token}` };
-        const { data: results } = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table/${location_index}`, { headers });
 
-        setAnalyticsResults(results);
-      } catch (err) {
-        // Is this error because we cancelled it ourselves?
-        if (axios.isCancel(err)) {
-          console.log(`call was cancelled`);
-        } else {
-          console.error(err);
-        }
-      }
-    }
-    send()
-  }
 
   const onMapChange = (val) => setMap(val);
   const onBasemapChange = (val) => {
@@ -687,6 +722,7 @@ export const MapProvider = (props) => {
         setQueryResults,
         analyticsResults,
         setAnalyticsResults,
+        setLastLocationId,
         getHexColorForScore,
         fetchAnalyticsTableForLocation,
         handleFilters,

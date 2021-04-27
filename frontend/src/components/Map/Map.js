@@ -175,6 +175,7 @@ const Map = ({
             '</tbody></table>',
           );
 
+          mapProvider.setLastLocationId(pointFeatures[0].properties.location_i);
           mapProvider.fetchAnalyticsTableForLocation(pointFeatures[0].properties.location_i);
           mapProvider.handleControlsVisibility('dataViz', true);
           map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
