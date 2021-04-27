@@ -4,6 +4,7 @@ import { Box, Button } from '@material-ui/core';
 import SubmitIcon from '@material-ui/icons/Forward';
 import Chips from '../Chips';
 import { useMap } from '../../pages/Map/MapProvider';
+import DateControl from '../DateControl';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -51,6 +52,34 @@ const ControlsPanel = ({}) => {
 
   return (
     <div className={classes.root}>
+      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
+        <DateControl
+          name={'startDate'}
+          label={'Start Date'}
+          value={context.filters.startDate}
+          onChange={(event) => context.handleFilters('startDate', event.target.value, true)}
+        />
+      </Box>
+      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
+        <DateControl
+          name={'endDate'}
+          label={'End Date'}
+          value={context.filters.endDate}
+          onChange={(event) => context.handleFilters('endDate', event.target.value, true)}
+        />
+      </Box>
+      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
+        <Button
+          color="secondary"
+          variant="contained"
+          disableElevation
+          onClick={context.handleControlsSubmit}
+          className={classes.btn}
+          startIcon={<SubmitIcon />}
+        >
+          Submit
+        </Button>
+      </Box>
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
         <div id="analysis-type-filter" className={classes.filterGroup}>
           <label className={classes.label}>Analysis</label>
@@ -114,19 +143,6 @@ const ControlsPanel = ({}) => {
             activeChips={context.filters.parameters}
           />
         </div>
-      </Box>
-      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <Button
-          color="secondary"
-          variant="contained"
-          disableElevation
-          onClick={() => {
-          }}
-          className={classes.btn}
-          startIcon={<SubmitIcon />}
-        >
-          Submit
-        </Button>
       </Box>
     </div>
   );

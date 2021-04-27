@@ -21,6 +21,7 @@ app.use("/api/example", require("./routes/Example"));
 app.use("/api/map-example", require("./routes/MapExample"));
 app.use("/api/user-geometry", require("./routes/UserGeometryRoutes"));
 app.use("/api/controls-list-param", require("./routes/ControlsListParamRoutes"));
+app.use("/api/monitoring-point", require("./routes/MonitoringPointRoutes"));
 app.use("/api/landing-controls", require("./routes/LandingControlsRoutes"));
 app.use("/api/results", require("./routes/ResultsRoutes"));
 app.use("/api/functions", require("./routes/FunctionRoutes"));

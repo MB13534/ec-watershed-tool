@@ -89,6 +89,18 @@ const MapDrawer = ({
     parseInt(sessionStorage.getItem('sk_active_drawer_tab')) || 0,
   );
 
+  useEffect(() => {
+    fetchNewQueryResults();
+  }, [mapProvider.geometryData, handleRefresh]); // eslint-disable-line
+
+  const fetchNewQueryResults = async () => {
+    const token = await getTokenSilently();
+    const headers = { Authorization: `Bearer ${token}` };
+    const { data: results } = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/results`, { headers});
+
+    mapProvider.setQueryResults(results);
+  }
+
   return (
     <Drawer
       variant="permanent"

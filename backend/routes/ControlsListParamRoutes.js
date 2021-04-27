@@ -3,6 +3,8 @@ const { checkAccessToken } = require('../middleware/auth.js')
 const { ListParametersModel } = require('../models')
 const { ListPrioritiesModel } = require('../models')
 const { ListThreatsModel } = require('../models')
+const { SeasonalAnalysisStartDateModel } = require('../models')
+const { SeasonalAnalysisEndDateModel } = require('../models')
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -39,7 +41,7 @@ router.get('/threats', (req, res, next) => {
 })
 
 /**
- * GET /api/controls-list-param/parameters
+ * POST /api/controls-list-param/parameters
  */
 router.post('/parameters', (req, res, next) => {
   const data = req.body;
@@ -80,6 +82,31 @@ router.post('/parameters', (req, res, next) => {
       .catch((err) => {
         next(err)
       })
+  }
+})
+
+/**
+ * POST /api/controls-list-param/submit
+ */
+router.post('/submit', (req, res, next) => {
+  const data = req.body;
+
+  if (data.startDate !== '' && data.endDate !== '') {
+    SeasonalAnalysisStartDateModel.update({analysis_start_date: data.startDate}, {where: {}})
+      .then(() => {
+        SeasonalAnalysisEndDateModel.update({analysis_end_date: data.endDate}, {where: {}})
+          .then(() => {
+            res.sendStatus(200);
+          })
+          .catch((err) => {
+            next(err);
+          });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    res.sendStatus(500);
   }
 })
 

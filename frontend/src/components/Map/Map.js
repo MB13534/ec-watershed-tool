@@ -19,6 +19,7 @@ import Box from '@material-ui/core/Box';
 import FreehandMode from './FreehandMode';
 import InitiateDrawingControl from '../InitiateDrawingControl';
 import PopupControl from '../PopupControl';
+import ResetZoomControl from './ResetZoom';
 
 const turf = require('@turf/turf');
 
@@ -110,7 +111,7 @@ const Map = ({
       style: activeBasemap.styleURL,
       center: [-106.64425246096249, 39.62037385121381],
       zoom: 9,
-      scrollZoom: false,
+      scrollZoom: true,
     });
 
     mapProvider.setMap(map);
@@ -118,6 +119,7 @@ const Map = ({
     const nav = new mapboxgl.NavigationControl();
     map.addControl(nav, 'top-left');
     map.addControl(draw, 'top-left');
+    map.addControl(new ResetZoomControl(), 'top-left');
 
     map.on('load', () => {
       setMapIsLoaded(true);
@@ -158,44 +160,24 @@ const Map = ({
         const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
           .setLngLat(e.lngLat);
 
+        console.log(layer);
         let hasPopup = true;
-        layer = { popupType: true }; // temporary until visibleLayers is working properly again
-        if (layer && layer.popupType && pointFeatures[0].properties['SECTION_']) {
+
+        if (layer && layer.popupType === 'point') {
           popup.setHTML(
-            '<h3>Section: ' + pointFeatures[0].properties['SECTION_'] + '</h3>' +
-            '<p>Township ' + pointFeatures[0].properties['TWNSHP'] + 'N, Range ' + pointFeatures[0].properties['RNG'] + pointFeatures[0].properties['DIR'],
+            '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
+            Object.entries(pointFeatures[0].properties).map(([k, v]) => {
+              if (k === 'hlink' || k === 'URL') {
+                return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
+              }
+              return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+            }).join('') +
+            '</tbody></table>',
           );
-        } else if (layer && layer.popupType && pointFeatures[0].properties['xsect']) {
-          popup.setHTML(
-            '<h3>Transect ' + pointFeatures[0].properties['xsect'] + ', ' + pointFeatures[0].properties['Study_Area'] + '</h3>' +
-            '<a href="' + pointFeatures[0].properties['URL'] + '" target="_blank">View Cross Section Diagram</a>',
-          );
-        } else if (layer && layer.popupType && pointFeatures[0].properties['GNIS_Name']) {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['GNIS_Name'] + '</h3>',
-          );
-        } else if (pointFeatures[0].layer.id === 'Nitrate Concentrations') {
-          popup.setHTML(
-            '<h3>Nitrate Concentrations</h3>' +
-            '<p>' + pointFeatures[0].properties['N_mgL'] + ' mg/L</p>',
-          );
-        } else if (pointFeatures[0].layer.id === 'Clay Thickness') {
-          popup.setHTML(
-            '<h3>Clay Thickness</h3>' +
-            '<p>' + pointFeatures[0].properties['Value'] + ' Feet</p>',
-          );
-        } else if (pointFeatures[0].layer.id === 'Water Level Elevations') {
-          popup.setHTML(
-            '<h3>Water Level Elevation</h3>' +
-            '<p>' + pointFeatures[0].properties['Value'] + ' Ft ab MSL</p>',
-          );
-        } else if (pointFeatures[0].layer.id === 'Saturated Sand Thickness') {
-          popup.setHTML(
-            '<h3>Saturated Sand Thickness</h3>' +
-            '<p>' + pointFeatures[0].properties['Contour'] + ' Feet</p>',
-          );
-        } else if (pointFeatures[0].layer.id === 'Study Areas' ||  Object.entries(pointFeatures[0].properties).length === 0) {
-          hasPopup = false;
+
+          mapProvider.fetchAnalyticsTableForLocation(pointFeatures[0].properties.location_i);
+          mapProvider.handleControlsVisibility('dataViz', true);
+          map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
         } else {
           popup.setHTML(
             '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +

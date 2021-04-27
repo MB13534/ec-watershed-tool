@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useAuth0 } from '../../hooks/useAuth0';
 import { HourglassEmpty } from '@material-ui/icons';
 import ResultsPopupDetails from '../../components/Map/ResultsPopupDetails';
+import AnalyticsPopupDetails from '../../components/Map/AnalyticsPopupDetails';
 
 // create page styles
 const useStyles = makeStyles((theme) => ({
@@ -122,9 +123,9 @@ const MapPage = () => {
   const handleUpdateClick = async () => {
     setLoading(true);
 
-    const token = await getTokenSilently();
-    const headers = { Authorization: `Bearer ${token}` };
-    await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/functions/process-control-selections`, { headers});
+    // const token = await getTokenSilently();
+    // const headers = { Authorization: `Bearer ${token}` };
+    // await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/functions/process-control-selections`, { headers});
 
     setHandleRefresh(!handleRefresh);
 
@@ -206,6 +207,11 @@ const MapPage = () => {
               {(map.queryResults && map.geometryData && map.geometryData.length > 0) &&
               <>
                 <ResultsPopupDetails map={map} />
+              </>
+              }
+              {(map.analyticsResults) &&
+              <>
+                <AnalyticsPopupDetails map={map} />
               </>
               }
             </Paper>

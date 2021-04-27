@@ -75,6 +75,10 @@ db.ListInputValueTypesModel = require("./ListInputValueTypesModel")(sequelize, S
 db.ListParametersModel = require("./ListParametersModel")(sequelize, Sequelize);
 db.ListPrioritiesModel = require("./ListPrioritiesModel")(sequelize, Sequelize);
 db.ListThreatsModel = require("./ListThreatsModel")(sequelize, Sequelize);
+db.SeasonalAnalysisStartDateModel = require("./SeasonalAnalysisStartDateModel")(sequelize, Sequelize);
+db.SeasonalAnalysisEndDateModel = require("./SeasonalAnalysisEndDateModel")(sequelize, Sequelize);
+db.DynamicFinalForPortalPointsModel = require("./DynamicFinalForPortalPointsModel")(sequelize, Sequelize);
+db.DynamicFinalForPortalTableModel = require("./DynamicFinalForPortalTableModel")(sequelize, Sequelize);
 
 Sequelize.postgres.DECIMAL.parse = function (value) {
   return parseFloat(value);

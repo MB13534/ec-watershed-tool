@@ -48,6 +48,7 @@ export const MapContext = React.createContext({
   resetFilters: () => {},
   onSelectAllLayers: () => {},
   onSelectNoneLayers: () => {},
+  handleControlsSubmit: () => {},
 });
 
 export const DummyBasemapLayers = [
@@ -99,6 +100,8 @@ export const MapProvider = (props) => {
 
   // initialize the default sidebar filter values
   const [filters, setFilters] = useState({
+    startDate: '2020-04-01',
+    endDate: '2020-10-30',
     analysisType: "85th percentile",
     priorities: ["Treatment", "Infrastructure", "Environment"],
     threats: [
@@ -122,7 +125,6 @@ export const MapProvider = (props) => {
       "Cl",
       "Cu-D",
       "Cu-T",
-      "DO",
       "E. coli",
       "Hardness",
       "Fe-D",
@@ -149,7 +151,6 @@ export const MapProvider = (props) => {
       "Temp",
       "Zn-D",
       "Zn-T",
-      "Alk",
       "Turb",
       "Al-T",
       "U-T",
@@ -178,6 +179,9 @@ export const MapProvider = (props) => {
   }
   const getParameterIndexByName = (name) => {
     let parameter = parameters.find(x => x.parameter_abbrev === name);
+    if (typeof parameter === 'undefined') {
+      console.log(name + ' wasnt found... why?');
+    }
     return parameter.parameter_index;
   }
 
@@ -220,6 +224,7 @@ export const MapProvider = (props) => {
   const [geometryData, setGeometryData] = useState();
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
+  const [analyticsResults, setAnalyticsResults] = useState(null);
   const [filterActive, setFilterActive] = useState(false);
   const [activeZoomToLayer, setActiveZoomToLayer] = useState(null);
   const [activeBasemap, setActiveBasemap] = useState({
@@ -291,7 +296,7 @@ export const MapProvider = (props) => {
     dataViz: {
       visible: checkControlOpen(
         sessionStorage.getItem("sk_dataViz_control"),
-        false
+        true
       ),
     },
     popup: {
@@ -456,8 +461,20 @@ export const MapProvider = (props) => {
     });
   };
 
-  const handleFilters = (name, value) => {
-    if (name !== "analysisType") { // toggle only this one on/off
+  const cleanParams = (params) => {
+    const newParams = [];
+
+    parameters.forEach(x => {
+      if (params.indexOf(x.parameter_abbrev) !== -1) {
+        newParams.push(x.parameter_abbrev);
+      }
+    });
+
+    return newParams;
+  }
+
+  const handleFilters = (name, value, simpleMode = false) => {
+    if (name !== "analysisType" && simpleMode === false) { // toggle only this one on/off
       setFilters(prevState => {
         const existingVals = [...prevState[name]];
         const existingIndex = existingVals.indexOf(value);
@@ -479,6 +496,144 @@ export const MapProvider = (props) => {
       });
     }
   };
+
+  const handleControlsSubmit = () => {
+    async function send() {
+      try {
+        console.log(filters);
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        let query = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/controls-list-param/submit`,
+          {
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+          },
+          { headers }
+        );
+
+        fetchMonitoringPointData();
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send();
+  }
+
+  const fetchMonitoringPointData = () => {
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        let query = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers }
+        );
+
+        recolorPointsForLayers([
+          'Stream Stations',
+          'Reservoir Stations',
+          'Effluent Stations',
+          'Mine Discharge Stations',
+          'Spring Stations',
+          'Groundwater Stations',
+        ], query.data);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send();
+  }
+
+  const getHexColorForScore = (score) => {
+    switch (score) {
+      case 4:
+        return '#c61717';
+      case 3:
+        return '#f9a825';
+      case 2:
+        return '#ffeb3b';
+      case 1:
+        return '#16f465';
+      case 0:
+        return '#228044';
+      default:
+        return '#999999';
+    }
+  }
+
+  const recolorPointsForLayers = (layerIds, data) => {
+    // sort by location_index ascending
+    data.sort((a,b) => (a.location_index > b.location_index) ? 1 : ((b.location_index > a.location_index) ? -1 : 0));
+
+    const colorData = [];
+    const locationValues = {};
+
+    data.forEach(row => {
+      // set a default score
+      if (typeof locationValues[row.location_index] === 'undefined') {
+        locationValues[row.location_index] = 0;
+      }
+
+      if (filters.analysisType === '85th percentile') {
+          if (row.all_85_bmk > locationValues[row.location_index]) {
+            locationValues[row.location_index] = row.all_85_bmk;
+          }
+      } else {
+        if (row.all_med_bmk > locationValues[row.location_index]) {
+          locationValues[row.location_index] = row.all_med_bmk;
+        }
+      }
+    });
+
+    for (const [loc_id, score] of Object.entries(locationValues)) {
+      colorData.push(parseInt(loc_id));
+      colorData.push(getHexColorForScore(score))
+    }
+
+    layerIds.forEach(id => {
+      map.setPaintProperty(id, 'circle-color', [
+        'interpolate',
+        ['linear'],
+        ['get', 'location_i'],
+        ...colorData,
+      ]);
+    })
+  }
+
+
+  const fetchAnalyticsTableForLocation = (location_index) => {
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const { data: results } = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table/${location_index}`, { headers });
+
+        setAnalyticsResults(results);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send()
+  }
 
   const onMapChange = (val) => setMap(val);
   const onBasemapChange = (val) => {
@@ -530,6 +685,10 @@ export const MapProvider = (props) => {
         setQueryAreaSize,
         queryResults,
         setQueryResults,
+        analyticsResults,
+        setAnalyticsResults,
+        getHexColorForScore,
+        fetchAnalyticsTableForLocation,
         handleFilters,
         handleControlsVisibility,
         onMapChange,
@@ -543,6 +702,7 @@ export const MapProvider = (props) => {
         resetFilters,
         onSelectAllLayers,
         onSelectNoneLayers,
+        handleControlsSubmit,
       }}
     >
       {props.children}
