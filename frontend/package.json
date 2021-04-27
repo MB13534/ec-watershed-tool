@@ -1,0 +1,65 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^1.9.0",
+    "@lrewater/lre-react": "^0.6.6",
+    "@mapbox/mapbox-gl-draw": "^1.2.0",
+    "@material-ui/core": "^4.10.1",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@sentry/browser": "^5.17.0",
+    "@turf/turf": "^5.1.6",
+    "auth0-js": "^9.13.2",
+    "axios": "^0.21.1",
+    "copy-to-clipboard": "^3.3.1",
+    "dotenv": "^8.0.0",
+    "mapbox-gl": "^1.12.0",
+    "match-sorter": "^4.2.0",
+    "material-table": "^1.57.2",
+    "numbro": "^2.3.1",
+    "papaparse": "^5.2.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-markdown": "^4.2.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^3.4.3",
+    "react-syntax-highlighter": "^11.0.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && mv _redirects build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public",
+    "generateComponent": "node src/utils/generateComponent.js",
+    "generatePage": "node src/utils/generatePage.js"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^5.3.19",
+    "@storybook/addon-docs": "^5.3.19",
+    "@storybook/addon-knobs": "^5.3.19",
+    "@storybook/addon-links": "^5.3.19",
+    "@storybook/addon-storysource": "^5.3.19",
+    "@storybook/addons": "^5.3.19",
+    "@storybook/preset-create-react-app": "^3.1.4",
+    "@storybook/react": "^5.3.19"
+  }
+}
