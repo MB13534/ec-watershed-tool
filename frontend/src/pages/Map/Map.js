@@ -201,14 +201,6 @@ const MapPage = () => {
             position="absolute"
           >
             <Paper style={{ padding: 24, paddingTop: 8 }}>
-              {(!map.geometryData || map.geometryData.length === 0) &&
-              <Box pt={2}><Typography variant="body1" align="center">Please use the drawing tools to define an area to query.</Typography></Box>
-              }
-              {(map.queryResults && map.geometryData && map.geometryData.length > 0) &&
-              <>
-                <ResultsPopupDetails map={map} />
-              </>
-              }
               {(map.analyticsResults) &&
               <>
                 <AnalyticsPopupDetails map={map} />

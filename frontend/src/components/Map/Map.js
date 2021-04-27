@@ -176,6 +176,8 @@ const Map = ({
           );
 
           mapProvider.setLastLocationId(pointFeatures[0].properties.location_i);
+          console.log('click params', mapProvider.parameters, mapProvider.filters.parameters);
+
           mapProvider.fetchAnalyticsTableForLocation(pointFeatures[0].properties.location_i);
           mapProvider.handleControlsVisibility('dataViz', true);
           map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
@@ -276,7 +278,7 @@ const Map = ({
         }
       }
 
-      const querySizeLimit = 2800;
+      const querySizeLimit = 1200000;
       const area = turf.area(data);
       if (parseInt(area / 4046.8564224) <= querySizeLimit) {
         setHasChanges(true);

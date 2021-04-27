@@ -79,6 +79,8 @@ db.SeasonalAnalysisStartDateModel = require("./SeasonalAnalysisStartDateModel")(
 db.SeasonalAnalysisEndDateModel = require("./SeasonalAnalysisEndDateModel")(sequelize, Sequelize);
 db.DynamicFinalForPortalPointsModel = require("./DynamicFinalForPortalPointsModel")(sequelize, Sequelize);
 db.DynamicFinalForPortalTableModel = require("./DynamicFinalForPortalTableModel")(sequelize, Sequelize);
+db.GisUserIntersectLandUseModel = require("./GisUserIntersectLandUseModel")(sequelize, Sequelize);
+db.GisUserIntersectStationsModel = require("./GisUserIntersectStationsModel")(sequelize, Sequelize);
 
 Sequelize.postgres.DECIMAL.parse = function (value) {
   return parseFloat(value);

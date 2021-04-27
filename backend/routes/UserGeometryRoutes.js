@@ -1,6 +1,6 @@
 const express = require('express');
 const { checkAccessToken } = require('../middleware/auth.js');
-const { UserGeometryModel } = require('../models');
+const { UserGeometryModel, GisUserIntersectLandUseModel, GisUserIntersectStationsModel } = require('../models');
 
 // Create Express Router
 const router = express.Router();
@@ -52,4 +52,37 @@ router.put(
   },
 );
 
+/**
+ * GET /api/user-geometry/landuse
+ */
+router.get('/landuse', (req, res, next) => {
+  GisUserIntersectLandUseModel.findAll({
+    where: {
+      userid: req.user.sub,
+    },
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+/**
+ * GET /api/user-geometry/stations
+ */
+router.get('/stations', (req, res, next) => {
+  GisUserIntersectStationsModel.findAll({
+    where: {
+      userid: req.user.sub,
+    },
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
 module.exports = router;

@@ -28,7 +28,6 @@ export const MapContext = React.createContext({
   analysisTypes: [],
   priorities: [],
   threats: [],
-  parameters: [],
   filters: {},
   filteredLayers: [],
   visibleLayers: [],
@@ -117,51 +116,8 @@ export const MapProvider = (props) => {
       "Wildfire",
     ],
     parameters: [
-      "NH3",
-      "As-D",
-      "As-T",
-      "Cd-D",
-      "Cd-T",
-      "Cl",
-      "Cu-D",
-      "Cu-T",
-      "E. coli",
       "Hardness",
-      "Fe-D",
-      "Fe-T",
-      "Pb-D",
-      "Pb-T",
-      "Mn-D",
-      "Mn-T",
-      "Hg-T",
-      "Mo-D",
-      "Mo-T",
-      "Ni-D",
-      "Ni-T",
-      "NO3",
-      "NO3+NO2",
-      "NO2",
-      "pH",
       "TP",
-      "Se-D",
-      "Se-T",
-      "Ag-D",
-      "Ag-T",
-      "SO4",
-      "Temp",
-      "Zn-D",
-      "Zn-T",
-      "Turb",
-      "Al-T",
-      "U-T",
-      "U-D",
-      "Al-D",
-      "TOC",
-      "BR",
-      "TSS",
-      "F",
-      "TN",
-      "CSMR",
     ],
   });
 
@@ -222,6 +178,8 @@ export const MapProvider = (props) => {
 
   const [map, setMap] = useState();
   const [geometryData, setGeometryData] = useState();
+  const [landUseData, setLandUseData] = useState();
+  const [stationData, setStationData] = useState();
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
   const [analyticsResults, setAnalyticsResults] = useState(null);
@@ -497,7 +455,6 @@ export const MapProvider = (props) => {
         };
       });
     }
-    fetchMonitoringPointData();
   };
 
   const handleControlsSubmit = () => {
@@ -516,6 +473,8 @@ export const MapProvider = (props) => {
         );
 
         fetchMonitoringPointData();
+        fetchLandUseData();
+        fetchStationData();
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -558,6 +517,11 @@ export const MapProvider = (props) => {
     send();
   }
 
+  useEffect(() => {
+    fetchMonitoringPointData();
+    fetchAnalyticsTableForLocation();
+  }, [filters.parameters]);
+
   const fetchMonitoringPointData = () => {
     async function send() {
       try {
@@ -573,6 +537,50 @@ export const MapProvider = (props) => {
         setMonitoringPointData(query.data);
         recolorPointsForLayers(query.data);
         //fetchAnalyticsTableForLocation();
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send();
+  }
+
+  const fetchLandUseData = () => {
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        let query = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/landuse`,
+          { headers }
+        );
+        setLandUseData(query.data);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send();
+  }
+
+  const fetchStationData = () => {
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        let query = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/stations`,
+          { headers }
+        );
+        setStationData(query.data);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -701,6 +709,8 @@ export const MapProvider = (props) => {
         setMap,
         geometryData,
         setGeometryData,
+        landUseData,
+        stationData,
         controls,
         activeZoomToLayer,
         activeBasemap,

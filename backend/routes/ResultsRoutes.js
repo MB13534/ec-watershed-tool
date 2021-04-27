@@ -1,6 +1,12 @@
 const express = require('express');
 const { checkAccessToken } = require('../middleware/auth.js');
-const { ResultsModel, ResultsDetailsModel, ResultsDetailsAqVulnModel, ResultsDetailsLandUseModel, ResultsDetailsParcelsModel } = require('../models');
+const {
+  ResultsModel,
+  ResultsDetailsModel,
+  ResultsDetailsAqVulnModel,
+  ResultsDetailsLandUseModel,
+  ResultsDetailsParcelsModel,
+} = require('../models');
 
 // Create Express Router
 const router = express.Router();

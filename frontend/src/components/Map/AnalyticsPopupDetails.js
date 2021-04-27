@@ -22,6 +22,7 @@ import { colors } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { useMap } from '../../pages/Map/MapProvider';
 import Icon from '@material-ui/core/Icon';
+import ResultsPopupDetails from './ResultsPopupDetails';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -129,8 +130,7 @@ export default function AnalyticsPopupDetails({ map }) {
       >
         <Tab label="Stats & Benchmarks" icon={<DetailsIcon />} {...a11yProps(0)} />
         <Tab label="Land Use" icon={<LandUseIcon />} {...a11yProps(1)} />
-        <Tab label="Parcels" icon={<ParcelsIcon />} {...a11yProps(2)} />
-        <Tab label="Monitoring Locations" icon={<AqVulnIcon />} {...a11yProps(3)} />
+        <Tab label="Monitoring Locations" icon={<AqVulnIcon />} {...a11yProps(2)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <Divider />
@@ -172,19 +172,67 @@ export default function AnalyticsPopupDetails({ map }) {
       <TabPanel value={value} index={1}>
         <Divider />
         <Paper>
-
+          {(map.landUseData) &&
+          <TableContainer>
+            <Table className={classes.table} size="small" aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Land Cover Type</TableCell>
+                  <TableCell>Acres</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {map.landUseData.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      {row.use_new}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.acres}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          }
         </Paper>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Divider />
         <Paper>
-
-        </Paper>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <Divider style={{ marginBottom: theme.spacing(4) }} />
-        <Paper>
-
+          {(map.stationData) &&
+          <TableContainer>
+            <Table className={classes.table} size="small" aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Location Name</TableCell>
+                  <TableCell>Location Type</TableCell>
+                  <TableCell>HUC12</TableCell>
+                  <TableCell>HUC Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {map.stationData.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      {row.location_name}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.loc_type}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.huc12}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.huc_name}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          }
         </Paper>
       </TabPanel>
     </div>
