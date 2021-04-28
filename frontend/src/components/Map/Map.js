@@ -93,6 +93,8 @@ const Map = ({
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [mapPopups, setMapPopups] = useState([]);
 
+  const [lastLocationIdClicked, setLastLocationIdClicked] = useState(null);
+
   /**
    * Load map geometry from database
    */
@@ -175,10 +177,8 @@ const Map = ({
             '</tbody></table>',
           );
 
-          mapProvider.setLastLocationId(pointFeatures[0].properties.location_i);
-          console.log('click params', mapProvider.parameters, mapProvider.filters.parameters);
+          setLastLocationIdClicked(pointFeatures[0].properties.location_i);
 
-          mapProvider.fetchAnalyticsTableForLocation(pointFeatures[0].properties.location_i);
           mapProvider.handleControlsVisibility('dataViz', true);
           map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
         } else {
@@ -281,7 +281,7 @@ const Map = ({
       const querySizeLimit = 1200000;
       const area = turf.area(data);
       if (parseInt(area / 4046.8564224) <= querySizeLimit) {
-        setHasChanges(true);
+        //setHasChanges(true);
         saveDrawings();
       } else {
         const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
@@ -293,6 +293,11 @@ const Map = ({
     onMapChange(map);
   }, []); //eslint-disable-line
 
+
+  useEffect(() => {
+    mapProvider.setLastLocationId(lastLocationIdClicked);
+    mapProvider.fetchAnalyticsTableForLocation(lastLocationIdClicked);
+  }, [lastLocationIdClicked]);
 
   // useEffect(() => {
   //   let data = draw.getAll();

@@ -520,7 +520,23 @@ export const MapProvider = (props) => {
   useEffect(() => {
     fetchMonitoringPointData();
     fetchAnalyticsTableForLocation();
-  }, [filters.parameters]);
+  }, [filters.parameters, filters.analysisType]);
+
+  useEffect(() => {
+    if (filters.parameters.length && parameters.length) {
+      setFilters((prevState) => {
+        return {
+          ...prevState,
+          ['parameters']: cleanParams(filters.parameters),
+        };
+      });
+    }
+  }, [parameters]);
+
+  useEffect(() => {
+    fetchLandUseData();
+    fetchStationData();
+  }, [geometryData]);
 
   const fetchMonitoringPointData = () => {
     async function send() {
@@ -675,8 +691,6 @@ export const MapProvider = (props) => {
   useEffect(() => {
     console.log('parameters changed to', parameters);
   }, [parameters]);
-
-
 
   const onMapChange = (val) => setMap(val);
   const onBasemapChange = (val) => {

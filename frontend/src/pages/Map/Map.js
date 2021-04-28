@@ -119,57 +119,12 @@ const MapPage = () => {
       document.getElementsByTagName('body')[0].style.overflow = 'auto';
     };
   }, []);
-
-  const handleUpdateClick = async () => {
-    setLoading(true);
-
-    // const token = await getTokenSilently();
-    // const headers = { Authorization: `Bearer ${token}` };
-    // await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/functions/process-control-selections`, { headers});
-
-    setHandleRefresh(!handleRefresh);
-
-    setHasChanges(false);
-    setLoading(false);
-  };
-
+  
   return (
     <MapLayout>
       <div className={classes.root}>
         <MapDrawer setHasChanges={setHasChanges} handleRefresh={handleRefresh}/>
         <div className={classes.content}>
-          <Box
-            className={clsx(loading ? classes.loading : '', hasChanges ? classes.unsentFull : classes.unsentCollapsed, {
-              [classes.unsentOpen]: hasChanges,
-              [classes.unsentClose]: !hasChanges,
-            })}
-            ml="60px"
-            top="60px"
-            zIndex={1399}
-            position="absolute"
-          >
-            <Alert severity="info"
-                   action={
-                     <>
-                       {loading && (
-                         <Button disabled color="inherit" size="small" startIcon={
-                           <HourglassEmpty style={{
-                             animation: 'rotation 2s infinite linear',
-                           }}/>
-                         }>
-                           Loading, Please Wait...
-                         </Button>
-                       )}
-                       {!loading && (
-                         <Button color="inherit" size="small" onClick={handleUpdateClick}>
-                           UPDATE
-                         </Button>
-                       )}
-                     </>
-                   }>
-              <strong>Query Changes Detected</strong> &mdash; Do you want to update the query?
-            </Alert>
-          </Box>
 
           <Box
             className={clsx(showQueryTooBigError ? classes.tooBigErrorFull : classes.tooBigErrorCollapsed, {

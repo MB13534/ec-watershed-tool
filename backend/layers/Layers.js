@@ -43,7 +43,7 @@ const Layers = [
     enabled: true,
     visible: true,
     popupType: 'none',
-    geometry_type_ndx: 3,
+    geometry_type_ndx: 1,
     layer_categories: [1],
     spatial_data: counties,
     paint: {

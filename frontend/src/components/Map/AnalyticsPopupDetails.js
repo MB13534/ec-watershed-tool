@@ -173,7 +173,10 @@ export default function AnalyticsPopupDetails({ map }) {
         <Divider />
         <Paper>
           {(map.landUseData) &&
-          <TableContainer>
+          <TableContainer style={{
+            overflowY: 'scroll',
+            maxHeight: '201px',
+          }}>
             <Table className={classes.table} size="small" aria-label="simple table">
               <TableHead>
                 <TableRow>
@@ -202,7 +205,10 @@ export default function AnalyticsPopupDetails({ map }) {
         <Divider />
         <Paper>
           {(map.stationData) &&
-          <TableContainer>
+          <TableContainer style={{
+            overflowY: 'scroll',
+            maxHeight: '201px',
+          }}>
             <Table className={classes.table} size="small" aria-label="simple table">
               <TableHead>
                 <TableRow>
