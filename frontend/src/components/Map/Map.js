@@ -129,8 +129,6 @@ const Map = ({
       scrollZoom: true,
     });
 
-    mapProvider.setMap(map);
-
     const nav = new mapboxgl.NavigationControl();
     map.addControl(nav, 'top-left');
     map.addControl(draw, 'top-left');
@@ -148,9 +146,9 @@ const Map = ({
 
     map.on('draw.delete', updateDrawings);
     map.on('draw.update', updateDrawings);
-
-
     map.on('zoom', updateZoomViz);
+
+    mapProvider.setMap(map);
 
     function updateZoomViz(e) {
       visibleLayers.map(layer => {
@@ -164,8 +162,6 @@ const Map = ({
         return layer;
       });
     }
-
-
 
     function removeExistingDrawings() {
       const drawings = draw.getAll();
@@ -254,7 +250,7 @@ const Map = ({
     //if (geometryData.length > 0 && mapIsLoaded) {
     draw.add(getFeatureGeometryObj(geometryData));
     //}
-    if (mapIsLoaded) {
+    if (mapIsLoaded && visibleLayers.length > 0) {
       map.on('click', setupPopups);
 
       function setupPopups(e) {
@@ -367,7 +363,7 @@ const Map = ({
         }
       }
     }
-  }, [mapIsLoaded]); //eslint-disable-line
+  }, [mapIsLoaded, visibleLayers]); //eslint-disable-line
 
   useEffect(() => {
     mapProvider.setGeometryData(geometryData);
