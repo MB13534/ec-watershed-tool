@@ -145,10 +145,11 @@ const Map = ({
       removeExistingDrawings();
       updateDrawings();
     });
+
     map.on('draw.delete', updateDrawings);
     map.on('draw.update', updateDrawings);
 
-    map.on('click', setupPopups);
+
     map.on('zoom', updateZoomViz);
 
     function updateZoomViz(e) {
@@ -164,115 +165,7 @@ const Map = ({
       });
     }
 
-    function setupPopups(e) {
-      const pointFeatures = map.queryRenderedFeatures(e.point);
-      // .filter(layer => layer.layer.id.includes('All Wells'));
-      const isDrawing = draw.getMode().startsWith('draw');
-      if (pointFeatures.length && !pointFeatures[0].source.startsWith('mapbox-gl-draw') && !isDrawing) {
-        map.fire('closeAllPopups');
 
-        let layer = visibleLayers.filter(x => x.name === pointFeatures[0].layer.id)[0];
-        const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
-          .setLngLat(e.lngLat);
-
-        console.log('lngLat',e.lngLat);
-        console.log('point',e.point);
-        console.log('pointFeatures',pointFeatures);
-        console.log(layer);
-        let hasPopup = true;
-
-        if (layer && layer.popupType === 'point') {
-          let data = pointFeatures[0].properties;
-
-          let icon = document.createElement('div');
-          ReactDOM.render(<RoomIcon fontSize={"large"}/>, icon);
-
-          let heading = document.createElement('div');
-          ReactDOM.render(<Typography variant={'h5'} align={'center'}>{data.location_1}</Typography>, heading);
-
-          let subheading = document.createElement('div');
-          ReactDOM.render(<Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>({data.loc_type})</Typography>, subheading);
-
-          let body = document.createElement('div');
-          ReactDOM.render(<Typography variant={'body1'} align={'center'}>{data.location_n}</Typography>, body);
-
-          popup.setLngLat({lng: data.loc_long, lat: data.loc_lat});
-
-          popup.setHTML(
-            '<div class="' + classes.popupIcon + '"> ' + icon.innerHTML + '</div>' +
-            heading.innerHTML +
-            subheading.innerHTML +
-            body.innerHTML
-          );
-
-          setLastLocationIdClicked(pointFeatures[0].properties.location_i);
-
-          mapProvider.handleControlsVisibility('dataViz', true);
-          map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
-        } else {
-          popup.setHTML(
-            '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
-            Object.entries(pointFeatures[0].properties).map(([k, v]) => {
-              if (k === 'hlink' || k === 'URL') {
-                return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
-              }
-              return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-            }).join('') +
-            '</tbody></table>',
-          );
-        }
-
-        /*if (layer && layer.popupType && layer.popupType === 'section') {
-          popup.setHTML(
-            '<h3>Section: ' + pointFeatures[0].properties['SECTION_'] + '</h3>' +
-            '<p>Township ' + pointFeatures[0].properties['TWNSHP'] + pointFeatures[0].properties['DIR'] + ', Range ' +
-            pointFeatures[0].properties['RNG']
-          );
-        } else if (layer && layer.popupType && layer.popupType === 'transects') {
-            popup.setHTML(
-              '<h3>Transect ' + pointFeatures[0].properties['xsect'] + ', ' + pointFeatures[0].properties['Study_Area'] + '</h3>' +
-              '<a href="' + pointFeatures[0].properties['Study_Area'] + '" target="_blank">View Cross Section Diagram</a>'
-            );
-        } else if (layer && layer.popupType && layer.popupType === 'streams') {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['GNIS_Name'] + '</h3>'
-          );
-        } else if (layer && layer.popupType && layer.popupType === 'nitrates') {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['Contour'] + ' ppm</h3>'
-          );
-        } else if (layer && layer.popupType && layer.popupType === 'clay') {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['Contour'] + ' Feet</h3>'
-          );
-        } else if (layer && layer.popupType && layer.popupType === 'waterlevels') {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['Contour'] + '</h3> Ft ab MSL'
-          );
-        } else if (layer && layer.popupType && layer.popupType === 'sand') {
-          popup.setHTML(
-            '<h3>' + pointFeatures[0].properties['Contour'] + '</h3> Feet'
-          );
-        } else {
-          popup.setHTML(
-              '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
-              Object.entries(pointFeatures[0].properties).map(([k,v ]) => {
-                if (k === 'hlink' || k === 'URL') {
-                  return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
-                }
-                return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-              }).join('') +
-              '</tbody></table>'
-            );
-        }*/
-
-        if (hasPopup) popup.addTo(map);
-
-        map.on('closeAllPopups', () => {
-          popup.remove();
-        });
-      }
-    }
 
     function removeExistingDrawings() {
       const drawings = draw.getAll();
@@ -361,6 +254,119 @@ const Map = ({
     //if (geometryData.length > 0 && mapIsLoaded) {
     draw.add(getFeatureGeometryObj(geometryData));
     //}
+    if (mapIsLoaded) {
+      map.on('click', setupPopups);
+
+      function setupPopups(e) {
+        const pointFeatures = map.queryRenderedFeatures(e.point);
+        // .filter(layer => layer.layer.id.includes('All Wells'));
+        const isDrawing = draw.getMode().startsWith('draw');
+        if (pointFeatures.length && !pointFeatures[0].source.startsWith('mapbox-gl-draw') && !isDrawing) {
+          map.fire('closeAllPopups');
+
+          let layer = visibleLayers.filter(x => x.name === pointFeatures[0].layer.id)[0];
+          const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
+            .setLngLat(e.lngLat);
+
+          console.log('lngLat',e.lngLat);
+          console.log('point',e.point);
+          console.log('pointFeatures',pointFeatures);
+          console.log(layer);
+          let hasPopup = true;
+
+          if (layer && layer.popupType === 'point') {
+            let data = pointFeatures[0].properties;
+
+            let icon = document.createElement('div');
+            ReactDOM.render(<RoomIcon fontSize={"large"}/>, icon);
+
+            let heading = document.createElement('div');
+            ReactDOM.render(<Typography variant={'h5'} align={'center'}>{data.location_1}</Typography>, heading);
+
+            let subheading = document.createElement('div');
+            ReactDOM.render(<Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>({data.loc_type})</Typography>, subheading);
+
+            let body = document.createElement('div');
+            ReactDOM.render(<Typography variant={'body1'} align={'center'}>{data.location_n}</Typography>, body);
+
+            popup.setLngLat({lng: data.loc_long, lat: data.loc_lat});
+
+            popup.setHTML(
+              '<div class="' + classes.popupIcon + '"> ' + icon.innerHTML + '</div>' +
+              heading.innerHTML +
+              subheading.innerHTML +
+              body.innerHTML
+            );
+
+            setLastLocationIdClicked(pointFeatures[0].properties.location_i);
+
+            mapProvider.handleControlsVisibility('dataViz', true);
+            map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
+          } else {
+            popup.setHTML(
+              '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
+              Object.entries(pointFeatures[0].properties).map(([k, v]) => {
+                if (k === 'hlink' || k === 'URL') {
+                  return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
+                }
+                return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+              }).join('') +
+              '</tbody></table>',
+            );
+          }
+
+          /*if (layer && layer.popupType && layer.popupType === 'section') {
+            popup.setHTML(
+              '<h3>Section: ' + pointFeatures[0].properties['SECTION_'] + '</h3>' +
+              '<p>Township ' + pointFeatures[0].properties['TWNSHP'] + pointFeatures[0].properties['DIR'] + ', Range ' +
+              pointFeatures[0].properties['RNG']
+            );
+          } else if (layer && layer.popupType && layer.popupType === 'transects') {
+              popup.setHTML(
+                '<h3>Transect ' + pointFeatures[0].properties['xsect'] + ', ' + pointFeatures[0].properties['Study_Area'] + '</h3>' +
+                '<a href="' + pointFeatures[0].properties['Study_Area'] + '" target="_blank">View Cross Section Diagram</a>'
+              );
+          } else if (layer && layer.popupType && layer.popupType === 'streams') {
+            popup.setHTML(
+              '<h3>' + pointFeatures[0].properties['GNIS_Name'] + '</h3>'
+            );
+          } else if (layer && layer.popupType && layer.popupType === 'nitrates') {
+            popup.setHTML(
+              '<h3>' + pointFeatures[0].properties['Contour'] + ' ppm</h3>'
+            );
+          } else if (layer && layer.popupType && layer.popupType === 'clay') {
+            popup.setHTML(
+              '<h3>' + pointFeatures[0].properties['Contour'] + ' Feet</h3>'
+            );
+          } else if (layer && layer.popupType && layer.popupType === 'waterlevels') {
+            popup.setHTML(
+              '<h3>' + pointFeatures[0].properties['Contour'] + '</h3> Ft ab MSL'
+            );
+          } else if (layer && layer.popupType && layer.popupType === 'sand') {
+            popup.setHTML(
+              '<h3>' + pointFeatures[0].properties['Contour'] + '</h3> Feet'
+            );
+          } else {
+            popup.setHTML(
+                '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
+                Object.entries(pointFeatures[0].properties).map(([k,v ]) => {
+                  if (k === 'hlink' || k === 'URL') {
+                    return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
+                  }
+                  return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+                }).join('') +
+                '</tbody></table>'
+              );
+          }*/
+
+          if (hasPopup) popup.addTo(map);
+
+          map.on('closeAllPopups', () => {
+            popup.remove();
+          });
+        }
+      }
+    }
   }, [mapIsLoaded]); //eslint-disable-line
 
   useEffect(() => {
