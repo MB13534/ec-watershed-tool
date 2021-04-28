@@ -22,6 +22,8 @@ const defaultCircleStyles = {
   'circle-radius': 6,
   'circle-stroke-color': '#333',
   'circle-stroke-width': 1.5,
+  'circle-stroke-opacity': 0,
+  'circle-opacity': 0,
 };
 
 const defaultLineStyles = {

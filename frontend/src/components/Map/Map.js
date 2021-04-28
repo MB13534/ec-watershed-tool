@@ -23,6 +23,7 @@ import PopupControl from '../PopupControl';
 import ResetZoomControl from './ResetZoom';
 import RoomIcon from '@material-ui/icons/Room';
 import Button from '@material-ui/core/Button';
+import LegendControl from '../LegendControl';
 
 const turf = require('@turf/turf');
 
@@ -107,6 +108,8 @@ const Map = ({
   const [mapPopups, setMapPopups] = useState([]);
 
   const [lastLocationIdClicked, setLastLocationIdClicked] = useState(null);
+
+  const [mapMoveEnd, setMapMoveEnd] = useState(false);
 
   /**
    * Load map geometry from database
@@ -207,9 +210,29 @@ const Map = ({
       }
     }
 
+    async function loadDrawings() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const query = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
+          { headers },
+        );
+        setGeometryData(query.data);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+
+    //loadDrawings();
+
     onMapChange(map);
   }, []); //eslint-disable-line
-
 
   useEffect(() => {
     mapProvider.setLastLocationId(lastLocationIdClicked);
@@ -251,6 +274,7 @@ const Map = ({
     draw.add(getFeatureGeometryObj(geometryData));
     //}
     if (mapIsLoaded && visibleLayers.length > 0) {
+      // TODO : Fix this seemingly firing multiple times after toggling layers
       map.on('click', setupPopups);
 
       function setupPopups(e) {
@@ -264,10 +288,6 @@ const Map = ({
           const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
             .setLngLat(e.lngLat);
 
-          console.log('lngLat',e.lngLat);
-          console.log('point',e.point);
-          console.log('pointFeatures',pointFeatures);
-          console.log(layer);
           let hasPopup = true;
 
           if (layer && layer.popupType === 'point') {
@@ -294,11 +314,15 @@ const Map = ({
               body.innerHTML
             );
 
+            map.fire('mapPointClicked');
+
+            mapProvider.setCurrentLocationData(data);
+
             setLastLocationIdClicked(pointFeatures[0].properties.location_i);
 
             mapProvider.handleControlsVisibility('dataViz', true);
             map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
-          } else {
+          } else if (layer && layer.popupType === 'table') {
             popup.setHTML(
               '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
               Object.entries(pointFeatures[0].properties).map(([k, v]) => {
@@ -309,6 +333,8 @@ const Map = ({
               }).join('') +
               '</tbody></table>',
             );
+          } else {
+            hasPopup = false;
           }
 
           /*if (layer && layer.popupType && layer.popupType === 'section') {
@@ -363,6 +389,7 @@ const Map = ({
         }
       }
     }
+
   }, [mapIsLoaded, visibleLayers]); //eslint-disable-line
 
   useEffect(() => {
@@ -490,6 +517,36 @@ const Map = ({
               return layer;
             });
 
+
+            [
+              'Stream Stations',
+              'Reservoir Stations',
+              'Effluent Stations',
+              'Mine Discharge Stations',
+              'Spring Stations',
+              'Groundwater Stations',
+            ].forEach((layer) => {
+              if (
+                !map.getLayer(`${layer}-labels`)
+              ) {
+                map.addLayer({
+                  'id': layer + `-labels`,
+                  'type': 'symbol',
+                  'source': layer + '-source',
+                  'minzoom': 10,
+                  'layout': {
+                    'text-field': ["get", "location_1"],
+                    'text-offset': [0, -2],
+                    'text-size': 14,
+                  },
+                  'paint': {
+                    'text-halo-color': '#ffffff',
+                    'text-halo-width': 0.5,
+                  },
+                });
+              }
+            });
+
             map.on('mousemove', function (e) {
               const bbox = [
                 [e.point.x - 5, e.point.y - 5],
@@ -516,9 +573,16 @@ const Map = ({
                   'visibility',
                   layer.visible ? 'visible' : 'none',
                 );
+                map.setLayoutProperty(
+                  layer.name+'-labels',
+                  'visibility',
+                  layer.visible ? 'visible' : 'none',
+                );
               }
               return layer;
             });
+
+            mapProvider.setKickoff(true);
           });
         },
       );
@@ -630,12 +694,12 @@ const Map = ({
       const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
       mapProvider.setQueryAreaSize(`${roundedArea} acres`);
 
-      const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
-        .setLngLat(center)
-        .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
-        .addTo(map);
-
-      setMapPopups((prevState) => [...prevState, popup]);
+      // const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
+      //   .setLngLat(center)
+      //   .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
+      //   .addTo(map);
+      //
+      // setMapPopups((prevState) => [...prevState, popup]);
     }
 
     if (typeof map !== 'undefined' && map !== null) {
@@ -712,9 +776,16 @@ const Map = ({
           open={controls.popup.visible}
           onClose={() => handleControlsVisibility('popup')}
         />
+        <LegendControl
+          open={controls.legend.visible}
+          onClose={() => handleControlsVisibility('legend')}
+        />
       </div>
       {controls.popup.visible === false && (
         <div dangerouslySetInnerHTML={{ __html: '<style>.mapboxgl-popup { display: none; }</style>' }}/>
+      )}
+      {controls.legend.visible === false && (
+        <div dangerouslySetInnerHTML={{ __html: '<style>.map-legend { display: none; }</style>' }}/>
       )}
     </>
   );

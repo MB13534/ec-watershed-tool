@@ -43,20 +43,24 @@ const LayersPanel = (props) => {
       }
     });
 
-    if (layerName) {
+    if (name) {
       const setVis = function(layer) {
         const visibility = map.getLayoutProperty(layer, 'visibility');
 
         if (visibility !== 'visible') {
           map.setLayoutProperty(layer, 'visibility', 'visible');
+          map.setLayoutProperty(layer+'-labels', 'visibility', 'visible');
+          console.log('showing layer ' + layer);
         } else {
+          console.log('hiding layer ' + layer);
           map.setLayoutProperty(layer, 'visibility', 'none');
+          map.setLayoutProperty(layer+'-labels', 'visibility', 'none');
         }
       }
-      if (Array.isArray(layerName)) {
-        layerName.forEach((layer) => setVis(layer));
+      if (Array.isArray(name)) {
+        name.forEach((layer) => setVis(layer));
       } else {
-        setVis(layerName);
+        setVis(name);
       }
     }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, Grid } from '@material-ui/core';
 import SubmitIcon from '@material-ui/icons/Forward';
 import Chips from '../Chips';
 import { useMap } from '../../pages/Map/MapProvider';
@@ -101,6 +101,32 @@ const ControlsPanel = ({}) => {
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
         <div id="parameters-filter" className={classes.filterGroup}>
           <label className={classes.label}>Constituents</label>
+          <Box mb={1}>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={6}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  size="small"
+                  onClick={context.onSelectAllParameters}
+                >
+                  + Select All
+                </Button>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  size="small"
+                  onClick={context.onSelectNoneParameters}
+                >
+                  - Select None
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
           {context.parameters.length === 0 && (
             <p>None</p>
           )}

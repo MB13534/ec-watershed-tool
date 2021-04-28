@@ -16,6 +16,7 @@ import { useAuth0 } from '../../hooks/useAuth0';
 import { HourglassEmpty } from '@material-ui/icons';
 import ResultsPopupDetails from '../../components/Map/ResultsPopupDetails';
 import AnalyticsPopupDetails from '../../components/Map/AnalyticsPopupDetails';
+import MapLegend from '../../components/Map/MapLegend';
 
 // create page styles
 const useStyles = makeStyles((theme) => ({
@@ -28,13 +29,14 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     overflow: 'hidden',
+    position: 'relative',
     marginTop: theme.mixins.toolbar,
   },
   boxFull: {
-    width: 'calc(100% - 340px - 60px)',
+    width: 'calc(100% - 60px)',
   },
   boxCollapsed: {
-    width: 'calc(100% - 50px - 60px)',
+    width: 'calc(100% - 60px)',
   },
   boxOpen: {
     height: 'auto',
@@ -53,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   unsentFull: {
-    width: 'calc(100% - 340px - 120px - 20px)',
+    width: 'calc(100% - 120px - 20px)',
     marginTop: 'calc(64px + 10px)',
     '& .MuiPaper-root': {},
   },
@@ -77,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   tooBigErrorFull: {
-    width: 'calc(100% - 340px - 120px - 20px)',
+    width: 'calc(100% - 120px - 20px)',
     marginTop: 'calc(64px + 10px)',
     '& .MuiPaper-root': {},
   },
@@ -119,7 +121,7 @@ const MapPage = () => {
       document.getElementsByTagName('body')[0].style.overflow = 'auto';
     };
   }, []);
-  
+
   return (
     <MapLayout>
       <div className={classes.root}>
@@ -137,10 +139,11 @@ const MapPage = () => {
             position="absolute"
           >
             <Alert severity="error">
-              <strong>Please Reduce Query Area</strong> &mdash; Selected area is currently {lastQuerySize} out of a max of 2,800 acres.
+              <strong>Please Reduce Query Area</strong> &mdash; Selected area is currently {lastQuerySize} out of a max of 1,200,000 acres.
             </Alert>
           </Box>
 
+          <MapLegend/>
           <Box bgcolor="#f1f1f1" width="100%">
             <Map setHasChanges={setHasChanges} setShowQueryTooBigError={setShowQueryTooBigError} setLastQuerySize={setLastQuerySize} handleRefresh={handleRefresh}/>
           </Box>
@@ -156,7 +159,7 @@ const MapPage = () => {
             position="absolute"
           >
             <Paper style={{ padding: 24, paddingTop: 8 }}>
-              {(map.analyticsResults) &&
+              {(map.analyticsResults || map.geometryData) &&
               <>
                 <AnalyticsPopupDetails map={map} />
               </>

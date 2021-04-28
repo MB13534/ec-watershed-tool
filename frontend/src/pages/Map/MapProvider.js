@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useLayoutEffect } from 'react';
 import matchSorter from "match-sorter";
 
 import useFetchData from "../../hooks/useFetchData";
@@ -8,6 +8,7 @@ import OutdoorsImg from "../../images/outdoors.png";
 import SatelliteImg from "../../images/satellite.jpg";
 import axios from 'axios';
 import { useAuth0 } from '../../hooks/useAuth0';
+import debounce from 'lodash.debounce';
 
 /**
  * Create a context that will be used to share global state
@@ -34,6 +35,7 @@ export const MapContext = React.createContext({
   filterValues: {},
   searchValue: "",
   filterActive: false,
+  updateRenderedPoints: () => {},
   onMapChange: () => {},
   handleFilters: (name, value) => {},
   handleControlsVisibility: () => {},
@@ -46,7 +48,9 @@ export const MapContext = React.createContext({
   onSearchValueChange: () => {},
   resetFilters: () => {},
   onSelectAllLayers: () => {},
+  onSelectAllParameters: () => {},
   onSelectNoneLayers: () => {},
+  onSelectNoneParameters: () => {},
   handleControlsSubmit: () => {},
 });
 
@@ -102,7 +106,7 @@ export const MapProvider = (props) => {
     startDate: '2020-04-01',
     endDate: '2020-10-30',
     analysisType: "85th percentile",
-    priorities: ["Treatment", "Infrastructure", "Environment"],
+    priorities: ["Field/Chemistry", "Metals/Ions", "Nutrients/Solids", "Pathogens"],
     threats: [
       "Agriculture",
       "Development",
@@ -123,7 +127,21 @@ export const MapProvider = (props) => {
 
   const [priorities] = useFetchData(`controls-list-param/priorities`);
   const [threats] = useFetchData(`controls-list-param/threats`);
+  const [startDate] = useFetchData(`controls-list-param/startDate`);
+  const [endDate] = useFetchData(`controls-list-param/endDate`);
   const [parameters, setParameters] = useState([]);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      setFilters((prevState) => {
+        return {
+          ...prevState,
+          ['startDate']: startDate,
+          ['endDate']: endDate,
+        };
+      });
+    }
+  }, [startDate, endDate]);
 
   const getPriorityIndexByName = (name) => {
     let priority = priorities.find(x => x.priority_desc === name);
@@ -177,14 +195,18 @@ export const MapProvider = (props) => {
   }, [priorities, threats]);
 
   const [map, setMap] = useState();
+  const [mapMoveEnd, setMapMoveEnd] = useState(false);
+  const [kickoff, setKickoff] = useState();
   const [geometryData, setGeometryData] = useState();
   const [landUseData, setLandUseData] = useState();
   const [stationData, setStationData] = useState();
+  const [currentLocationData, setCurrentLocationData] = useState();
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
   const [analyticsResults, setAnalyticsResults] = useState(null);
   const [lastLocationId, setLastLocationId] = useState(null);
   const [monitoringPointData, setMonitoringPointData] = useState(null);
+  const [renderedPointData, setRenderedPointData] = useState(null);
   const [filterActive, setFilterActive] = useState(false);
   const [activeZoomToLayer, setActiveZoomToLayer] = useState(null);
   const [activeBasemap, setActiveBasemap] = useState({
@@ -254,17 +276,20 @@ export const MapProvider = (props) => {
       ),
     },
     dataViz: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_dataViz_control"),
-        true
-      ),
+      visible: false,
     },
     popup: {
       visible: checkControlOpen(
         sessionStorage.getItem("sk_popup_control"),
         true
       ),
-    }
+    },
+    legend: {
+      visible: checkControlOpen(
+        sessionStorage.getItem("sk_legend_control"),
+        true
+      ),
+    },
   });
 
   useEffect(() => {
@@ -382,6 +407,24 @@ export const MapProvider = (props) => {
     });
   };
 
+  const onSelectAllParameters = () => {
+    setFilters((prevState) => {
+      return {
+        ...prevState,
+        ['parameters']: parameters.map(x => x.parameter_abbrev)
+      }
+    });
+  }
+
+  const onSelectNoneParameters = () => {
+    setFilters((prevState) => {
+      return {
+        ...prevState,
+        ['parameters']: []
+      }
+    });
+  };
+
   const handleControlsVisibility = (control, state) => {
     setControls((prevState) => {
       let newValues = { ...prevState };
@@ -475,6 +518,7 @@ export const MapProvider = (props) => {
         fetchMonitoringPointData();
         fetchLandUseData();
         fetchStationData();
+        fetchAnalyticsTableForLocation();
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -502,7 +546,7 @@ export const MapProvider = (props) => {
           },
           { headers });
 
-        setAnalyticsResults(results);
+        setAnalyticsResults(results.reverse());
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -520,6 +564,15 @@ export const MapProvider = (props) => {
     fetchMonitoringPointData();
     fetchAnalyticsTableForLocation();
   }, [filters.parameters, filters.analysisType]);
+
+  useEffect(() => {
+    if (filters.parameters.length && parameters.length) {
+      console.log('INITIAL LOAD_----------------');
+      fetchMonitoringPointData();
+      fetchLandUseData();
+      fetchStationData();
+    }
+  }, [kickoff, parameters, filters.parameters]);
 
   useEffect(() => {
     if (filters.parameters.length && parameters.length) {
@@ -550,6 +603,7 @@ export const MapProvider = (props) => {
           { headers }
         );
         setMonitoringPointData(query.data);
+        updateRenderedPoints(query.data);
         recolorPointsForLayers(query.data);
         //fetchAnalyticsTableForLocation();
       } catch (err) {
@@ -562,6 +616,86 @@ export const MapProvider = (props) => {
       }
     }
     send();
+  }
+
+  // const debouncedUpdate = useCallback(debounce(() => {
+  //   updateRenderedPoints(monitoringPointData);
+  // },1000), [monitoringPointData]);
+  //
+  // const [oneTime, setOneTime] = useState(false);
+  //
+  // useLayoutEffect(() => {
+  //   if (kickoff && monitoringPointData.length && !oneTime) {
+  //     map.on('moveend', debouncedUpdate);
+  //     setOneTime(true);
+  //   } else if (kickoff && monitoringPointData.length) {
+  //     map.off('moveend', debouncedUpdate);
+  //     setOneTime(false);
+  //   }
+  // }, [kickoff, monitoringPointData, oneTime]);
+
+  const updateRenderedPoints = (myData) => {
+    if (myData === null || typeof myData === 'undefined') {
+      myData = monitoringPointData;
+    }
+
+    const locationValues = {};
+    const parameterValues = {};
+
+    myData.forEach(row => {
+      // set a default score
+      if (typeof locationValues[row.location_index] === 'undefined') {
+        locationValues[row.location_index] = 0;
+      }
+
+      if (filters.analysisType === '85th percentile') {
+        if (row.all_85_bmk > locationValues[row.location_index]) {
+          locationValues[row.location_index] = row.all_85_bmk;
+        }
+      } else {
+        if (row.all_med_bmk > locationValues[row.location_index]) {
+          locationValues[row.location_index] = row.all_med_bmk;
+        }
+      }
+
+      // set a default score
+      if (typeof parameterValues[row.location_index] === 'undefined') {
+        parameterValues[row.location_index] = [];
+      }
+      if (parameterValues[row.location_index].indexOf(row.parameter_abbrev) === -1) {
+        parameterValues[row.location_index].push(row.parameter_abbrev);
+      }
+    });
+
+    let features = map.queryRenderedFeatures({
+      layers: [
+        'Stream Stations',
+        'Reservoir Stations',
+        'Effluent Stations',
+        'Mine Discharge Stations',
+        'Spring Stations',
+        'Groundwater Stations',
+      ],
+      filter: [
+        'match',
+        ['get', 'location_i'],
+        Object.keys(locationValues).map(x => parseInt(x)),
+        true,
+        false
+      ]
+    });
+
+    features = features.map(x => {
+      return {
+        ...x,
+        score: locationValues[x.properties.location_i],
+        parameters: parameterValues[x.properties.location_i],
+      };
+    });
+
+    features.sort((a,b) => (a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0));
+
+    setRenderedPointData(features);
   }
 
   const fetchLandUseData = () => {
@@ -678,6 +812,16 @@ export const MapProvider = (props) => {
         false
       ]);
 
+      map.setFilter(id + '-labels', [
+        'match',
+        ['get', 'location_i'],
+        Object.keys(locationValues).map(x => parseInt(x)),
+        true,
+        false
+      ]);
+
+      map.setPaintProperty(id, 'circle-opacity', 1);
+      map.setPaintProperty(id, 'circle-stroke-opacity', 1);
       map.setPaintProperty(id, 'circle-color', [
         'interpolate',
         ['linear'],
@@ -719,7 +863,11 @@ export const MapProvider = (props) => {
     <MapContext.Provider
       value={{
         map,
+        mapMoveEnd,
+        setMapMoveEnd,
         setMap,
+        kickoff,
+        setKickoff,
         geometryData,
         setGeometryData,
         landUseData,
@@ -746,6 +894,11 @@ export const MapProvider = (props) => {
         analyticsResults,
         setAnalyticsResults,
         setLastLocationId,
+        monitoringPointData,
+        renderedPointData,
+        currentLocationData,
+        setCurrentLocationData,
+        updateRenderedPoints,
         getHexColorForScore,
         fetchAnalyticsTableForLocation,
         handleFilters,
@@ -761,6 +914,8 @@ export const MapProvider = (props) => {
         resetFilters,
         onSelectAllLayers,
         onSelectNoneLayers,
+        onSelectAllParameters,
+        onSelectNoneParameters,
         handleControlsSubmit,
       }}
     >

@@ -224,7 +224,7 @@ const TopNav = (props) => {
             <img src={logo} alt="Eagle County Watershed Tool" />
           </div>
           <Typography variant="h6" className={classes.title}>
-            Eagle County Watershed Tool
+            <span style={{fontWeight: 'bold'}}>Eagle County</span> Watershed Tool
           </Typography>
           {MenuItems.map((item) => returnMenuItem(item, isAuthenticated, user))}
           {isAuthenticated ? (

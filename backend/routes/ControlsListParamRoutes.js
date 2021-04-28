@@ -15,6 +15,32 @@ const router = express.Router()
 router.use(checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUDIENCE))
 
 /**
+ * GET /api/controls-list-param/startDate
+ */
+router.get('/startDate', (req, res, next) => {
+  SeasonalAnalysisStartDateModel.findAll({})
+    .then((data) => {
+      res.json(data[0].analysis_start_date)
+    })
+    .catch((err) => {
+      next(err)
+    })
+})
+
+/**
+ * GET /api/controls-list-param/endDate
+ */
+router.get('/endDate', (req, res, next) => {
+  SeasonalAnalysisEndDateModel.findAll({})
+    .then((data) => {
+      res.json(data[0].analysis_end_date)
+    })
+    .catch((err) => {
+      next(err)
+    })
+})
+
+/**
  * GET /api/controls-list-param/priorities
  */
 router.get('/priorities', (req, res, next) => {

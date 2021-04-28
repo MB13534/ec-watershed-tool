@@ -1,8 +1,8 @@
 import React from "react";
 import { IconButton, Box, Tooltip } from "@material-ui/core";
-import GraphIcon from "@material-ui/icons/List";
+import Icon from "@material-ui/icons/Info";
 
-const DataVizControl = ({ open = false, onClose }) => {
+const LegendControl = ({ open = false, onClose }) => {
   return (
     <div>
       <Box
@@ -11,14 +11,14 @@ const DataVizControl = ({ open = false, onClose }) => {
         borderRadius={4}
         position="absolute"
         zIndex={1200}
-        top={255}
+        top={195}
         right={15}
         display="flex"
         flexDirection="column"
       >
-        <Tooltip title="Detailed Results">
+        <Tooltip title="Toggle Legend">
           <IconButton color={open ? "secondary" : "default"} onClick={onClose}>
-            <GraphIcon />
+            <Icon />
           </IconButton>
         </Tooltip>
       </Box>
@@ -26,4 +26,4 @@ const DataVizControl = ({ open = false, onClose }) => {
   );
 };
 
-export default DataVizControl;
+export default LegendControl;
