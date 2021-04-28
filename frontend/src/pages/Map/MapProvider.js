@@ -491,7 +491,6 @@ export const MapProvider = (props) => {
     if (!location_index) location_index = lastLocationId;
     if (!location_index) return;
 
-    console.log('wtf why is params this', parameters);
     async function send() {
       try {
         const token = await getTokenSilently();

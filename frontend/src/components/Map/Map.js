@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useContext, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
+import ReactDOM from 'react-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAuth0 } from '../../hooks/useAuth0';
 import useFetchData from '../../hooks/useFetchData';
@@ -20,6 +21,8 @@ import FreehandMode from './FreehandMode';
 import InitiateDrawingControl from '../InitiateDrawingControl';
 import PopupControl from '../PopupControl';
 import ResetZoomControl from './ResetZoom';
+import RoomIcon from '@material-ui/icons/Room';
+import Button from '@material-ui/core/Button';
 
 const turf = require('@turf/turf');
 
@@ -52,6 +55,16 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: '5px',
     },
   },
+  popupIcon: {
+    width: '60px',
+    height: '60px',
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: '50%',
+    textAlign: 'center',
+    margin: '10px auto',
+    color: 'white',
+    lineHeight: '87px',
+  }
 }));
 
 const Map = ({
@@ -166,15 +179,26 @@ const Map = ({
         let hasPopup = true;
 
         if (layer && layer.popupType === 'point') {
+          let data = pointFeatures[0].properties;
+
+          let icon = document.createElement('div');
+          ReactDOM.render(<RoomIcon fontSize={"large"}/>, icon);
+
+          let heading = document.createElement('div');
+          ReactDOM.render(<Typography variant={'h5'} align={'center'}>{data.location_1}</Typography>, heading);
+
+          let subheading = document.createElement('div');
+          ReactDOM.render(<Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>({data.loc_type})</Typography>, subheading);
+
+          let body = document.createElement('div');
+          ReactDOM.render(<Typography variant={'body1'} align={'center'}>{data.location_n}</Typography>, body);
+
+
           popup.setHTML(
-            '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
-            Object.entries(pointFeatures[0].properties).map(([k, v]) => {
-              if (k === 'hlink' || k === 'URL') {
-                return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
-              }
-              return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-            }).join('') +
-            '</tbody></table>',
+            '<div class="' + classes.popupIcon + '"> ' + icon.innerHTML + '</div>' +
+            heading.innerHTML +
+            subheading.innerHTML +
+            body.innerHTML
           );
 
           setLastLocationIdClicked(pointFeatures[0].properties.location_i);
