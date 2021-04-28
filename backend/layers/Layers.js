@@ -19,9 +19,9 @@ const locs_Effluent = parseGeoJSON('./layers/locs_Effluent.geojson');
 
 const defaultCircleStyles = {
   'circle-color': '#444',
-  'circle-radius': 5,
-  'circle-stroke-color': '#000000',
-  'circle-stroke-width': 2,
+  'circle-radius': 6,
+  'circle-stroke-color': '#333',
+  'circle-stroke-width': 1.5,
 };
 
 const defaultLineStyles = {
@@ -74,8 +74,8 @@ const Layers = [
     geometry_type: 'line',
     drawOrder: 2,
     legendOrder: 2,
-    enabled: true,
-    visible: true,
+    enabled: false,
+    visible: false,
     popupType: 'none',
     geometry_type_ndx: 1,
     layer_categories: [2],
@@ -98,7 +98,7 @@ const Layers = [
     layer_categories: [3],
     spatial_data: landuse,
     paint: {
-      'fill-opacity': 0.8,
+      'fill-opacity': 0.4,
       'fill-outline-color': '#000000',
       'fill-color': [
         'interpolate',

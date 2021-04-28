@@ -175,6 +175,9 @@ const Map = ({
         const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
           .setLngLat(e.lngLat);
 
+        console.log('lngLat',e.lngLat);
+        console.log('point',e.point);
+        console.log('pointFeatures',pointFeatures);
         console.log(layer);
         let hasPopup = true;
 
@@ -193,6 +196,7 @@ const Map = ({
           let body = document.createElement('div');
           ReactDOM.render(<Typography variant={'body1'} align={'center'}>{data.location_n}</Typography>, body);
 
+          popup.setLngLat({lng: data.loc_long, lat: data.loc_lat});
 
           popup.setHTML(
             '<div class="' + classes.popupIcon + '"> ' + icon.innerHTML + '</div>' +

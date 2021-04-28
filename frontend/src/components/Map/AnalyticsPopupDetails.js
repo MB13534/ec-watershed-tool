@@ -137,7 +137,7 @@ export default function AnalyticsPopupDetails({ map }) {
         <Paper>
           <TableContainer style={{
             overflowY: 'scroll',
-            maxHeight: '201px',
+            maxHeight: '230px',
           }}>
             <Table className={classes.table} size="small">
               <TableHead>
