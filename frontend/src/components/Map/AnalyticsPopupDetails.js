@@ -197,7 +197,7 @@ export default function AnalyticsPopupDetails({ map }) {
                         <TableCell component="th" scope="row">
                           {row.parameter_abbrev}
                         </TableCell>
-                        <TableCell align="center">{formatStatistic(row)} mg/L</TableCell>
+                        <TableCell align="center">{formatStatistic(row)} {row.units}</TableCell>
                         <TableCell align="center">{formatValue(row)}</TableCell>
                         <TableCell align="center">
                           <Icon>{setTrendIcon(row.trend)}</Icon><br />
