@@ -80,6 +80,7 @@ const Layers = [
     enabled: false,
     visible: false,
     popupType: 'table',
+    // Will be creating a custom popupType for this layer
     geometry_type_ndx: 1,
     layer_categories: [2],
     spatial_data: cdpheStreams2020,
@@ -87,6 +88,20 @@ const Layers = [
       ...defaultLineStyles,
       "line-color": "#6380b5",
       "line-width": 2,
+//      "line-color": [
+//        'interpolate',
+//        ['linear'],
+//        ['get', 'huc_8'],
+        // Actually want to color by the cat field
+        // which is a string so we'll need to create
+        // an index for it.
+//        11020001,"#3366FF",
+//        14010001,"#FF6600",
+//        14010002,"#993300",
+//        14010003,"#66FFFF",
+//        14010004,"#FF0000",
+//        14010005,"#CC00FF",
+//      ],
     },
   },
   {
