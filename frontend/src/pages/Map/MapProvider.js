@@ -120,8 +120,9 @@ export const MapProvider = (props) => {
       "Wildfire",
     ],
     parameters: [
-      "Hardness",
+//      "Hardness",
       "TP",
+      "Cu-D",
     ],
   });
 
