@@ -273,9 +273,9 @@ export default function AnalyticsPopupDetails({ map }) {
             <Table className={classes.table} size="small" aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Location Name</TableCell>
-                  <TableCell>Location Type</TableCell>
-                  <TableCell>HUC Name</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>HUC 12</TableCell>
                   <TableCell>Period of Record</TableCell>
                   <TableCell>Available Parameters</TableCell>
                 </TableRow>
