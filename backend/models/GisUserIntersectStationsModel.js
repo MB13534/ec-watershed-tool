@@ -38,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
       por: {
         type: TEXT,
       },
+      params: {
+        type: TEXT,
+      },
+      params_c: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,

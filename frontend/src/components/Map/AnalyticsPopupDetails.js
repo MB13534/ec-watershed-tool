@@ -277,6 +277,7 @@ export default function AnalyticsPopupDetails({ map }) {
                   <TableCell>Location Type</TableCell>
                   <TableCell>HUC Name</TableCell>
                   <TableCell>Period of Record</TableCell>
+                  <TableCell>Available Parameters</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -294,6 +295,9 @@ export default function AnalyticsPopupDetails({ map }) {
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {row.por}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.params_c}
                     </TableCell>
                   </TableRow>
                 ))}
