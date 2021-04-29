@@ -63,7 +63,7 @@ const DrawerTabs = ({ activeTab, setActiveTab }) => {
       aria-label="sidebar-tabs-nav"
     >
       <Tab label={setTabLabel("Layers", LayersIcon)} {...a11yProps(0)} />
-      <Tab label={setTabLabel("Controls", ControlsIcon)} {...a11yProps(1)} />
+      <Tab label={setTabLabel("Water Quality", ControlsIcon)} {...a11yProps(1)} />
     </Tabs>
   );
 };

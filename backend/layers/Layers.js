@@ -9,6 +9,7 @@ const cdpheLakes2020 = parseGeoJSON('./layers/CDPHE_Lakes_2020.geojson');
 const cdpheStreams2020 = parseGeoJSON('./layers/CDPHE_StreamSegment_2020.geojson');
 const landuse = parseGeoJSON('./layers/Landuse_EagleCounty.geojson');
 const hucs = parseGeoJSON('./layers/HUC12.geojson');
+const parcels = parseGeoJSON('./layers/EagleCounty_Parcels.geojson');
 
 const locs_Streams = parseGeoJSON('./layers/locs_Streams.geojson');
 const locs_Springs = parseGeoJSON('./layers/locs_Springs.geojson');
@@ -121,7 +122,7 @@ const Layers = [
     name: 'HUCs',
     geometry_type: 'fill',
     drawOrder: 4,
-    legendOrder: 4,
+    legendOrder: 40,
     enabled: false,
     visible: false,
     popupType: 'table',
@@ -158,7 +159,7 @@ const Layers = [
     name: 'Stream Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 5,
+    legendOrder: 50,
     enabled: true,
     visible: true,
     popupType: 'point',
@@ -175,7 +176,7 @@ const Layers = [
     name: 'Reservoir Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 6,
+    legendOrder: 60,
     enabled: true,
     visible: true,
     popupType: 'point',
@@ -192,7 +193,7 @@ const Layers = [
     name: 'Effluent Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 7,
+    legendOrder: 70,
     enabled: true,
     visible: true,
     popupType: 'point',
@@ -209,7 +210,7 @@ const Layers = [
     name: 'Mine Discharge Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 8,
+    legendOrder: 80,
     enabled: true,
     visible: true,
     popupType: 'point',
@@ -226,7 +227,7 @@ const Layers = [
     name: 'Spring Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 9,
+    legendOrder: 90,
     enabled: false,
     visible: false,
     popupType: 'point',
@@ -243,7 +244,7 @@ const Layers = [
     name: 'Groundwater Stations',
     geometry_type: 'circle',
     drawOrder: 50,
-    legendOrder: 10,
+    legendOrder: 100,
     enabled: false,
     visible: false,
     popupType: 'point',
@@ -259,6 +260,42 @@ const Layers = [
 ];
 
 const ParcelLayers = [
+  {
+    name: 'Parcels (Info)',
+    geometry_type: 'fill',
+    drawOrder: 5,
+    legendOrder: 6,
+    enabled: false,
+    visible: false,
+    toggleGroup: 1,
+    popupType: 'table',
+    geometry_type_ndx: 3,
+    layer_categories: [3],
+    spatial_data: parcels,
+    paint: {
+      ...defaultFillStyles,
+      'fill-color': 'white',
+      'fill-opacity': 0,
+      'fill-outline-color': 'black',
+    },
+  },
+  {
+    name: 'Parcels',
+    geometry_type: 'line',
+    drawOrder: 5,
+    legendOrder: 5,
+    enabled: false,
+    visible: false,
+    toggleGroup: 1,
+    geometry_type_ndx: 2,
+    layer_categories: [3],
+    spatial_data: parcels,
+    paint: {
+      ...defaultLineStyles,
+      'line-color': '#fffe8f',
+      'line-width': 1,
+    },
+  },
 ];
 
 const StreamLayers = [

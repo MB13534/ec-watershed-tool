@@ -20,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       acres: {
         type: REAL,
       },
+      total_acres: {
+        type: REAL,
+      },
+      pct_of_total: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,

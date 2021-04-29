@@ -32,6 +32,12 @@ module.exports = (sequelize, DataTypes) => {
       huc_acres: {
         type: DOUBLE,
       },
+      location_id: {
+        type: TEXT,
+      },
+      por: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,

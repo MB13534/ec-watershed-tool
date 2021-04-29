@@ -70,7 +70,7 @@ const ControlsPanel = ({}) => {
 
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
         <div id="priorities-filter" className={classes.filterGroup}>
-          <label className={classes.label}>Priorities</label>
+          <label className={classes.label}>Parameter Group</label>
           <Chips
             data={context.priorities}
             valueField="priority_desc"
@@ -85,7 +85,7 @@ const ControlsPanel = ({}) => {
       </Box>
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
         <div id="threats-filter" className={classes.filterGroup}>
-          <label className={classes.label}>Threats</label>
+          <label className={classes.label}>Categories</label>
           <Chips
             data={context.threats}
             valueField="threat_desc"
@@ -100,7 +100,7 @@ const ControlsPanel = ({}) => {
       </Box>
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
         <div id="parameters-filter" className={classes.filterGroup}>
-          <label className={classes.label}>Constituents</label>
+          <label className={classes.label}>Parameters</label>
           <Box mb={1}>
             <Grid container spacing={1}>
               <Grid item xs={12} md={6}>

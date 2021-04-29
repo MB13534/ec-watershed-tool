@@ -38,6 +38,9 @@ module.exports = (sequelize, DataTypes) => {
       location_name: {
         type: TEXT,
       },
+      analysis_period: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,

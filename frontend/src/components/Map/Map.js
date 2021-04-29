@@ -65,6 +65,10 @@ const useStyles = makeStyles((theme) => ({
     margin: '10px auto',
     color: 'white',
     lineHeight: '87px',
+  },
+  popupWrap: {
+    maxHeight: 300,
+    overflowY: 'scroll',
   }
 }));
 
@@ -324,14 +328,14 @@ const Map = ({
             map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
           } else if (layer && layer.popupType === 'table') {
             popup.setHTML(
-              '<h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
+              '<div class="' + classes.popupWrap + '"><h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
               Object.entries(pointFeatures[0].properties).map(([k, v]) => {
                 if (k === 'hlink' || k === 'URL') {
                   return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
                 }
                 return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
               }).join('') +
-              '</tbody></table>',
+              '</tbody></table></div>',
             );
           } else {
             hasPopup = false;

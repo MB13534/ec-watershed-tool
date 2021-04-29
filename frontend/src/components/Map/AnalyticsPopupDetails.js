@@ -188,6 +188,7 @@ export default function AnalyticsPopupDetails({ map }) {
                       <TableCell align="center">Benchmark</TableCell>
                       <TableCell align="center">Trend</TableCell>
                       <TableCell align="center">Count</TableCell>
+                      <TableCell align="center">Analysis POR</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -203,6 +204,7 @@ export default function AnalyticsPopupDetails({ map }) {
                           {row.trend}
                         </TableCell>
                         <TableCell align="center">{row.recordcount}</TableCell>
+                        <TableCell align="center">{row.analysis_period}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -229,6 +231,8 @@ export default function AnalyticsPopupDetails({ map }) {
                 <TableRow>
                   <TableCell>Land Cover Type</TableCell>
                   <TableCell>Acres</TableCell>
+                  <TableCell>Total Acres Selected</TableCell>
+                  <TableCell>% of Total</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -239,6 +243,12 @@ export default function AnalyticsPopupDetails({ map }) {
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {row.acres}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.total_acres}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {row.pct_of_total}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -265,24 +275,25 @@ export default function AnalyticsPopupDetails({ map }) {
                 <TableRow>
                   <TableCell>Location Name</TableCell>
                   <TableCell>Location Type</TableCell>
-                  <TableCell>HUC12</TableCell>
                   <TableCell>HUC Name</TableCell>
+                  <TableCell>Period of Record</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {map.stationData.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell component="th" scope="row">
+                      <strong>{row.location_id}</strong><br/>
                       {row.location_name}
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {row.loc_type}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.huc12}
+                      {row.huc_name}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {row.huc_name}
+                      {row.por}
                     </TableCell>
                   </TableRow>
                 ))}
