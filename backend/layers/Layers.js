@@ -1,15 +1,15 @@
 const fs = require('fs');
 
-const parseGeoJSON = (path) => {
+const parseGeoJSON = path => {
   return JSON.parse(fs.readFileSync(path));
 };
 
-const counties = parseGeoJSON('./layers/Counties.geojson');
-const cdpheLakes2020 = parseGeoJSON('./layers/CDPHE_Lakes_2020.geojson');
-const cdpheStreams2020 = parseGeoJSON('./layers/CDPHE_StreamSegment_2020.geojson');
-const landuse = parseGeoJSON('./layers/Landuse_EagleCounty.geojson');
-const hucs = parseGeoJSON('./layers/HUC12.geojson');
-const parcels = parseGeoJSON('./layers/EagleCounty_Parcels.geojson');
+// const counties = parseGeoJSON('./layers/Counties.geojson');
+// const cdpheLakes2020 = parseGeoJSON('./layers/CDPHE_Lakes_2020.geojson');
+// const cdpheStreams2020 = parseGeoJSON('./layers/CDPHE_StreamSegment_2020.geojson');
+// const landuse = parseGeoJSON('./layers/Landuse_EagleCounty.geojson');
+// const hucs = parseGeoJSON('./layers/HUC12.geojson');
+// const parcels = parseGeoJSON('./layers/EagleCounty_Parcels.geojson');
 
 const locs_Streams = parseGeoJSON('./layers/locs_Streams.geojson');
 const locs_Springs = parseGeoJSON('./layers/locs_Springs.geojson');
@@ -39,8 +39,14 @@ const defaultFillStyles = {
 
 const Layers = [
   {
+    id: 'counties',
     name: 'Counties',
     geometry_type: 'line',
+    source: {
+      id: 'Counties-36yluy',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.4lqjj410',
+    },
     drawOrder: 1,
     legendOrder: 1,
     enabled: true,
@@ -48,16 +54,21 @@ const Layers = [
     popupType: 'none',
     geometry_type_ndx: 1,
     layer_categories: [1],
-    spatial_data: counties,
     paint: {
       ...defaultLineStyles,
-      "line-color": "#000000",
-      "line-width": 4,
+      'line-color': '#000000',
+      'line-width': 4,
     },
   },
   {
+    id: 'lakes',
     name: 'Lakes',
     geometry_type: 'fill',
+    source: {
+      id: 'CDPHE_Lakes_2020-ba4d1y',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.1cwgbp2g',
+    },
     drawOrder: 2,
     legendOrder: 2,
     enabled: true,
@@ -65,16 +76,21 @@ const Layers = [
     popupType: 'table',
     geometry_type_ndx: 3,
     layer_categories: [2],
-    spatial_data: cdpheLakes2020,
     paint: {
       ...defaultFillStyles,
-      'fill-opacity':1.0,
-      'fill-color':'#0090ff'
+      'fill-opacity': 1.0,
+      'fill-color': '#0090ff',
     },
   },
   {
+    id: 'streams',
     name: 'Streams',
     geometry_type: 'line',
+    source: {
+      id: 'CDPHE_StreamSegment_2020-b54cte',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.25qquheb',
+    },
     drawOrder: 2,
     legendOrder: 2,
     enabled: false,
@@ -83,30 +99,35 @@ const Layers = [
     // Will be creating a custom popupType for this layer
     geometry_type_ndx: 1,
     layer_categories: [2],
-    spatial_data: cdpheStreams2020,
     paint: {
       ...defaultLineStyles,
-      "line-color": "#6380b5",
-      "line-width": 2,
-//      "line-color": [
-//        'interpolate',
-//        ['linear'],
-//        ['get', 'huc_8'],
-        // Actually want to color by the cat field
-        // which is a string so we'll need to create
-        // an index for it.
-//        11020001,"#3366FF",
-//        14010001,"#FF6600",
-//        14010002,"#993300",
-//        14010003,"#66FFFF",
-//        14010004,"#FF0000",
-//        14010005,"#CC00FF",
-//      ],
+      'line-color': '#6380b5',
+      'line-width': 2,
+      //      "line-color": [
+      //        'interpolate',
+      //        ['linear'],
+      //        ['get', 'huc_8'],
+      // Actually want to color by the cat field
+      // which is a string so we'll need to create
+      // an index for it.
+      //        11020001,"#3366FF",
+      //        14010001,"#FF6600",
+      //        14010002,"#993300",
+      //        14010003,"#66FFFF",
+      //        14010004,"#FF0000",
+      //        14010005,"#CC00FF",
+      //      ],
     },
   },
   {
+    id: 'land-use',
     name: 'Land Use',
     geometry_type: 'fill',
+    source: {
+      id: 'Landuse_EagleCounty-82ftxn',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.bvnzwjmw',
+    },
     drawOrder: 3,
     legendOrder: 3,
     enabled: false,
@@ -114,7 +135,6 @@ const Layers = [
     popupType: 'table',
     geometry_type_ndx: 3,
     layer_categories: [3],
-    spatial_data: landuse,
     paint: {
       'fill-opacity': 0.4,
       'fill-outline-color': '#000000',
@@ -122,20 +142,34 @@ const Layers = [
         'interpolate',
         ['linear'],
         ['get', 'LULC_CODE1'],
-        1,'#DDD93B',
-        2,'#EDEDCC',
-        3,'#1B6635',
-        4,'#AE722A',
-        5,'#DC9881',
-        6,'#466EA3',
-        7,'#B3AFA4',
-        8,'#BBD7ED',
+        1,
+        '#DDD93B',
+        2,
+        '#EDEDCC',
+        3,
+        '#1B6635',
+        4,
+        '#AE722A',
+        5,
+        '#DC9881',
+        6,
+        '#466EA3',
+        7,
+        '#B3AFA4',
+        8,
+        '#BBD7ED',
       ],
     },
   },
   {
+    id: 'hucs',
     name: 'HUCs',
     geometry_type: 'fill',
+    source: {
+      id: 'HUC12-5ax4za',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.5ggz9ivj',
+    },
     drawOrder: 4,
     legendOrder: 40,
     enabled: false,
@@ -143,7 +177,6 @@ const Layers = [
     popupType: 'table',
     geometry_type_ndx: 3,
     layer_categories: [3],
-    spatial_data: hucs,
     paint: {
       'fill-opacity': 0.4,
       'fill-outline-color': '#000000',
@@ -151,28 +184,48 @@ const Layers = [
         'interpolate',
         ['linear'],
         ['get', 'OBJECTID'],
-        11, '#466EA3',
-        12, '#E9F0F9',
-        21, '#E1CDCF',
-        22, '#DC9881',
-        23, '#EC1C24',
-        24, '#A91E22',
-        31, '#B3AFA4',
-        41, '#69A966',
-        42, '#1B6635',
-        43, '#BDCC93',
-        52, '#D1BB81',
-        71, '#EDEDCC',
-        81, '#DDD93B',
-        82, '#AE722A',
-        90, '#BBD7ED',
-        95, '#70A4C1',
+        11,
+        '#466EA3',
+        12,
+        '#E9F0F9',
+        21,
+        '#E1CDCF',
+        22,
+        '#DC9881',
+        23,
+        '#EC1C24',
+        24,
+        '#A91E22',
+        31,
+        '#B3AFA4',
+        41,
+        '#69A966',
+        42,
+        '#1B6635',
+        43,
+        '#BDCC93',
+        52,
+        '#D1BB81',
+        71,
+        '#EDEDCC',
+        81,
+        '#DDD93B',
+        82,
+        '#AE722A',
+        90,
+        '#BBD7ED',
+        95,
+        '#70A4C1',
       ],
     },
   },
   {
+    id: 'stream-stations',
     name: 'Stream Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 50,
     enabled: true,
@@ -188,8 +241,12 @@ const Layers = [
     },
   },
   {
+    id: 'reservoir-stations',
     name: 'Reservoir Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 60,
     enabled: true,
@@ -205,8 +262,12 @@ const Layers = [
     },
   },
   {
+    id: 'effluent-stations',
     name: 'Effluent Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 70,
     enabled: true,
@@ -224,6 +285,9 @@ const Layers = [
   {
     name: 'Mine Discharge Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 80,
     enabled: true,
@@ -239,8 +303,12 @@ const Layers = [
     },
   },
   {
+    id: 'spring-stations',
     name: 'Spring Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 90,
     enabled: false,
@@ -256,8 +324,12 @@ const Layers = [
     },
   },
   {
+    id: 'groundwater-stations',
     name: 'Groundwater Stations',
     geometry_type: 'circle',
+    source: {
+      type: 'geojson',
+    },
     drawOrder: 50,
     legendOrder: 100,
     enabled: false,
@@ -276,8 +348,14 @@ const Layers = [
 
 const ParcelLayers = [
   {
+    id: 'parcels-info',
     name: 'Parcels (Info)',
     geometry_type: 'fill',
+    source: {
+      id: 'EagleCounty_Parcels-852e27',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.bns5v4l3',
+    },
     drawOrder: 5,
     legendOrder: 6,
     enabled: false,
@@ -286,7 +364,6 @@ const ParcelLayers = [
     popupType: 'table',
     geometry_type_ndx: 3,
     layer_categories: [3],
-    spatial_data: parcels,
     paint: {
       ...defaultFillStyles,
       'fill-color': 'white',
@@ -295,8 +372,14 @@ const ParcelLayers = [
     },
   },
   {
+    id: 'parcels',
     name: 'Parcels',
     geometry_type: 'line',
+    source: {
+      id: 'EagleCounty_Parcels-852e27',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.bns5v4l3',
+    },
     drawOrder: 5,
     legendOrder: 5,
     enabled: false,
@@ -304,7 +387,6 @@ const ParcelLayers = [
     toggleGroup: 1,
     geometry_type_ndx: 2,
     layer_categories: [3],
-    spatial_data: parcels,
     paint: {
       ...defaultLineStyles,
       'line-color': '#fffe8f',
@@ -313,8 +395,7 @@ const ParcelLayers = [
   },
 ];
 
-const StreamLayers = [
-];
+const StreamLayers = [];
 
 module.exports = {
   Layers: Layers,

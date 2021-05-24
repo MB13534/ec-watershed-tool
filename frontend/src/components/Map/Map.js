@@ -29,8 +29,10 @@ const turf = require('@turf/turf');
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
+let counter = 0;
+
 // create page styles
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   map: {
     position: 'relative',
     width: '100%',
@@ -69,15 +71,10 @@ const useStyles = makeStyles((theme) => ({
   popupWrap: {
     maxHeight: 300,
     overflowY: 'scroll',
-  }
+  },
 }));
 
-const Map = ({
-               setHasChanges,
-               setShowQueryTooBigError,
-               setLastQuerySize,
-               handleRefresh,
-             }) => {
+const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleRefresh }) => {
   const classes = useStyles();
   const { getTokenSilently } = useAuth0();
   const {
@@ -98,16 +95,19 @@ const Map = ({
   } = useContext(MapContext);
   const mapProvider = useMap();
   const mapContainer = useRef(null); // create a reference to the map container
-  const [draw, setDraw] = useState(new MapboxDraw({ // eslint-disable-line
-    displayControlsDefault: false,
-    controls: {
-      polygon: true,
-      trash: true,
-    },
-    modes: Object.assign(MapboxDraw.modes, {
-      draw_polygon: FreehandMode,
-    }),
-  })); //eslint-disable-line
+  const [draw, setDraw] = useState(
+    new MapboxDraw({
+      // eslint-disable-line
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true,
+      },
+      modes: Object.assign(MapboxDraw.modes, {
+        draw_polygon: FreehandMode,
+      }),
+    })
+  ); //eslint-disable-line
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [mapPopups, setMapPopups] = useState([]);
 
@@ -118,10 +118,7 @@ const Map = ({
   /**
    * Load map geometry from database
    */
-  const [
-    geometryData,
-    setGeometryData,
-  ] = useState([]);
+  const [geometryData, setGeometryData] = useState([]);
 
   /**
    * create the map on page load and
@@ -155,193 +152,99 @@ const Map = ({
     map.on('draw.update', updateDrawings);
     map.on('zoom', updateZoomViz);
 
-    mapProvider.setMap(map);
+    map.on('click', setupPopups);
 
-    function updateZoomViz(e) {
-      visibleLayers.map(layer => {
-        //map.setLayoutProperty(layer.name, 'visibility', 'visible');
-        if (layer.minzoom && map.getZoom() < layer.minzoom) {
-          map.setLayoutProperty(layer.name, 'visibility', 'none');
-        }
-        if (layer.maxzoom && map.getZoom() > layer.maxzoom) {
-          map.setLayoutProperty(layer.name, 'visibility', 'none');
-        }
-        return layer;
-      });
-    }
+    function setupPopups(e) {
+      console.log('counter:', counter);
+      counter = counter + 1;
+      const pointFeatures = map.queryRenderedFeatures(e.point);
+      // .filter(layer => layer.layer.id.includes('All Wells'));
+      const isDrawing = draw.getMode().startsWith('draw');
+      if (pointFeatures.length && !pointFeatures[0].source.startsWith('mapbox-gl-draw') && !isDrawing) {
+        map.fire('closeAllPopups');
 
-    function removeExistingDrawings() {
-      const drawings = draw.getAll();
-      const newId = drawings.features[drawings.features.length - 1].id;
-      const pids = drawings.features.map(x => x.id).filter(x => x !== newId);
-      draw.delete(pids);
-    }
+        let layer = visibleLayers.filter(x => x.name === pointFeatures[0].layer.id)[0];
+        const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' }).setLngLat(e.lngLat);
 
-    function updateDrawings(e) {
-      let data = draw.getAll();
+        let hasPopup = true;
 
-      setShowQueryTooBigError(false);
+        if (layer && layer.popupType === 'point') {
+          let data = pointFeatures[0].properties;
 
-      async function saveDrawings() {
-        try {
-          const token = await getTokenSilently();
-          const headers = { Authorization: `Bearer ${token}` };
-          await axios.put(
-            `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
-            { features: data.features },
-            { headers },
+          let icon = document.createElement('div');
+          ReactDOM.render(<RoomIcon fontSize={'large'} />, icon);
+
+          let heading = document.createElement('div');
+          ReactDOM.render(
+            <Typography variant={'h5'} align={'center'}>
+              {data.location_1}
+            </Typography>,
+            heading
           );
-          setGeometryData(data.features);
-        } catch (err) {
-          // Is this error because we cancelled it ourselves?
-          if (axios.isCancel(err)) {
-            console.log(`call was cancelled`);
-          } else {
-            console.error(err);
-          }
-        }
-      }
 
-      const querySizeLimit = 1200000;
-      const area = turf.area(data);
-      if (parseInt(area / 4046.8564224) <= querySizeLimit) {
-        //setHasChanges(true);
-        saveDrawings();
-      } else {
-        const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
-        setLastQuerySize(roundedArea);
-        setShowQueryTooBigError(true);
-      }
-    }
+          let subheading = document.createElement('div');
+          ReactDOM.render(
+            <Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>
+              ({data.loc_type})
+            </Typography>,
+            subheading
+          );
 
-    async function loadDrawings() {
-      try {
-        const token = await getTokenSilently();
-        const headers = { Authorization: `Bearer ${token}` };
-        const query = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
-          { headers },
-        );
-        setGeometryData(query.data);
-      } catch (err) {
-        // Is this error because we cancelled it ourselves?
-        if (axios.isCancel(err)) {
-          console.log(`call was cancelled`);
-        } else {
-          console.error(err);
-        }
-      }
-    }
+          let body = document.createElement('div');
+          ReactDOM.render(
+            <Typography variant={'body1'} align={'center'}>
+              {data.location_n}
+            </Typography>,
+            body
+          );
 
-    //loadDrawings();
+          popup.setLngLat({ lng: data.loc_long, lat: data.loc_lat });
 
-    onMapChange(map);
-  }, []); //eslint-disable-line
-
-  useEffect(() => {
-    mapProvider.setLastLocationId(lastLocationIdClicked);
-    mapProvider.fetchAnalyticsTableForLocation(lastLocationIdClicked);
-  }, [lastLocationIdClicked]);
-
-  // useEffect(() => {
-  //   let data = draw.getAll();
-  //
-  //   async function saveDrawings() {
-  //     try {
-  //       const token = await getTokenSilently();
-  //       const headers = { Authorization: `Bearer ${token}` };
-  //       await axios.put(
-  //         `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
-  //         { features: data.features },
-  //         { headers },
-  //       );
-  //       setGeometryData(data.features);
-  //     } catch (err) {
-  //       // Is this error because we cancelled it ourselves?
-  //       if (axios.isCancel(err)) {
-  //         console.log(`call was cancelled`);
-  //       } else {
-  //         console.error(err);
-  //       }
-  //     }
-  //   }
-  //
-  //   saveDrawings();
-  // }, [handleRefresh]);
-
-  const handleStartDrawing = (e) => {
-    draw.changeMode('draw_polygon');
-  };
-
-  useEffect(() => {
-    //if (geometryData.length > 0 && mapIsLoaded) {
-    draw.add(getFeatureGeometryObj(geometryData));
-    //}
-    if (mapIsLoaded && visibleLayers.length > 0) {
-      // TODO : Fix this seemingly firing multiple times after toggling layers
-      map.on('click', setupPopups);
-
-      function setupPopups(e) {
-        const pointFeatures = map.queryRenderedFeatures(e.point);
-        // .filter(layer => layer.layer.id.includes('All Wells'));
-        const isDrawing = draw.getMode().startsWith('draw');
-        if (pointFeatures.length && !pointFeatures[0].source.startsWith('mapbox-gl-draw') && !isDrawing) {
-          map.fire('closeAllPopups');
-
-          let layer = visibleLayers.filter(x => x.name === pointFeatures[0].layer.id)[0];
-          const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '300px' })
-            .setLngLat(e.lngLat);
-
-          let hasPopup = true;
-
-          if (layer && layer.popupType === 'point') {
-            let data = pointFeatures[0].properties;
-
-            let icon = document.createElement('div');
-            ReactDOM.render(<RoomIcon fontSize={"large"}/>, icon);
-
-            let heading = document.createElement('div');
-            ReactDOM.render(<Typography variant={'h5'} align={'center'}>{data.location_1}</Typography>, heading);
-
-            let subheading = document.createElement('div');
-            ReactDOM.render(<Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>({data.loc_type})</Typography>, subheading);
-
-            let body = document.createElement('div');
-            ReactDOM.render(<Typography variant={'body1'} align={'center'}>{data.location_n}</Typography>, body);
-
-            popup.setLngLat({lng: data.loc_long, lat: data.loc_lat});
-
-            popup.setHTML(
-              '<div class="' + classes.popupIcon + '"> ' + icon.innerHTML + '</div>' +
+          popup.setHTML(
+            '<div class="' +
+              classes.popupIcon +
+              '"> ' +
+              icon.innerHTML +
+              '</div>' +
               heading.innerHTML +
               subheading.innerHTML +
               body.innerHTML
-            );
+          );
 
-            map.fire('mapPointClicked');
+          map.fire('mapPointClicked');
 
-            mapProvider.setCurrentLocationData(data);
+          mapProvider.setCurrentLocationData(data);
 
-            setLastLocationIdClicked(pointFeatures[0].properties.location_i);
+          // TODO FIGURE OUT WHY THIS IS KICKING OFF SO MANY RE-RENDERS
+          setLastLocationIdClicked(pointFeatures[0].properties.location_i);
 
-            mapProvider.handleControlsVisibility('dataViz', true);
-            map.flyTo({ center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat], zoom: 12});
-          } else if (layer && layer.popupType === 'table') {
-            popup.setHTML(
-              '<div class="' + classes.popupWrap + '"><h3>Properties</h3><table class="' + classes.propTable + '"><tbody>' +
-              Object.entries(pointFeatures[0].properties).map(([k, v]) => {
-                if (k === 'hlink' || k === 'URL') {
-                  return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
-                }
-                return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-              }).join('') +
-              '</tbody></table></div>',
-            );
-          } else {
-            hasPopup = false;
-          }
+          mapProvider.handleControlsVisibility('dataViz', true);
+          map.flyTo({
+            center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat],
+            zoom: 12,
+          });
+        } else if (layer && layer.popupType === 'table') {
+          popup.setHTML(
+            '<div class="' +
+              classes.popupWrap +
+              '"><h3>Properties</h3><table class="' +
+              classes.propTable +
+              '"><tbody>' +
+              Object.entries(pointFeatures[0].properties)
+                .map(([k, v]) => {
+                  if (k === 'hlink' || k === 'URL') {
+                    return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
+                  }
+                  return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+                })
+                .join('') +
+              '</tbody></table></div>'
+          );
+        } else {
+          hasPopup = false;
+        }
 
-          /*if (layer && layer.popupType && layer.popupType === 'section') {
+        /*if (layer && layer.popupType && layer.popupType === 'section') {
             popup.setHTML(
               '<h3>Section: ' + pointFeatures[0].properties['SECTION_'] + '</h3>' +
               '<p>Township ' + pointFeatures[0].properties['TWNSHP'] + pointFeatures[0].properties['DIR'] + ', Range ' +
@@ -385,15 +288,138 @@ const Map = ({
               );
           }*/
 
-          if (hasPopup) popup.addTo(map);
+        if (hasPopup) popup.addTo(map);
 
-          map.on('closeAllPopups', () => {
-            popup.remove();
-          });
+        map.on('closeAllPopups', () => {
+          popup.remove();
+        });
+      }
+    }
+
+    mapProvider.setMap(map);
+
+    function updateZoomViz(e) {
+      visibleLayers.map(layer => {
+        //map.setLayoutProperty(layer.name, 'visibility', 'visible');
+        if (layer.minzoom && map.getZoom() < layer.minzoom) {
+          map.setLayoutProperty(layer.name, 'visibility', 'none');
+        }
+        if (layer.maxzoom && map.getZoom() > layer.maxzoom) {
+          map.setLayoutProperty(layer.name, 'visibility', 'none');
+        }
+        return layer;
+      });
+    }
+
+    function removeExistingDrawings() {
+      const drawings = draw.getAll();
+      const newId = drawings.features[drawings.features.length - 1].id;
+      const pids = drawings.features.map(x => x.id).filter(x => x !== newId);
+      draw.delete(pids);
+    }
+
+    function updateDrawings(e) {
+      let data = draw.getAll();
+
+      setShowQueryTooBigError(false);
+
+      async function saveDrawings() {
+        try {
+          const token = await getTokenSilently();
+          const headers = { Authorization: `Bearer ${token}` };
+          await axios.put(
+            `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
+            { features: data.features },
+            { headers }
+          );
+          setGeometryData(data.features);
+        } catch (err) {
+          // Is this error because we cancelled it ourselves?
+          if (axios.isCancel(err)) {
+            console.log(`call was cancelled`);
+          } else {
+            console.error(err);
+          }
+        }
+      }
+
+      const querySizeLimit = 1200000;
+      const area = turf.area(data);
+      if (parseInt(area / 4046.8564224) <= querySizeLimit) {
+        //setHasChanges(true);
+        saveDrawings();
+      } else {
+        const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
+        setLastQuerySize(roundedArea);
+        setShowQueryTooBigError(true);
+      }
+    }
+
+    async function loadDrawings() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const query = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user-geometry`, { headers });
+        setGeometryData(query.data);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
         }
       }
     }
 
+    //loadDrawings();
+
+    onMapChange(map);
+  }, []); //eslint-disable-line
+
+  /**
+   * TODO review that removing mapProvider does cause any undesired side effects
+   * Ben Tyler removed mapProvider from the dependency array as it was
+   * kicking off a crazy number of re-renders
+   */
+  useEffect(() => {
+    mapProvider.setLastLocationId(lastLocationIdClicked);
+    mapProvider.fetchAnalyticsTableForLocation(lastLocationIdClicked);
+  }, [lastLocationIdClicked]); //eslint-disable-line
+
+  // useEffect(() => {
+  //   let data = draw.getAll();
+  //
+  //   async function saveDrawings() {
+  //     try {
+  //       const token = await getTokenSilently();
+  //       const headers = { Authorization: `Bearer ${token}` };
+  //       await axios.put(
+  //         `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
+  //         { features: data.features },
+  //         { headers },
+  //       );
+  //       setGeometryData(data.features);
+  //     } catch (err) {
+  //       // Is this error because we cancelled it ourselves?
+  //       if (axios.isCancel(err)) {
+  //         console.log(`call was cancelled`);
+  //       } else {
+  //         console.error(err);
+  //       }
+  //     }
+  //   }
+  //
+  //   saveDrawings();
+  // }, [handleRefresh]);
+
+  const handleStartDrawing = e => {
+    draw.changeMode('draw_polygon');
+  };
+
+  useEffect(() => {
+    //if (geometryData.length > 0 && mapIsLoaded) {
+    draw.add(getFeatureGeometryObj(geometryData));
+    //}
   }, [mapIsLoaded, visibleLayers]); //eslint-disable-line
 
   useEffect(() => {
@@ -414,44 +440,53 @@ const Map = ({
     if (typeof map !== 'undefined' && map !== null && map.isStyleLoaded()) {
       map.setStyle(activeBasemap.styleURL);
       map.on('style.load', function() {
-        visibleLayers.sort((a, b) => (a.drawOrder > b.drawOrder) ? 1 : -1).map((layer) => {
-          if (
-            !map.getSource(`${layer.name}-source`) &&
-            layer.spatialData !== null &&
-            layer.paint !== null
-          ) {
-            map.addSource(`${layer.name}-source`, {
-              type: 'geojson',
-              lineMetrics: true,
-              data: layer.spatial_data,
-            });
+        visibleLayers
+          .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
+          .map(layer => {
+            if (!map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+              if (layer.source.type === 'vector') {
+                map.addSource(`${layer.name}-source`, {
+                  type: 'vector',
+                  lineMetrics: true,
+                  url: layer.source.url,
+                });
+                map.addLayer({
+                  id: layer.name,
+                  type: layer.geometry_type,
+                  source: `${layer.name}-source`,
+                  'source-layer': `${layer.source.id}`,
+                  layout: {
+                    visibility: layer.visible ? 'visible' : 'none',
+                  },
+                  paint: layer.paint,
+                });
+              } else if (layer.source.type === 'geojson') {
+                map.addSource(`${layer.name}-source`, {
+                  type: 'geojson',
+                  lineMetrics: true,
+                  data: layer.spatial_data,
+                });
+                map.addLayer({
+                  id: layer.name,
+                  type: layer.geometry_type,
+                  source: `${layer.name}-source`,
+                  // "source-layer": `${layer.name}-source`,
+                  layout: {
+                    visibility: layer.visible ? 'visible' : 'none',
+                  },
+                  paint: layer.paint,
+                });
+              }
+            }
+            return layer;
+          });
 
-            map.addLayer({
-              id: layer.name,
-              type: layer.geometry_type,
-              source: `${layer.name}-source`,
-              // "source-layer": `${layer.name}-source`,
-              layout: {
-                visibility: layer.visible ? 'visible' : 'none',
-              },
-              paint: layer.paint,
-            });
-          }
-          return layer;
-        });
-
-        visibleLayers.map((layer) => {
-          if (
-            map.getSource(`${layer.name}-source`) &&
-            layer.spatialData !== null &&
-            layer.paint !== null
-          ) {
-            map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
-            map.setLayoutProperty(
-              layer.name,
-              'visibility',
-              layer.visible ? 'visible' : 'none',
-            );
+        visibleLayers.map(layer => {
+          if (map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+            if (layer.source.type === 'geojson') {
+              map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
+            }
+            map.setLayoutProperty(layer.name, 'visibility', layer.visible ? 'visible' : 'none');
           }
           return layer;
         });
@@ -462,44 +497,55 @@ const Map = ({
 
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null) {
-      setTimeout(() => { map.resize(); }, 500);
+      setTimeout(() => {
+        map.resize();
+      }, 500);
     }
   }, [controls.drawer.visible, map]);
 
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null && mapIsLoaded && visibleLayers.length > 0) {
       map.loadImage('/images/marker_wells.png', function(error, allWellsImg) {
+        if (error) throw error;
+        map.loadImage('/images/marker_highcap-wells.png', function(error, highcapWellsImg) {
           if (error) throw error;
-          map.loadImage('/images/marker_highcap-wells.png', function(error, highcapWellsImg) {
-            if (error) throw error;
 
-            map.addImage('allWells', allWellsImg);
-            map.addImage('highcapWells', highcapWellsImg);
+          // map.addImage('allWells', allWellsImg);
+          // map.addImage('highcapWells', highcapWellsImg);
 
-            visibleLayers.sort((a, b) => (a.drawOrder > b.drawOrder) ? 1 : -1).map((layer) => {
+          visibleLayers
+            .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
+            .map(layer => {
               console.log('adding layer', layer);
-              if (
-                !map.getSource(`${layer.name}-source`) &&
-                layer.spatialData !== null &&
-                layer.paint !== null
-              ) {
-                map.addSource(`${layer.name}-source`, {
-                  type: 'geojson',
-                  lineMetrics: true,
-                  data: layer.spatial_data,
-                });
+              if (!map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+                if (layer.source.type === 'vector') {
+                  map.addSource(`${layer.name}-source`, {
+                    type: 'vector',
+                    lineMetrics: true,
+                    url: layer.source.url,
+                  });
+                } else if (layer.source.type === 'geojson') {
+                  map.addSource(`${layer.name}-source`, {
+                    type: 'geojson',
+                    lineMetrics: true,
+                    data: layer.spatial_data,
+                  });
+                }
 
                 const newLayer = {
                   id: layer.name,
                   interactive: true,
                   type: layer.geometry_type,
                   source: `${layer.name}-source`,
-                  // "source-layer": `${layer.name}-source`,
                   layout: {
                     visibility: layer.visible ? 'visible' : 'none',
                   },
                   paint: layer.paint,
                 };
+
+                if (layer.source.type === 'vector') {
+                  newLayer['source-layer'] = layer.source.id;
+                }
 
                 if (layer.markerType === 'allWells') {
                   newLayer.type = 'symbol';
@@ -521,81 +567,72 @@ const Map = ({
               return layer;
             });
 
-
-            [
-              'Stream Stations',
-              'Reservoir Stations',
-              'Effluent Stations',
-              'Mine Discharge Stations',
-              'Spring Stations',
-              'Groundwater Stations',
-            ].forEach((layer) => {
-              if (
-                !map.getLayer(`${layer}-labels`)
-              ) {
-                map.addLayer({
-                  'id': layer + `-labels`,
-                  'type': 'symbol',
-                  'source': layer + '-source',
-                  'minzoom': 10,
-                  'layout': {
-                    'text-field': ["get", "location_1"],
-                    'text-offset': [0, -2],
-                    'text-size': 14,
-                  },
-                  'paint': {
-                    'text-halo-color': '#ffffff',
-                    'text-halo-width': 0.5,
-                  },
-                });
-              }
-            });
-
-            map.on('mousemove', function (e) {
-              const bbox = [
-                [e.point.x - 5, e.point.y - 5],
-                [e.point.x + 5, e.point.y + 5]
-              ];
-              const features = map.queryRenderedFeatures(bbox, {layers: visibleLayers.map(x => x.name)})
-              map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-            });
-
-            map.fire('zoom');
-            console.log('loaded map with ' + visibleLayers.length + ' visible layers');
-            //map.setStyle(activeBasemap.styleURL);
-
-            console.log('visibleLayers before setting visibility', visibleLayers);
-            visibleLayers.map((layer) => {
-              if (
-                map.getSource(`${layer.name}-source`) &&
-                layer.spatialData !== null &&
-                layer.paint !== null
-              ) {
-                map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
-                map.setLayoutProperty(
-                  layer.name,
-                  'visibility',
-                  layer.visible ? 'visible' : 'none',
-                );
-                map.setLayoutProperty(
-                  layer.name+'-labels',
-                  'visibility',
-                  layer.visible ? 'visible' : 'none',
-                );
-              }
-              return layer;
-            });
-
-            mapProvider.setKickoff(true);
+          [
+            'Stream Stations',
+            'Reservoir Stations',
+            'Effluent Stations',
+            'Mine Discharge Stations',
+            'Spring Stations',
+            'Groundwater Stations',
+          ].forEach(layer => {
+            if (!map.getLayer(`${layer}-labels`)) {
+              map.addLayer({
+                id: layer + `-labels`,
+                type: 'symbol',
+                source: layer + '-source',
+                minzoom: 10,
+                layout: {
+                  'text-field': ['get', 'location_1'],
+                  'text-offset': [0, -2],
+                  'text-size': 14,
+                },
+                paint: {
+                  'text-halo-color': '#ffffff',
+                  'text-halo-width': 0.5,
+                },
+              });
+            }
           });
-        },
-      );
+
+          map.on('mousemove', function(e) {
+            const bbox = [
+              [e.point.x - 5, e.point.y - 5],
+              [e.point.x + 5, e.point.y + 5],
+            ];
+            const features = map.queryRenderedFeatures(bbox, { layers: visibleLayers.map(x => x.name) });
+            map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+          });
+
+          map.fire('zoom');
+          console.log('loaded map with ' + visibleLayers.length + ' visible layers');
+          //map.setStyle(activeBasemap.styleURL);
+
+          console.log('visibleLayers before setting visibility', visibleLayers);
+          visibleLayers.map(layer => {
+            if (map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+              if (layer.source.type === 'geojson') {
+                map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
+              }
+              if (map.getLayer(layer.name)) {
+                map.setLayoutProperty(layer.name, 'visibility', layer.visible ? 'visible' : 'none');
+              }
+              if (map.getLayer(layer.name + '-labels')) {
+                map.setLayoutProperty(layer.name + '-labels', 'visibility', layer.visible ? 'visible' : 'none');
+              }
+            }
+            return layer;
+          });
+
+          mapProvider.setKickoff(true);
+        });
+      });
     }
-  }, [map, mapIsLoaded, visibleLayers, mapProvider.visibleLayers, activeBasemap]);
+    // }, [map, mapIsLoaded, visibleLayers, mapProvider.visibleLayers, activeBasemap, mapProvider]);
+  }, [map, mapIsLoaded, visibleLayers, mapProvider.visibleLayers, activeBasemap]); //eslint-disable-line
 
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null && map.isStyleLoaded()) {
-      const layer = filteredLayers.find((d) => d.name === activeZoomToLayer);
+      const layer = filteredLayers.find(d => d.name === activeZoomToLayer);
       const bbox = turf.bbox(layer.spatial_data);
 
       map.fitBounds(bbox, {
@@ -604,13 +641,13 @@ const Map = ({
     }
   }, [activeZoomToLayer, map]); //eslint-disable-line
 
-  const getFeatureGeometryObj = (geometryData) => {
+  const getFeatureGeometryObj = geometryData => {
     return {
-      'type': 'FeatureCollection',
-      'features': geometryData.map(feature => ({
-        'type': 'Feature',
-        'properties': {},
-        'geometry': feature.geometry,
+      type: 'FeatureCollection',
+      features: geometryData.map(feature => ({
+        type: 'Feature',
+        properties: {},
+        geometry: feature.geometry,
       })),
     };
   };
@@ -620,7 +657,7 @@ const Map = ({
     setMapPopups([]);
   };
 
-  const getScoreBgColor = (score) => {
+  const getScoreBgColor = score => {
     score = parseFloat(score);
 
     let green = '#28a745';
@@ -632,7 +669,7 @@ const Map = ({
     return red;
   };
 
-  const getScoreColor = (score) => {
+  const getScoreColor = score => {
     score = parseFloat(score);
 
     let green = '#ffffff';
@@ -652,18 +689,24 @@ const Map = ({
             {mapProvider.queryResults.data[0].table_label}
           </Typography>
           <Box pb={1} style={{ textAlign: 'center' }}>
-            <Typography variant="caption" align="center" gutterBottom>1=LOW, 10=HIGH</Typography>
+            <Typography variant="caption" align="center" gutterBottom>
+              1=LOW, 10=HIGH
+            </Typography>
           </Box>
           <Divider />
           <Flex style={{ alignItems: 'baseline' }}>
             <Box p={2} pb={2} style={{ textAlign: 'center', width: '150px' }}>
               <Typography variant="h6" align="center">
-                <Box p={1} mb={1} style={{
-                  width: '100%',
-                  color: getScoreColor(mapProvider.queryResults.data[0].user_scenario_score),
-                  backgroundColor: getScoreBgColor(mapProvider.queryResults.data[0].user_scenario_score),
-                  borderRadius: '80px',
-                }}>
+                <Box
+                  p={1}
+                  mb={1}
+                  style={{
+                    width: '100%',
+                    color: getScoreColor(mapProvider.queryResults.data[0].user_scenario_score),
+                    backgroundColor: getScoreBgColor(mapProvider.queryResults.data[0].user_scenario_score),
+                    borderRadius: '80px',
+                  }}
+                >
                   {mapProvider.queryResults.data[0].user_scenario_score}
                 </Box>
               </Typography>
@@ -680,12 +723,14 @@ const Map = ({
           </Flex>
           <Divider />
           <Box pt={1} style={{ textAlign: 'center' }}>
-            <Typography variant="caption" align="center">Query Area: {mapProvider.queryAreaSize}</Typography>
+            <Typography variant="caption" align="center">
+              Query Area: {mapProvider.queryAreaSize}
+            </Typography>
           </Box>
         </>
       );
     } else {
-      return (<div />);
+      return <div />;
     }
   };
 
@@ -715,8 +760,8 @@ const Map = ({
     }
   };
 
-  const handleLayerToggle = (name) => {
-    onVisibleLayerChange((prevState) => {
+  const handleLayerToggle = name => {
+    onVisibleLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -725,7 +770,7 @@ const Map = ({
         return rec;
       });
     });
-    onFilteredLayerChange((prevState) => {
+    onFilteredLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -735,7 +780,7 @@ const Map = ({
         return rec;
       });
     });
-    onLayerChange((prevState) => {
+    onLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -751,9 +796,7 @@ const Map = ({
     <>
       <div className={classes.toolbar}></div>
       <div ref={mapContainer} className={classes.map}>
-        <InitiateDrawingControl
-          onInitiateDrawing={handleStartDrawing}
-        />
+        <InitiateDrawingControl onInitiateDrawing={handleStartDrawing} />
         <BasemapControls
           layers={basemapLayers}
           open={controls.basemap.visible}
@@ -762,7 +805,7 @@ const Map = ({
           onBasemapChange={onBasemapChange}
         />
         <LayerControl
-          layers={visibleLayers.filter((d) => d.enabled)}
+          layers={visibleLayers.filter(d => d.enabled)}
           open={controls.layers.visible}
           onLayerChange={handleLayerToggle}
           onZoomToLayerChange={onZoomToLayerChange}
@@ -772,24 +815,15 @@ const Map = ({
           open={controls.filterLayers.visible}
           onClose={() => handleControlsVisibility('filterLayers')}
         />
-        <DataVizControl
-          open={controls.dataViz.visible}
-          onClose={() => handleControlsVisibility('dataViz')}
-        />
-        <PopupControl
-          open={controls.popup.visible}
-          onClose={() => handleControlsVisibility('popup')}
-        />
-        <LegendControl
-          open={controls.legend.visible}
-          onClose={() => handleControlsVisibility('legend')}
-        />
+        <DataVizControl open={controls.dataViz.visible} onClose={() => handleControlsVisibility('dataViz')} />
+        <PopupControl open={controls.popup.visible} onClose={() => handleControlsVisibility('popup')} />
+        <LegendControl open={controls.legend.visible} onClose={() => handleControlsVisibility('legend')} />
       </div>
       {controls.popup.visible === false && (
-        <div dangerouslySetInnerHTML={{ __html: '<style>.mapboxgl-popup { display: none; }</style>' }}/>
+        <div dangerouslySetInnerHTML={{ __html: '<style>.mapboxgl-popup { display: none; }</style>' }} />
       )}
       {controls.legend.visible === false && (
-        <div dangerouslySetInnerHTML={{ __html: '<style>.map-legend { display: none; }</style>' }}/>
+        <div dangerouslySetInnerHTML={{ __html: '<style>.map-legend { display: none; }</style>' }} />
       )}
     </>
   );
