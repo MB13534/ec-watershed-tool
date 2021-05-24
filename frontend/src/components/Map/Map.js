@@ -215,7 +215,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
 
           mapProvider.setCurrentLocationData(data);
 
-          // TODO FIGURE OUT WHY THIS IS KICKING OFF SO MANY RE-RENDERS
           setLastLocationIdClicked(pointFeatures[0].properties.location_i);
 
           mapProvider.handleControlsVisibility('dataViz', true);

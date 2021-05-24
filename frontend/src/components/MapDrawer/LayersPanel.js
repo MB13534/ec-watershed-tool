@@ -1,17 +1,17 @@
-import React, { useContext } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Box, Button, Divider, Grid } from '@material-ui/core'
-import LayerSearch from '../LayerSearch'
-import FilterIcon from '@material-ui/icons/FilterList'
-import LayersList from '../LayerList'
+import React, { useContext } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Button, Divider, Grid } from '@material-ui/core';
+import LayerSearch from '../LayerSearch';
+import FilterIcon from '@material-ui/icons/FilterList';
+import LayersList from '../LayerList';
 import { MapContext } from '../../pages/Map/MapProvider';
 
 const useStyles = makeStyles(theme => ({
   root: {},
-}))
+}));
 
-const LayersPanel = (props) => {
-  const classes = useStyles()
+const LayersPanel = props => {
+  const classes = useStyles();
   const {
     map,
     filterActive,
@@ -28,14 +28,14 @@ const LayersPanel = (props) => {
     onSelectNoneLayers,
   } = useContext(MapContext);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     onSearchValueChange(e.target.value);
   };
 
   const handleLayerToggle = (name, layerName) => {
     console.log('handleLayerToggle() layerName', name, layerName);
     console.log('filteredLayers', filteredLayers);
-    filteredLayers.forEach((layer) => {
+    filteredLayers.forEach(layer => {
       if (layer.name === name && layer.toggleGroup) {
         let otherLayers = filteredLayers.filter(x => x.toggleGroup === layer.toggleGroup);
         layerName = otherLayers.map(x => x.name);
@@ -48,23 +48,31 @@ const LayersPanel = (props) => {
         const visibility = map.getLayoutProperty(layer, 'visibility');
 
         if (visibility !== 'visible') {
-          map.setLayoutProperty(layer, 'visibility', 'visible');
-          map.setLayoutProperty(layer+'-labels', 'visibility', 'visible');
+          if (map.getLayer(layer)) {
+            map.setLayoutProperty(layer, 'visibility', 'visible');
+          }
+          if (map.getLayer(layer + '-labels')) {
+            map.setLayoutProperty(layer + '-labels', 'visibility', 'visible');
+          }
           console.log('showing layer ' + layer);
         } else {
           console.log('hiding layer ' + layer);
-          map.setLayoutProperty(layer, 'visibility', 'none');
-          map.setLayoutProperty(layer+'-labels', 'visibility', 'none');
+          if (map.getLayer(layer)) {
+            map.setLayoutProperty(layer, 'visibility', 'none');
+          }
+          if (map.getLayer(layer + '-labels')) {
+            map.setLayoutProperty(layer + '-labels', 'visibility', 'none');
+          }
         }
-      }
+      };
       if (Array.isArray(name)) {
-        name.forEach((layer) => setVis(layer));
+        name.forEach(layer => setVis(layer));
       } else {
         setVis(name);
       }
     }
 
-    onVisibleLayerChange((prevState) => {
+    onVisibleLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -74,7 +82,7 @@ const LayersPanel = (props) => {
         return rec;
       });
     });
-    onFilteredLayerChange((prevState) => {
+    onFilteredLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -84,7 +92,7 @@ const LayersPanel = (props) => {
         return rec;
       });
     });
-    onLayerChange((prevState) => {
+    onLayerChange(prevState => {
       return [...prevState].map((d, i) => {
         let rec = { ...d };
         if (rec.name === name) {
@@ -99,11 +107,7 @@ const LayersPanel = (props) => {
   return (
     <div className={classes.root}>
       <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <LayerSearch
-          value={searchValue}
-          handleSearch={handleSearch}
-          width="95%"
-        />
+        <LayerSearch value={searchValue} handleSearch={handleSearch} width="95%" />
       </Box>
       <Box m={1}>
         <Button
@@ -114,7 +118,7 @@ const LayersPanel = (props) => {
           disabled={controls.filterLayers.visible}
           fullWidth
           startIcon={<FilterIcon />}
-          onClick={() => handleControlsVisibility("filterLayers")}
+          onClick={() => handleControlsVisibility('filterLayers')}
         >
           Filter Layers
         </Button>
@@ -122,24 +126,12 @@ const LayersPanel = (props) => {
       <Box m={1}>
         <Grid container spacing={1}>
           <Grid item xs={12} md={6}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              fullWidth
-              size="small"
-              onClick={onSelectAllLayers}
-            >
+            <Button variant="outlined" color="secondary" fullWidth size="small" onClick={onSelectAllLayers}>
               + Select All
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              fullWidth
-              size="small"
-              onClick={onSelectNoneLayers}
-            >
+            <Button variant="outlined" color="secondary" fullWidth size="small" onClick={onSelectNoneLayers}>
               - Select None
             </Button>
           </Grid>
@@ -155,7 +147,7 @@ const LayersPanel = (props) => {
       />
       <Divider />
     </div>
-  )
-}
+  );
+};
 
-export default LayersPanel
+export default LayersPanel;
