@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ccc',
     color: '#555',
     borderRadius: '5px',
-  }
+  },
 }));
 
 export default function AnalyticsPopupDetails({ map }) {
@@ -117,6 +117,7 @@ export default function AnalyticsPopupDetails({ map }) {
   useEffect(() => {
     map.map.on('mapPointClicked', () => {
       setValue(0);
+      map.setMapMode('analyze');
     });
   }, []);
 
@@ -135,6 +136,15 @@ export default function AnalyticsPopupDetails({ map }) {
     }
   };
 
+  useEffect(() => {
+    if (map.mapMode === 'explore') {
+      setValue(1);
+    }
+    if (map.mapMode === 'analyze') {
+      setValue(0);
+    }
+  }, [map.mapMode]);
+
   return (
     <div className={classes.root}>
       <Tabs
@@ -145,10 +155,11 @@ export default function AnalyticsPopupDetails({ map }) {
         textColor="primary"
         aria-label="scrollable force tabs example"
       >
-        <Tab label="Stats & Benchmarks" icon={<DetailsIcon />} {...a11yProps(0)} />
-        <Tab label="Land Use" icon={<LandUseIcon />} {...a11yProps(1)} />
-        <Tab label="Monitoring Locations" icon={<AqVulnIcon />} {...a11yProps(2)} />
-        <Tab label="Nearby Results" icon={<RoomIcon />} {...a11yProps(3)} />
+            <Tab label="Stats & Benchmarks" style={{display: map.mapMode === 'analyze' ? 'block' : 'none'}} icon={<DetailsIcon />} {...a11yProps(0)} />
+            <Tab label="Land Use" style={{display: map.mapMode === 'explore' ? 'block' : 'none'}} icon={<LandUseIcon />} {...a11yProps(1)} />
+            <Tab label="Monitoring Locations" style={{display: map.mapMode === 'explore' ? 'block' : 'none'}} icon={<AqVulnIcon />} {...a11yProps(2)} />
+            <Tab label="Nearby Results" style={{display: map.mapMode === 'analyze' ? 'block' : 'none'}} icon={<RoomIcon />} {...a11yProps(3)} />
+
       </Tabs>
       <TabPanel value={value} index={0}>
         <Divider />
@@ -158,58 +169,58 @@ export default function AnalyticsPopupDetails({ map }) {
             select a monitoring location on the map above.</Typography>
           }
           {(map.analyticsResults) &&
-            <>
-              <Box ml={2} pt={1} pb={1}>
-                <div
-                  className={classes.circle}
-                  style={{
-                    backgroundColor: theme.palette.primary.main,
-                    float: 'left',
-                    width: '50px',
-                    height: '50px',
-                    lineHeight: '66px',
-                    marginRight: '13px',
-                  }}>
-                  <Icon>room</Icon>
-                </div>
+          <>
+            <Box ml={2} pt={1} pb={1}>
+              <div
+                className={classes.circle}
+                style={{
+                  backgroundColor: theme.palette.primary.main,
+                  float: 'left',
+                  width: '50px',
+                  height: '50px',
+                  lineHeight: '66px',
+                  marginRight: '13px',
+                }}>
+                <Icon>room</Icon>
+              </div>
               <Typography variant={'body1'}><strong>{map.currentLocationData.location_1}</strong></Typography>
               <Typography variant={'body1'}>{map.currentLocationData.location_n}</Typography>
-              </Box>
-              <Divider/>
-              <TableContainer style={{
-                overflowY: 'scroll',
-                maxHeight: '230px',
-              }}>
-                <Table className={classes.table} size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Parameter</TableCell>
-                      <TableCell align="center">{map.filters.analysisType}</TableCell>
-                      <TableCell align="center">Benchmark</TableCell>
-                      <TableCell align="center">Trend</TableCell>
-                      <TableCell align="center">Count</TableCell>
-                      <TableCell align="center">Analysis POR</TableCell>
+            </Box>
+            <Divider />
+            <TableContainer style={{
+              overflowY: 'scroll',
+              maxHeight: '230px',
+            }}>
+              <Table className={classes.table} size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Parameter</TableCell>
+                    <TableCell align="center">{map.filters.analysisType}</TableCell>
+                    <TableCell align="center">Benchmark</TableCell>
+                    <TableCell align="center">Trend</TableCell>
+                    <TableCell align="center">Count</TableCell>
+                    <TableCell align="center">Analysis POR</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {map.analyticsResults.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">
+                        {row.parameter_abbrev}
+                      </TableCell>
+                      <TableCell align="center">{formatStatistic(row)} {row.units}</TableCell>
+                      <TableCell align="center">{formatValue(row)}</TableCell>
+                      <TableCell align="center">
+                        <Icon>{setTrendIcon(row.trend)}</Icon><br />
+                        {row.trend}
+                      </TableCell>
+                      <TableCell align="center">{row.recordcount}</TableCell>
+                      <TableCell align="center">{row.analysis_period}</TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {map.analyticsResults.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell component="th" scope="row">
-                          {row.parameter_abbrev}
-                        </TableCell>
-                        <TableCell align="center">{formatStatistic(row)} {row.units}</TableCell>
-                        <TableCell align="center">{formatValue(row)}</TableCell>
-                        <TableCell align="center">
-                          <Icon>{setTrendIcon(row.trend)}</Icon><br />
-                          {row.trend}
-                        </TableCell>
-                        <TableCell align="center">{row.recordcount}</TableCell>
-                        <TableCell align="center">{row.analysis_period}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </>
           }
         </Paper>
@@ -284,7 +295,7 @@ export default function AnalyticsPopupDetails({ map }) {
                 {map.stationData.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell component="th" scope="row">
-                      <strong>{row.location_id}</strong><br/>
+                      <strong>{row.location_id}</strong><br />
                       {row.location_name}
                     </TableCell>
                     <TableCell component="th" scope="row">
@@ -353,7 +364,7 @@ export default function AnalyticsPopupDetails({ map }) {
                         }}><Icon>room</Icon></div>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <strong>{row.properties.location_1}</strong><br/>
+                      <strong>{row.properties.location_1}</strong><br />
                       {row.properties.location_n}
                     </TableCell>
                     <TableCell component="th" scope="row">
@@ -361,7 +372,7 @@ export default function AnalyticsPopupDetails({ map }) {
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {row.parameters.map((x, i) =>
-                        <div key={i} className={classes.badge}>{x}</div>
+                        <div key={i} className={classes.badge}>{x}</div>,
                       )}
                     </TableCell>
                   </TableRow>

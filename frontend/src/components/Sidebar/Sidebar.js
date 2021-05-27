@@ -19,7 +19,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
-import logo from "../../images/logo-lpnnrd.png";
+import logo from "../../images/logo-ec.svg";
 import lreLogo from "../../images/lre-logo-grey.png"
 
 import { useAuth0 } from "../../hooks/useAuth0";

@@ -356,7 +356,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
                 Object.entries(pointFeatures[0].properties)
                   .map(([k, v]) => {
                     if (k === 'hlink' || k === 'URL') {
-                      return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">DNR Link</a></td></tr>`;
+                      return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
                     }
                     return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
                   })
@@ -414,6 +414,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           if (hasPopup) popup.addTo(map);
 
           map.on('closeAllPopups', () => {
+            console.log('closingallpopups');
             popup.remove();
           });
         }
@@ -795,7 +796,9 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
     <>
       <div className={classes.toolbar}></div>
       <div ref={mapContainer} className={classes.map}>
-        <InitiateDrawingControl onInitiateDrawing={handleStartDrawing} />
+        {mapProvider.mapMode === 'explore' && (
+          <InitiateDrawingControl onInitiateDrawing={handleStartDrawing} />
+        )}
         <BasemapControls
           layers={basemapLayers}
           open={controls.basemap.visible}

@@ -101,11 +101,13 @@ export const MapProvider = (props) => {
     { value: "med", display: "Median" },
   ];
 
+  const [mapMode, setMapMode] = useState('explore');
+
   // initialize the default sidebar filter values
   const [filters, setFilters] = useState({
     startDate: '2020-04-01',
     endDate: '2020-10-30',
-    analysisType: "85th percentile",
+    analysisType: "Median",
     priorities: ["Field/Chemistry", "Metals/Ions", "Nutrients/Solids", "Pathogens"],
     threats: [
       "Agriculture",
@@ -864,6 +866,8 @@ export const MapProvider = (props) => {
     <MapContext.Provider
       value={{
         map,
+        mapMode,
+        setMapMode,
         mapMoveEnd,
         setMapMoveEnd,
         setMap,

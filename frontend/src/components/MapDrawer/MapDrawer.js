@@ -90,6 +90,15 @@ const MapDrawer = ({
   );
 
   useEffect(() => {
+    if (mapProvider.mapMode === 'explore') {
+      setActiveTab(0);
+    }
+    if (mapProvider.mapMode === 'analyze') {
+      setActiveTab(1);
+    }
+  }, [mapProvider.mapMode]);
+
+  useEffect(() => {
     fetchNewQueryResults();
   }, [mapProvider.geometryData, handleRefresh]); // eslint-disable-line
 
@@ -119,7 +128,7 @@ const MapDrawer = ({
       <div className={classes.toolbar} />
       {controls.drawer.visible && (
         <div className={classes.drawerContainer}>
-          <DrawerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          {/*<DrawerTabs activeTab={activeTab} setActiveTab={setActiveTab} />*/}
           <DrawerTabPanel activeTab={activeTab} index={0}>
             <LayersPanel />
           </DrawerTabPanel>

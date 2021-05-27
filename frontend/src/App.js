@@ -10,6 +10,7 @@ import theme from "./theme";
 import { MapProvider } from "./pages/Map/MapProvider";
 
 const MapPage = React.lazy(() => import("./pages/Map"));
+const StoriesPage = React.lazy(() => import("./pages/Stories"));
 const DataListInputsPage = React.lazy(() => import("./pages/DataManagement/Inputs"));
 const DataListInputTypesPage = React.lazy(() => import("./pages/DataManagement/InputTypes"));
 const DataListInputBinsPage = React.lazy(() => import("./pages/DataManagement/InputBins"));
@@ -35,6 +36,13 @@ const App = () => {
                 <MapProvider>
                   <MapPage />
                 </MapProvider>
+              )}
+            />
+            <PrivateRoute
+              path="/stories"
+              exact
+              render={() => (
+                <StoriesPage/>
               )}
             />
             <PrivateRoute

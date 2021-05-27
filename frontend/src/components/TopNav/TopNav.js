@@ -10,7 +10,8 @@ import { checkActive } from '../../utils';
 import { useAuth0 } from '../../hooks/useAuth0';
 import { Menu } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
-import logo from "../../images/logo-ec.svg";
+import logo from '../../images/logo-ec.svg';
+import { useMap } from '../../pages/Map/MapProvider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     width: 50,
-    marginLeft: "auto",
-    marginRight: "auto",
-    "& img": {
-      maxWidth: "100%",
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    '& img': {
+      maxWidth: '100%',
     },
   },
   menuButton: {
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 const TopNav = (props) => {
   const classes = useStyles();
   let history = useHistory();
+  const map = useMap();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -88,7 +90,7 @@ const TopNav = (props) => {
 
   const goTo = (route) => {
     history.push(`/${route}`);
-    localStorage.setItem("last_url", history.location.pathname);
+    localStorage.setItem('last_url', history.location.pathname);
   };
 
   /**
@@ -107,9 +109,9 @@ const TopNav = (props) => {
   // Configure sidebar menu items
   const MenuItems = [
     {
-      link: 'map',
-      title: 'Map',
-      activePath: 'map',
+      link: 'stories',
+      title: 'Stories',
+      activePath: 'stories',
       exact: true,
       loginRequired: true,
     },
@@ -188,7 +190,7 @@ const TopNav = (props) => {
             keepMounted
             open={Boolean(anchorEl)}
             onClose={handleClose}
-            style={{zIndex:1500}}
+            style={{ zIndex: 1500 }}
           >
             {children}
           </Menu>
@@ -224,8 +226,26 @@ const TopNav = (props) => {
             <img src={logo} alt="Eagle County Watershed Tool" />
           </div>
           <Typography variant="h6" className={classes.title}>
-            <span style={{fontWeight: 'bold'}}>Eagle County</span> Watershed Tool
+            <span style={{ fontWeight: 'bold' }}>Eagle County</span> Watershed Tool
           </Typography>
+          {isAuthenticated && (
+            <>
+              <Link
+                key='explore'
+                onClick={() => map.setMapMode('explore')}
+                className={map.mapMode === 'explore' && checkActive(history, 'map', true) ? classes.activeLink : classes.link}
+              >
+                Explore
+              </Link>
+              <Link
+                key='analyze'
+                onClick={() => map.setMapMode('analyze')}
+                className={map.mapMode === 'analyze' && checkActive(history, 'map', true) ? classes.activeLink : classes.link}
+              >
+                Analyze
+              </Link>
+            </>
+          )}
           {MenuItems.map((item) => returnMenuItem(item, isAuthenticated, user))}
           {isAuthenticated ? (
             <Link className={handleActive('/logout')} onClick={() => logout()}>
