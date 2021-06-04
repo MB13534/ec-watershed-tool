@@ -103,8 +103,7 @@ export const MapProvider = (props) => {
 
   const [mapMode, setMapMode] = useState('explore');
 
-  // initialize the default sidebar filter values
-  const [filters, setFilters] = useState({
+  const defaultFilters = {
     startDate: '2020-04-01',
     endDate: '2020-10-30',
     analysisType: "Median",
@@ -126,13 +125,52 @@ export const MapProvider = (props) => {
       "TP",
       "Cu-D",
     ],
-  });
+  };
+
+  // initialize the default sidebar filter values
+  const [filters, setFilters] = useState(defaultFilters);
+  const [refresh, setRefresh] = useState(false);
 
   const [priorities] = useFetchData(`controls-list-param/priorities`);
   const [threats] = useFetchData(`controls-list-param/threats`);
   const [startDate] = useFetchData(`controls-list-param/startDate`);
   const [endDate] = useFetchData(`controls-list-param/endDate`);
   const [parameters, setParameters] = useState([]);
+  const [scenarioDialogIsOpen, setScenarioDialogIsOpen] = useState(false);
+  const [scenarioDialogMode, setScenarioDialogMode] = useState('save');
+
+  const [scenarioData, setScenarioData] = useState(defaultFilters);
+
+  const [fetchedGeometryData, setFetchedGeometryData] = useState([]);
+
+  const triggerLoadGeometryData = (data) => {
+    setFetchedGeometryData(data);
+  };
+
+  const handleRefresh = () => {
+    setRefresh((state) => !state);
+  }
+
+  const [first, setFirst] = useState(true);
+
+  useEffect(() => {
+    if (!first) {
+      handleControlsSubmit();
+    }
+
+    setFirst(false);
+
+  }, [refresh]);
+
+  const handleScenarioLoadClick = () => {
+    setScenarioDialogMode('load');
+    setScenarioDialogIsOpen(true);
+  }
+
+  const handleScenarioSaveClick = () => {
+    setScenarioDialogMode('save');
+    setScenarioDialogIsOpen(true);
+  }
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -882,6 +920,7 @@ export const MapProvider = (props) => {
         activeBasemap,
         basemapLayers,
         filters,
+        setFilters,
         analysisTypes,
         priorities,
         threats,
@@ -903,6 +942,15 @@ export const MapProvider = (props) => {
         renderedPointData,
         currentLocationData,
         setCurrentLocationData,
+        scenarioDialogIsOpen,
+        setScenarioDialogIsOpen,
+        scenarioData,
+        scenarioDialogMode,
+        fetchedGeometryData,
+        triggerLoadGeometryData,
+        handleRefresh,
+        handleScenarioLoadClick,
+        handleScenarioSaveClick,
         updateRenderedPoints,
         getHexColorForScore,
         fetchAnalyticsTableForLocation,

@@ -20,6 +20,7 @@ app.use(setHeaders);
 app.use("/api/example", require("./routes/Example"));
 app.use("/api/map-example", require("./routes/MapExample"));
 app.use("/api/user-geometry", require("./routes/UserGeometryRoutes"));
+app.use("/api/user-scenario", require("./routes/UserScenarioRoutes"));
 app.use("/api/controls-list-param", require("./routes/ControlsListParamRoutes"));
 app.use("/api/monitoring-point", require("./routes/MonitoringPointRoutes"));
 app.use("/api/landing-controls", require("./routes/LandingControlsRoutes"));

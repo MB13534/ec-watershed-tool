@@ -426,6 +426,17 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
     mapProvider.setGeometryData(geometryData);
   }, [geometryData]); //eslint-disable-line
 
+
+  useEffect(() => {
+    setGeometryData(mapProvider.fetchedGeometryData);
+    console.log('setting geo data to ');
+    console.log(mapProvider.fetchedGeometryData);
+
+    draw.deleteAll();
+
+    draw.add(getFeatureGeometryObj(mapProvider.fetchedGeometryData));
+  }, [mapProvider.fetchedGeometryData]); //eslint-disable-line
+
   useEffect(() => {
     if (mapIsLoaded) {
       processQueryResults();

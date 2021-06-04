@@ -57,6 +57,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.UserGeometryModel = require("./UserGeometryModel")(sequelize, Sequelize);
+db.UserScenarioModel = require("./UserScenarioModel")(sequelize, Sequelize);
 db.UserLastActiveModel = require("./UserLastActiveModel")(sequelize, Sequelize);
 db.ControlsListParam1Model = require("./ControlsListParam1Model")(sequelize, Sequelize);
 db.ControlsListParam2Model = require("./ControlsListParam2Model")(sequelize, Sequelize);
