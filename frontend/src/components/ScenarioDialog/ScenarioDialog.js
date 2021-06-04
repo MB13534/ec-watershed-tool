@@ -154,6 +154,8 @@ export default function CustomizedDialogs({
   };
 
   const handleSaveClick = () => {
+    context.setSnackbarMessage('Scenario saved successfully!', 'Unable to save scenario.');
+
     if (value === 0) { // new
       if (!scenarioName || !scenarioName.trim().length) {
         setError(true);
@@ -164,6 +166,7 @@ export default function CustomizedDialogs({
 
         async function save() {
           try {
+            context.setWaitingState('in progress');
             const token = await getTokenSilently();
             const headers = { Authorization: `Bearer ${token}` };
             const query = await axios.post(
@@ -181,8 +184,10 @@ export default function CustomizedDialogs({
             if (query.data) {
               setExistingScenario(query.data.user_scenario_ndx);
               setValue(1);
+              context.setWaitingState('complete', 'no error');
             }
           } catch (err) {
+            context.setWaitingState('complete', 'error');
             // Is this error because we cancelled it ourselves?
             if (axios.isCancel(err)) {
               console.log(`call was cancelled`);
@@ -200,6 +205,7 @@ export default function CustomizedDialogs({
     if (value === 1) { // overwrite
       async function overwrite() {
         try {
+          context.setWaitingState('in progress');
           const token = await getTokenSilently();
           const headers = { Authorization: `Bearer ${token}` };
           const query = await axios.put(
@@ -214,9 +220,11 @@ export default function CustomizedDialogs({
           );
 
           if (query.data) {
+            context.setWaitingState('complete', 'no error');
             console.log('save success!');
           }
         } catch (err) {
+          context.setWaitingState('complete', 'error');
           // Is this error because we cancelled it ourselves?
           if (axios.isCancel(err)) {
             console.log(`call was cancelled`);
@@ -261,7 +269,6 @@ export default function CustomizedDialogs({
         );
 
         if (query.data) {
-          console.log('delete success!');
           loadScenarios();
         }
       } catch (err) {
@@ -282,6 +289,8 @@ export default function CustomizedDialogs({
   const handleLoadClick = (ndx) => {
     async function load() {
       try {
+        context.setSnackbarMessage('Scenario loaded successfully!', 'Unable to load scenario.');
+        context.setWaitingState('in progress');
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
         const query = await axios.get(
@@ -296,8 +305,10 @@ export default function CustomizedDialogs({
           context.setScenarioDialogIsOpen(false);
           context.triggerLoadGeometryData([{geometry: query.data.geometry}]);
           console.log('load success!');
+          context.setWaitingState('complete', 'no error');
         }
       } catch (err) {
+        context.setWaitingState('complete', 'error');
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
           console.log(`call was cancelled`);

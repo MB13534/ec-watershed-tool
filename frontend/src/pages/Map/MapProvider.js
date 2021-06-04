@@ -9,6 +9,7 @@ import SatelliteImg from "../../images/satellite.jpg";
 import axios from 'axios';
 import { useAuth0 } from '../../hooks/useAuth0';
 import debounce from 'lodash.debounce';
+import useFormSubmitStatus from '../../hooks/useFormSubmitStatus';
 
 /**
  * Create a context that will be used to share global state
@@ -140,6 +141,20 @@ export const MapProvider = (props) => {
   const [scenarioDialogMode, setScenarioDialogMode] = useState('save');
 
   const [scenarioData, setScenarioData] = useState(defaultFilters);
+
+  const [snackbarSuccessMessage, setSnackbarSuccessMessage] = useState('The operation completed successfully!');
+  const [snackbarErrorMessage, setSnackbarErrorMessage] = useState('The operation encountered an error.');
+  const setSnackbarMessage = (success, error) => {
+    setSnackbarSuccessMessage(success);
+    setSnackbarErrorMessage(error);
+  };
+
+  const {
+    setWaitingState,
+    snackbarOpen,
+    snackbarError,
+    handleSnackbarClose,
+  } = useFormSubmitStatus();
 
   const [fetchedGeometryData, setFetchedGeometryData] = useState([]);
 
@@ -947,6 +962,13 @@ export const MapProvider = (props) => {
         scenarioData,
         scenarioDialogMode,
         fetchedGeometryData,
+        setWaitingState,
+        snackbarOpen,
+        snackbarError,
+        snackbarSuccessMessage,
+        snackbarErrorMessage,
+        setSnackbarMessage,
+        handleSnackbarClose,
         triggerLoadGeometryData,
         handleRefresh,
         handleScenarioLoadClick,

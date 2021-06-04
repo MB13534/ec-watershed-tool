@@ -17,6 +17,8 @@ import { HourglassEmpty } from '@material-ui/icons';
 import ResultsPopupDetails from '../../components/Map/ResultsPopupDetails';
 import AnalyticsPopupDetails from '../../components/Map/AnalyticsPopupDetails';
 import MapLegend from '../../components/Map/MapLegend';
+import useFormSubmitStatus from '../../hooks/useFormSubmitStatus';
+import FormSnackbar from '../../components/FormSnackbar';
 
 // create page styles
 const useStyles = makeStyles((theme) => ({
@@ -127,7 +129,6 @@ const MapPage = () => {
       <div className={classes.root}>
         <MapDrawer setHasChanges={setHasChanges} handleRefresh={handleRefresh}/>
         <div className={classes.content}>
-
           <Box
             className={clsx(showQueryTooBigError ? classes.tooBigErrorFull : classes.tooBigErrorCollapsed, {
               [classes.tooBigErrorOpen]: showQueryTooBigError,
@@ -168,6 +169,13 @@ const MapPage = () => {
           </Box>
         </div>
       </div>
+      <FormSnackbar
+        open={map.snackbarOpen}
+        error={map.snackbarError}
+        handleClose={map.handleSnackbarClose}
+        successMessage={map.snackbarSuccessMessage}
+        errorMessage={map.snackbarErrorMessage}
+      />
     </MapLayout>
   );
 };

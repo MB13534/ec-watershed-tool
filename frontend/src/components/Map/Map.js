@@ -435,6 +435,27 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
     draw.deleteAll();
 
     draw.add(getFeatureGeometryObj(mapProvider.fetchedGeometryData));
+
+    async function saveDrawings() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        await axios.put(
+          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
+          { features: mapProvider.fetchedGeometryData },
+          { headers }
+        );
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+
+    saveDrawings();
   }, [mapProvider.fetchedGeometryData]); //eslint-disable-line
 
   useEffect(() => {
@@ -762,7 +783,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
       // setMapPopups((prevState) => [...prevState, popup]);
     }
 
-    if (typeof map !== 'undefined' && map !== null) {
+    if (typeof map !== 'undefined' && map !== null && mapProvider.mapMode === 'explore') {
       if (geometryData.length === 0) {
         mapProvider.handleControlsVisibility('dataViz', false);
       } else {
