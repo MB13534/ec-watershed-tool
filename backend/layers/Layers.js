@@ -395,6 +395,55 @@ const ParcelLayers = [
   },
 ];
 
+const ZoningLayers = [
+  {
+    id: 'zoning-info',
+    name: 'Zoning (Info)',
+    geometry_type: 'fill',
+    source: {
+      id: 'Zoning_EagleCounty-dc6gmx',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.3h6y8hlp',
+    },
+    drawOrder: 5,
+    legendOrder: 6,
+    enabled: false,
+    visible: false,
+    toggleGroup: 1,
+    popupType: 'table',
+    geometry_type_ndx: 3,
+    layer_categories: [3],
+    paint: {
+      ...defaultFillStyles,
+      'fill-color': 'white',
+      'fill-opacity': 0,
+      'fill-outline-color': 'black',
+    },
+  },
+  {
+    id: 'zoning',
+    name: 'Zoning',
+    geometry_type: 'line',
+    source: {
+      id: 'Zoning_EagleCounty-dc6gmx',
+      type: 'vector',
+      url: 'mapbox://ecwatershedtool.3h6y8hlp',
+    },
+    drawOrder: 5,
+    legendOrder: 5,
+    enabled: false,
+    visible: false,
+    toggleGroup: 1,
+    geometry_type_ndx: 2,
+    layer_categories: [3],
+    paint: {
+      ...defaultLineStyles,
+      'line-color': '#fffe8f',
+      'line-width': 1,
+    },
+  },
+];
+
 const StreamLayers = [];
 
 module.exports = {
