@@ -106,7 +106,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
       modes: Object.assign(MapboxDraw.modes, {
         draw_polygon: FreehandMode,
       }),
-    })
+    }),
   ); //eslint-disable-line
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [mapPopups, setMapPopups] = useState([]);
@@ -186,7 +186,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           await axios.put(
             `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
             { features: data.features },
-            { headers }
+            { headers },
           );
           setGeometryData(data.features);
         } catch (err) {
@@ -274,7 +274,9 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
 
   useEffect(() => {
     //if (geometryData.length > 0 && mapIsLoaded) {
-    draw.add(getFeatureGeometryObj(geometryData));
+    if (geometryData.length && geometryData[0].geometry !== null) {
+      draw.add(getFeatureGeometryObj(geometryData));
+    }
 
     if (map && mapIsLoaded) {
       map.off('click', setupPopups);
@@ -303,7 +305,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
               <Typography variant={'h5'} align={'center'}>
                 {data.location_1}
               </Typography>,
-              heading
+              heading,
             );
 
             let subheading = document.createElement('div');
@@ -311,7 +313,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
               <Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>
                 ({data.loc_type})
               </Typography>,
-              subheading
+              subheading,
             );
 
             let body = document.createElement('div');
@@ -319,20 +321,20 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
               <Typography variant={'body1'} align={'center'}>
                 {data.location_n}
               </Typography>,
-              body
+              body,
             );
 
             popup.setLngLat({ lng: data.loc_long, lat: data.loc_lat });
 
             popup.setHTML(
               '<div class="' +
-                classes.popupIcon +
-                '"> ' +
-                icon.innerHTML +
-                '</div>' +
-                heading.innerHTML +
-                subheading.innerHTML +
-                body.innerHTML
+              classes.popupIcon +
+              '"> ' +
+              icon.innerHTML +
+              '</div>' +
+              heading.innerHTML +
+              subheading.innerHTML +
+              body.innerHTML,
             );
 
             map.fire('mapPointClicked');
@@ -349,19 +351,19 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           } else if (layer && layer.popupType === 'table') {
             popup.setHTML(
               '<div class="' +
-                classes.popupWrap +
-                '"><h3>Properties</h3><table class="' +
-                classes.propTable +
-                '"><tbody>' +
-                Object.entries(pointFeatures[0].properties)
-                  .map(([k, v]) => {
-                    if (k === 'hlink' || k === 'URL') {
-                      return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
-                    }
-                    return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-                  })
-                  .join('') +
-                '</tbody></table></div>'
+              classes.popupWrap +
+              '"><h3>Properties</h3><table class="' +
+              classes.propTable +
+              '"><tbody>' +
+              Object.entries(pointFeatures[0].properties)
+                .map(([k, v]) => {
+                  if (k === 'hlink' || k === 'URL') {
+                    return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
+                  }
+                  return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+                })
+                .join('') +
+              '</tbody></table></div>',
             );
           } else {
             hasPopup = false;
@@ -423,6 +425,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
   }, [map, mapIsLoaded, visibleLayers]); //eslint-disable-line
 
   useEffect(() => {
+    console.log('SETTING GEOM DATA', geometryData);
     mapProvider.setGeometryData(geometryData);
   }, [geometryData]); //eslint-disable-line
 
@@ -434,7 +437,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
 
     draw.deleteAll();
 
-    draw.add(getFeatureGeometryObj(mapProvider.fetchedGeometryData));
+    //draw.add(getFeatureGeometryObj(mapProvider.fetchedGeometryData));
 
     async function saveDrawings() {
       try {
@@ -443,7 +446,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
         await axios.put(
           `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
           { features: mapProvider.fetchedGeometryData },
-          { headers }
+          { headers },
         );
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -768,7 +771,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
 
   const processQueryResults = () => {
     clearExistingPopups();
-    if (typeof map !== 'undefined' && map !== null && mapProvider.queryResults && geometryData.length > 0) {
+    if (typeof map !== 'undefined' && map !== null && mapProvider.queryResults && geometryData.length > 0 && geometryData[0].geometry !== null) {
       const center = turf.center(getFeatureGeometryObj(geometryData)).geometry.coordinates;
 
       const area = turf.area(draw.getAll());

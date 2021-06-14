@@ -8,10 +8,19 @@ import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import { checkActive } from '../../utils';
 import { useAuth0 } from '../../hooks/useAuth0';
-import { Menu } from '@material-ui/core';
+import { Box, Button, Grid, Menu } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import logo from '../../images/logo-ec.svg';
 import { useMap } from '../../pages/Map/MapProvider';
+import DateControl from '../DateControl';
+import { DatePicker } from '@lrewater/lre-react';
+import clsx from 'clsx';
+import SubmitIcon from '@material-ui/icons/Forward';
+import Flex from '../Flex/Flex';
+import useTheme from '@material-ui/core/styles/useTheme';
+import ScenarioDialog from '../ScenarioDialog/ScenarioDialog';
+import LoadIcon from '@material-ui/icons/Publish';
+import SaveIcon from '@material-ui/icons/Save';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,12 +79,28 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     cursor: 'pointer',
   },
+  subNav: {
+    backgroundColor: theme.palette.primary['50'],
+    borderBottom: `1px solid ${theme.palette.primary['100']}`,
+    '& .MuiOutlinedInput-input': {
+      padding: '10.5px 14px',
+    },
+    paddingLeft: '12px',
+    paddingRight: '12px',
+    justifyContent: 'space-between',
+  },
+  btn: {
+    margin: theme.spacing(1),
+    width: '95%',
+    marginRight: 0,
+  },
 }));
 
 const TopNav = (props) => {
   const classes = useStyles();
   let history = useHistory();
   const map = useMap();
+  const theme = useTheme();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -260,6 +285,87 @@ const TopNav = (props) => {
             </Link>
           )}
         </Toolbar>
+        {map.mapMode === 'analyze' && (
+          <Toolbar className={clsx(classes.subNav, 'subnav')}>
+            <Flex justifyContent={'flex-start'}>
+              <ScenarioDialog isOpen={map.scenarioDialogIsOpen} mode={map.scenarioDialogMode}/>
+              <Button
+                color="secondary"
+                variant="outlined"
+                disableElevation
+                onClick={map.handleScenarioLoadClick}
+                fullWidth
+                startIcon={<LoadIcon />}
+                style={{
+                  marginLeft: theme.spacing(0),
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Load Scenario
+              </Button>
+              <Button
+                color="secondary"
+                variant="outlined"
+                disableElevation
+                onClick={map.handleScenarioSaveClick}
+                fullWidth
+                startIcon={<SaveIcon />}
+                style={{
+                  marginLeft: theme.spacing(1),
+                }}
+              >
+                Save Scenario
+              </Button>
+            </Flex>
+            <Flex justifyContent={'flex-end'}>
+              <DatePicker
+                className={classes.picker}
+                name={'startDate'}
+                label={'Start Date'}
+                value={map.filters.startDate}
+                variant={'outlined'}
+                width={'100%'}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(event) => map.handleFilters('startDate', event.target.value, true)}
+                style={{
+                  backgroundColor: 'white',
+                  width: '100%'
+                }}
+              />
+              <DatePicker
+                className={classes.picker}
+                name={'endDate'}
+                label={'End Date'}
+                value={map.filters.endDate}
+                variant={'outlined'}
+                width={'100%'}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(event) => map.handleFilters('endDate', event.target.value, true)}
+                style={{
+                  backgroundColor: 'white',
+                  width: '100%',
+                  height: '40px',
+                  marginLeft: theme.spacing(1),
+                }}
+              />
+              <Button
+                color="secondary"
+                variant="contained"
+                disableElevation
+                onClick={map.handleControlsSubmit}
+                className={classes.btn}
+                startIcon={<SubmitIcon />}
+              >
+                Recalculate
+              </Button>
+            </Flex>
+
+          </Toolbar>
+        )}
       </AppBar>
     </div>
   );

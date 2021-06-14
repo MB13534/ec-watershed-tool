@@ -915,6 +915,62 @@ export const MapProvider = (props) => {
   };
   const onSearchValueChange = (val) => setSearchValue(val);
 
+  const updateVisibleLayers = (layers) => {
+
+    setFilteredLayers((prevState) => {
+      let newValues = [...prevState].map((d) => {
+        let rec = { ...d };
+        rec.visible = false;
+        rec.enabled = false;
+
+        layers.forEach(layer => {
+          if (rec.id === layer) {
+            rec.visible = true;
+            rec.enabled = true;
+          }
+        });
+
+        return rec;
+      });
+      return newValues;
+    });
+    setVisibleLayers((prevState) => {
+      let newValues = [...prevState].map((d) => {
+        let rec = { ...d };
+        rec.visible = false;
+        rec.enabled = false;
+
+        layers.forEach(layer => {
+          if (rec.id === layer) {
+            rec.visible = true;
+            rec.enabled = true;
+          }
+        });
+
+        return rec;
+      });
+      return newValues;
+    });
+    setLayers((prevState) => {
+      let newValues = [...prevState].map((d) => {
+        let rec = { ...d };
+        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+          rec.visible = false;
+          rec.enabled = false;
+
+          layers.forEach(layer => {
+            if (rec.id === layer) {
+              rec.visible = true;
+              rec.enabled = true;
+            }
+          });
+        }
+        return rec;
+      });
+      return newValues;
+    });
+  };
+
   return (
     <MapContext.Provider
       value={{
@@ -967,6 +1023,7 @@ export const MapProvider = (props) => {
         snackbarError,
         snackbarSuccessMessage,
         snackbarErrorMessage,
+        updateVisibleLayers,
         setSnackbarMessage,
         handleSnackbarClose,
         triggerLoadGeometryData,

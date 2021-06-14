@@ -13,7 +13,12 @@ router.use(checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUDIENCE));
 router.get(
   '/',
   (req, res, next) => {
-    UserScenarioModel.findAll()
+    UserScenarioModel.findAll({
+      where: {
+        auth0_sub: req.user.sub,
+      },
+      order: [['created_timestamp', 'DESC']]
+    })
       .then((data) => {
         res.json(data);
       })
@@ -28,7 +33,11 @@ router.get(
 router.get(
   '/:ndx',
   (req, res, next) => {
-    UserScenarioModel.findByPk(req.params.ndx)
+    UserScenarioModel.findByPk(req.params.ndx, {
+      where: {
+        auth0_sub: req.user.sub,
+      },
+    })
       .then((data) => {
         res.json(data);
       })

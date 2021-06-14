@@ -389,6 +389,7 @@ const Layers = [
     },
   },
   {
+    id: 'mine-discharge-stations',
     name: 'Mine Discharge Stations',
     geometry_type: 'circle',
     source: {
