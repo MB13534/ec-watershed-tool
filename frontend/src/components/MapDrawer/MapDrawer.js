@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
+  toolbar2: theme.mixins.toolbar,
   lreLogo: {
     display: "block",
     width: "100%",
@@ -126,6 +127,9 @@ const MapDrawer = ({
       }}
     >
       <div className={classes.toolbar} />
+      {mapProvider.mapMode === 'analyze' && (
+        <div className={classes.toolbar2} />
+      )}
       {controls.drawer.visible && (
         <div className={classes.drawerContainer}>
           {/*<DrawerTabs activeTab={activeTab} setActiveTab={setActiveTab} />*/}

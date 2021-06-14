@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       json_data: {
         type: TEXT,
       },
+      visible_layers: {
+        type: TEXT,
+      },
       start_date:{
         type: DATE,
       },

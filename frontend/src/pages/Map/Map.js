@@ -34,6 +34,12 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     marginTop: theme.mixins.toolbar,
   },
+  content2: {
+    flexGrow: 1,
+    overflow: 'hidden',
+    position: 'relative',
+    marginTop: '64px',
+  },
   boxFull: {
     width: 'calc(100% - 60px)',
   },
@@ -128,7 +134,7 @@ const MapPage = () => {
     <MapLayout>
       <div className={classes.root}>
         <MapDrawer setHasChanges={setHasChanges} handleRefresh={handleRefresh}/>
-        <div className={classes.content}>
+        <div className={map.mapMode === 'explore' ? classes.content : classes.content2}>
           <Box
             className={clsx(showQueryTooBigError ? classes.tooBigErrorFull : classes.tooBigErrorCollapsed, {
               [classes.tooBigErrorOpen]: showQueryTooBigError,
@@ -155,7 +161,7 @@ const MapPage = () => {
               [classes.boxClose]: !map.controls.dataViz.visible,
             })}
             ml="30px"
-            bottom="30px"
+            bottom={map.mapMode === 'explore' ? '30px' : '94px' }
             zIndex={1399}
             position="absolute"
           >

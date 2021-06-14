@@ -15,7 +15,7 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 import Paper from '@material-ui/core/Paper';
 import useTheme from '@material-ui/core/styles/useTheme';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -31,6 +31,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
+import Flex from '../Flex/Flex';
+import Grid from '@material-ui/core/Grid';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import { ExpandMore } from '@material-ui/icons';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
 
 const styles = (theme) => ({
   root: {
@@ -51,6 +57,28 @@ const useStyles = makeStyles(theme => ({
     margin: 0,
     minWidth: 120,
     width: '100%',
+  },
+  preview: {
+    '& li:first-child:not(.accordion)': {
+      border: 'none',
+      marginTop: 0,
+      paddingTop: 0,
+    },
+    '& li:not(.accordion)': {
+      marginTop: theme.spacing(1),
+      paddingTop: theme.spacing(1),
+      borderTop: '1px solid #ccc',
+    },
+    '& li:not(.accordion) span': {
+      backgroundColor: '#bbb',
+      color: 'white',
+      borderRadius: '4px',
+      padding: '2px 4px',
+      display: 'inline-block',
+      marginRight: '4px',
+      marginBottom: '4px',
+      fontSize: '12px',
+    },
   },
 }));
 
@@ -118,8 +146,9 @@ export default function CustomizedDialogs({
   const [errorMessage, setErrorMessage] = useState('');
   const [existingScenarioData, setExistingScenarioData] = useState([]);
   const [existingScenario, setExistingScenario] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     setOpen(isOpen);
     if (isOpen) {
       loadScenarios();
@@ -143,6 +172,8 @@ export default function CustomizedDialogs({
         } else {
           console.error(err);
         }
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -177,6 +208,7 @@ export default function CustomizedDialogs({
                 start_date: context.filters.startDate,
                 end_date: context.filters.endDate,
                 geometry: context.geometryData[0]?.geometry,
+                visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
               },
               { headers },
             );
@@ -215,6 +247,7 @@ export default function CustomizedDialogs({
               start_date: context.filters.startDate,
               end_date: context.filters.endDate,
               geometry: context.geometryData[0]?.geometry,
+              visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
             },
             { headers },
           );
@@ -303,8 +336,8 @@ export default function CustomizedDialogs({
           context.setFilters(JSON.parse(query.data.json_data));
           context.handleRefresh();
           context.setScenarioDialogIsOpen(false);
-          context.triggerLoadGeometryData([{geometry: query.data.geometry}]);
-          console.log('load success!');
+          context.triggerLoadGeometryData([{ geometry: query.data.geometry }]);
+          context.updateVisibleLayers(JSON.parse(query.data.visible_layers));
           context.setWaitingState('complete', 'no error');
         }
       } catch (err) {
@@ -323,7 +356,8 @@ export default function CustomizedDialogs({
 
   return (
     <div>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
+              style={{ marginTop: '128px' }}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           {mode.charAt(0).toUpperCase() + mode.slice(1)} Scenario
         </DialogTitle>
@@ -334,30 +368,66 @@ export default function CustomizedDialogs({
               <Tab label="Overwrite Existing Scenario" {...a11yProps(1)} />
             </Tabs>
             <TabPanel value={value} index={0}>
-              <Typography variant={'body1'}>Create a new scenario with the following data:</Typography>
-              <Paper style={{ backgroundColor: '#e0e0e0' }}>
-                <ul style={{ padding: theme.spacing(2), listStyleType: 'none' }}>
-                  <li><strong>Date
-                    Range:</strong> {moment(context.filters.startDate).format('l')} - {moment(context.filters.endDate).format('l')}
+              <Typography variant={'body1'} align={'center'} gutterBottom>Create a new scenario with the following
+                data:</Typography>
+              <TextField id="outlined-basic" label="Scenario Name" variant="outlined" value={scenarioName} fullWidth
+                         error={error} onChange={handleNameChange} style={{ marginTop: theme.spacing(1) }} />
+              {error && <Box pl={1} pr={1}><FormHelperText error>{errorMessage}</FormHelperText></Box>}
+              <Paper style={{ backgroundColor: '#e0e0e0', marginBottom: 0 }}>
+                <ul className={classes.preview}
+                    style={{ padding: theme.spacing(2), listStyleType: 'none', marginBottom: 0 }}>
+                  <li>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <strong>Analysis</strong><br />{context.filters.analysisType}
+                      </Grid>
+                      <Grid item xs={6}>
+                        <strong>Date
+                          Range</strong><br />{moment(context.filters.startDate).format('l')} - {moment(context.filters.endDate).format('l')}
+                      </Grid>
+                    </Grid>
                   </li>
-                  <li><strong>Analysis:</strong> {context.filters.analysisType}</li>
-                  <li><strong>Parameter Groups:</strong> {context.filters.priorities.join(', ')}</li>
-                  <li><strong>Categories:</strong> {context.filters.threats.join(', ')}</li>
-                  <li><strong>Parameters:</strong> {context.filters.parameters.join(', ')}</li>
+                  <li className={'accordion'} style={{ paddingTop: theme.spacing(1) }}>
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography className={classes.heading}>Scenario Details</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <ul style={{listStyleType: 'none', padding: 0}}>
+                          <li><strong>Parameter Groups</strong><br />{context.filters.priorities.map(x =>
+                            <span>{x}</span>)}</li>
+                          <li><strong>Categories</strong><br />{context.filters.threats.map(x => <span>{x}</span>)}</li>
+                          <li><strong>Parameters</strong><br />{context.filters.parameters.map(x => <span>{x}</span>)}
+                          </li>
+                          <li><strong>Visible
+                            Layers</strong><br />{Object.values(context.visibleLayers).filter(x => x.visible).map(x =>
+                            <span>{x.name}</span>)}</li>
+                        </ul>
+                      </AccordionDetails>
+                    </Accordion>
+                  </li>
                 </ul>
               </Paper>
-              <TextField id="outlined-basic" label="Scenario Name" variant="outlined" value={scenarioName} fullWidth
-                         error={error} onChange={handleNameChange} />
-              {error && <Box pl={1} pr={1}><FormHelperText error>{errorMessage}</FormHelperText></Box>}
             </TabPanel>
-            {existingScenarioData.length === 0 && (
+            {isLoading && (
+              <TabPanel value={value} index={1}>
+                <Typography variant={'body1'} align={'center'}>
+                  Loading, please wait...
+                </Typography>
+              </TabPanel>
+            )}
+            {!isLoading && existingScenarioData.length === 0 && (
               <TabPanel value={value} index={1}>
                 <Typography variant={'body1'} align={'center'}>
                   You do not have any existing scenarios saved.
                 </Typography>
               </TabPanel>
             )}
-            {existingScenarioData.length > 0 && (
+            {!isLoading && existingScenarioData.length > 0 && (
               <TabPanel value={value} index={1}>
                 <Typography variant={'body1'} gutterBottom>
                   Overwrite the following scenario:
@@ -383,12 +453,17 @@ export default function CustomizedDialogs({
         )}
         {mode === 'load' && (
           <DialogContent dividers>
-            {existingScenarioData.length === 0 && (
+            {isLoading && (
+              <Typography variant={'body1'} align={'center'}>
+                Loading, please wait...
+              </Typography>
+            )}
+            {!isLoading && existingScenarioData.length === 0 && (
               <Typography variant={'body1'} align={'center'}>
                 You do not have any existing scenarios saved.
               </Typography>
             )}
-            {existingScenarioData.length > 0 && (
+            {!isLoading && existingScenarioData.length > 0 && (
               <>
                 <Typography variant={'body1'} gutterBottom style={{ marginBottom: theme.spacing(2) }}>
                   Select a scenario to load:
@@ -423,7 +498,8 @@ export default function CustomizedDialogs({
                           <TableCell component="th" scope="row">
                             {row.name}
                           </TableCell>
-                          <TableCell align="right">{moment(row.created_timestamp).format('l')}</TableCell>
+                          <TableCell
+                            align="right">{moment(row.created_timestamp).tz('America/Denver').fromNow()}</TableCell>
                           <TableCell align="right">
                             <Button
                               variant={'contained'}

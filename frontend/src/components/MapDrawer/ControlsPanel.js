@@ -145,68 +145,6 @@ const ControlsPanel = ({}) => {
           />
         </div>
       </Box>
-      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <DateControl
-          name={'startDate'}
-          label={'Start Date'}
-          value={context.filters.startDate}
-          onChange={(event) => context.handleFilters('startDate', event.target.value, true)}
-        />
-      </Box>
-      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <DateControl
-          name={'endDate'}
-          label={'End Date'}
-          value={context.filters.endDate}
-          onChange={(event) => context.handleFilters('endDate', event.target.value, true)}
-        />
-      </Box>
-      <Box p={2} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <ScenarioDialog isOpen={context.scenarioDialogIsOpen} mode={context.scenarioDialogMode}/>
-        <label className={classes.label}>Scenarios</label>
-        <Box mb={1}>
-          <Grid container spacing={1}>
-            <Grid item xs={12} md={6}>
-              <Button
-                color="secondary"
-                variant="outlined"
-                disableElevation
-                onClick={context.handleScenarioLoadClick}
-                fullWidth
-                size="small"
-                startIcon={<LoadIcon />}
-              >
-                Load
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Button
-                color="secondary"
-                variant="outlined"
-                disableElevation
-                onClick={context.handleScenarioSaveClick}
-                fullWidth
-                size="small"
-                startIcon={<SaveIcon />}
-              >
-                Save
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-      <Box p={1} bgcolor="#f5f5f6" borderBottom="1px solid #dddddd">
-        <Button
-          color="secondary"
-          variant="contained"
-          disableElevation
-          onClick={context.handleControlsSubmit}
-          className={classes.btn}
-          startIcon={<SubmitIcon />}
-        >
-          Recalculate
-        </Button>
-      </Box>
     </div>
   );
 };
