@@ -72,6 +72,7 @@ router.put(
   (req, res, next) => {
     const body = req.body;
     body.auth0_sub = req.user.sub;
+    body.created_timestamp = new Date();
     UserScenarioModel.update(body, {
       where: {
         auth0_sub: req.user.sub,

@@ -134,7 +134,7 @@ const MapPage = () => {
     <MapLayout>
       <div className={classes.root}>
         <MapDrawer setHasChanges={setHasChanges} handleRefresh={handleRefresh}/>
-        <div className={map.mapMode === 'explore' ? classes.content : classes.content2}>
+        <div className={map.mapMode === 'explore' || map.mapMode === 'analyze' ? classes.content2 : classes.content}>
           <Box
             className={clsx(showQueryTooBigError ? classes.tooBigErrorFull : classes.tooBigErrorCollapsed, {
               [classes.tooBigErrorOpen]: showQueryTooBigError,
@@ -161,8 +161,8 @@ const MapPage = () => {
               [classes.boxClose]: !map.controls.dataViz.visible,
             })}
             ml="30px"
-            bottom={map.mapMode === 'explore' ? '30px' : '94px' }
-            zIndex={1399}
+            bottom={map.mapMode === 'explore' || map.mapMode === 'analyze' ? '94px' : '30px' }
+            zIndex={1200}
             position="absolute"
           >
             <Paper style={{ padding: 24, paddingTop: 8 }}>

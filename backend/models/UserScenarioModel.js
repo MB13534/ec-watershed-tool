@@ -15,6 +15,15 @@ module.exports = (sequelize, DataTypes) => {
       visible_layers: {
         type: TEXT,
       },
+      enabled_layers: {
+        type: TEXT,
+      },
+      // filter_layer_categories: {
+      //   type: TEXT,
+      // },
+      // filter_geometry_types: {
+      //   type: TEXT,
+      // },
       start_date:{
         type: DATE,
       },

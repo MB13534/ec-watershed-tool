@@ -209,6 +209,7 @@ export default function CustomizedDialogs({
                 end_date: context.filters.endDate,
                 geometry: context.geometryData[0]?.geometry,
                 visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
+                enabled_layers: JSON.stringify(context.layers.filter(x => x.enabled).map(x => x.id)),
               },
               { headers },
             );
@@ -248,6 +249,7 @@ export default function CustomizedDialogs({
               end_date: context.filters.endDate,
               geometry: context.geometryData[0]?.geometry,
               visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
+              enabled_layers: JSON.stringify(context.layers.filter(x => x.enabled).map(x => x.id)),
             },
             { headers },
           );
@@ -338,6 +340,7 @@ export default function CustomizedDialogs({
           context.setScenarioDialogIsOpen(false);
           context.triggerLoadGeometryData([{ geometry: query.data.geometry }]);
           context.updateVisibleLayers(JSON.parse(query.data.visible_layers));
+          context.updateEnabledLayers(JSON.parse(query.data.enabled_layers));
           context.setWaitingState('complete', 'no error');
         }
       } catch (err) {
@@ -474,7 +477,7 @@ export default function CustomizedDialogs({
                       <TableRow>
                         <TableCell></TableCell>
                         <TableCell>Name</TableCell>
-                        <TableCell align="right">Created</TableCell>
+                        <TableCell align="right">Saved</TableCell>
                         <TableCell align="right"></TableCell>
                       </TableRow>
                     </TableHead>

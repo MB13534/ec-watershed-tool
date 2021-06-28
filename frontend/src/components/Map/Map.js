@@ -822,6 +822,9 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           // rec.enabled = !rec.enabled;
           rec.visible = !rec.visible;
         }
+        if (!rec.visible && rec.enabled) {
+          console.log(rec.id);
+        }
         return rec;
       });
     });

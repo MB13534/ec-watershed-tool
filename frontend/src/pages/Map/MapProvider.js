@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useContext, useCallback, useLayoutEffect } from 'react';
-import matchSorter from "match-sorter";
+import React, { useContext, useEffect, useState } from 'react';
+import matchSorter from 'match-sorter';
 
-import useFetchData from "../../hooks/useFetchData";
+import useFetchData from '../../hooks/useFetchData';
 
-import StreetsImg from "../../images/streets.png";
-import OutdoorsImg from "../../images/outdoors.png";
-import SatelliteImg from "../../images/satellite.jpg";
+import StreetsImg from '../../images/streets.png';
+import OutdoorsImg from '../../images/outdoors.png';
+import SatelliteImg from '../../images/satellite.jpg';
 import axios from 'axios';
 import { useAuth0 } from '../../hooks/useAuth0';
-import debounce from 'lodash.debounce';
 import useFormSubmitStatus from '../../hooks/useFormSubmitStatus';
 
 /**
@@ -916,7 +915,6 @@ export const MapProvider = (props) => {
   const onSearchValueChange = (val) => setSearchValue(val);
 
   const updateVisibleLayers = (layers) => {
-
     setFilteredLayers((prevState) => {
       let newValues = [...prevState].map((d) => {
         let rec = { ...d };
@@ -968,6 +966,45 @@ export const MapProvider = (props) => {
         return rec;
       });
       return newValues;
+    });
+  };
+
+  const updateEnabledLayers = (layers) => {
+    if (!layers || layers.length === 0) return;
+    setFilteredLayers((prevState) => {
+      return [...prevState].map((d) => {
+        let rec = { ...d };
+        layers.forEach(layer => {
+          if (rec.id === layer) {
+            rec.enabled = true;
+          }
+        });
+        return rec;
+      });
+    });
+    setVisibleLayers((prevState) => {
+      return [...prevState].map((d) => {
+        let rec = { ...d };
+        layers.forEach(layer => {
+          if (rec.id === layer) {
+            rec.enabled = true;
+          }
+        });
+        return rec;
+      });
+    });
+    setLayers((prevState) => {
+      return [...prevState].map((d) => {
+        let rec = { ...d };
+        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+          layers.forEach(layer => {
+            if (rec.id === layer) {
+              rec.enabled = true;
+            }
+          });
+        }
+        return rec;
+      });
     });
   };
 
@@ -1024,6 +1061,7 @@ export const MapProvider = (props) => {
         snackbarSuccessMessage,
         snackbarErrorMessage,
         updateVisibleLayers,
+        updateEnabledLayers,
         setSnackbarMessage,
         handleSnackbarClose,
         triggerLoadGeometryData,

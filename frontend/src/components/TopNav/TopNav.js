@@ -285,7 +285,7 @@ const TopNav = (props) => {
             </Link>
           )}
         </Toolbar>
-        {map.mapMode === 'analyze' && (
+        {(map.mapMode === 'analyze' || map.mapMode === 'explore') && (
           <Toolbar className={clsx(classes.subNav, 'subnav')}>
             <Flex justifyContent={'flex-start'}>
               <ScenarioDialog isOpen={map.scenarioDialogIsOpen} mode={map.scenarioDialogMode}/>
@@ -317,6 +317,7 @@ const TopNav = (props) => {
                 Save Scenario
               </Button>
             </Flex>
+            {(map.mapMode === 'analyze') && (
             <Flex justifyContent={'flex-end'}>
               <DatePicker
                 className={classes.picker}
@@ -363,7 +364,7 @@ const TopNav = (props) => {
                 Recalculate
               </Button>
             </Flex>
-
+            )}
           </Toolbar>
         )}
       </AppBar>

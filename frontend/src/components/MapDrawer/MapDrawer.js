@@ -127,7 +127,7 @@ const MapDrawer = ({
       }}
     >
       <div className={classes.toolbar} />
-      {mapProvider.mapMode === 'analyze' && (
+      {(mapProvider.mapMode === 'analyze' || mapProvider.mapMode === 'explore') && (
         <div className={classes.toolbar2} />
       )}
       {controls.drawer.visible && (
