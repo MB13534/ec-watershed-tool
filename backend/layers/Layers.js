@@ -777,7 +777,7 @@ const Layers = [
     visible: false,
     popupType: 'table',
     geometry_type_ndx: 2,
-    layer_categories: [1,3],
+    layer_categories: [2,4],
     paint: {
       ...defaultCircleStyles,
       'circle-radius': 4,
