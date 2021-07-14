@@ -983,6 +983,7 @@ const Layers = [
     legendOrder: 35,
     enabled: false,
     visible: false,
+    popupType: 'table',
     toggleGroup: 1,
     geometry_type_ndx: 1,
     layer_categories: [2],
