@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const { TEXT, REAL } = DataTypes
   const Model = sequelize.define(
-    'results',
+    'results_OLD',
     {
       table_label: {
         type: TEXT,
