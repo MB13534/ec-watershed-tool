@@ -832,7 +832,7 @@ const Layers = [
       'circle-stroke-width': 1,
     },
   },
-  {
+//  {
 //    id: 'epa-frs-wtp',
 //    name: 'WTP/WWTF',
 //    geometry_type: 'circle',
