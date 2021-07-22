@@ -1,6 +1,7 @@
 const express = require('express');
 const { checkAccessToken } = require('../middleware/auth.js');
-const { UserGeometryModel, GisUserIntersectLandUseModel, GisUserIntersectStationsModel } = require('../models');
+const { UserGeometryModel, GisUserIntersectLandUseModel, GisUserIntersectStationsModel, GisUserIntersectParcelsModel } = require('../models');
+const { sequelize } = require("../models/index.js");
 
 // Create Express Router
 const router = express.Router();
@@ -60,6 +61,9 @@ router.get('/landuse', (req, res, next) => {
     where: {
       userid: req.user.sub,
     },
+    order: [
+      [ sequelize.cast(sequelize.fn('replace', sequelize.col('pct_of_total'), '%', ''), 'REAL') , 'DESC' ]
+    ]
   })
     .then((data) => {
       res.json(data);
@@ -77,6 +81,25 @@ router.get('/stations', (req, res, next) => {
     where: {
       userid: req.user.sub,
     },
+  })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+/**
+ * GET /api/user-geometry/parcels
+ */
+router.get('/parcels', (req, res, next) => {
+  GisUserIntersectParcelsModel.findAll({
+    where: {
+      userid: req.user.sub,
+    },
+    order: [['parcel_id', 'ASC']],
+    limit: 100
   })
     .then((data) => {
       res.json(data);

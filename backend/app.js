@@ -24,7 +24,6 @@ app.use("/api/user-scenario", require("./routes/UserScenarioRoutes"));
 app.use("/api/controls-list-param", require("./routes/ControlsListParamRoutes"));
 app.use("/api/monitoring-point", require("./routes/MonitoringPointRoutes"));
 app.use("/api/landing-controls", require("./routes/LandingControlsRoutes"));
-app.use("/api/results", require("./routes/ResultsRoutes"));
 app.use("/api/functions", require("./routes/FunctionRoutes"));
 app.use("/api/list-inputs", require("./routes/ListInputsRoutes"));
 app.use("/api/list-input-types", require("./routes/ListInputTypesRoutes"));

@@ -5,7 +5,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import DetailsIcon from '@material-ui/icons/ListAlt';
 import LandUseIcon from '@material-ui/icons/Terrain';
-import ParcelsIcon from '@material-ui/icons/PhotoSizeSelectSmall';
 import AqVulnIcon from '@material-ui/icons/Waves';
 import RoomIcon from '@material-ui/icons/Room';
 import Typography from '@material-ui/core/Typography';
@@ -17,14 +16,21 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
-import Grid from '@material-ui/core/Grid';
 import useTheme from '@material-ui/core/styles/useTheme';
-import { colors } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import { useMap } from '../../pages/Map/MapProvider';
 import Icon from '@material-ui/core/Icon';
-import ResultsPopupDetails from './ResultsPopupDetails';
-import Button from '@material-ui/core/Button';
+import ParcelsIcon from '@material-ui/icons/PhotoSizeSelectSmall';
+import clsx from 'clsx';
+import { HourglassEmpty } from '@material-ui/icons';
+import Alert from '@material-ui/lab/Alert';
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import Collapse from '@material-ui/core/Collapse';
+import Grid from '@material-ui/core/Grid';
+import { colors } from '@material-ui/core';
+import HSBar from 'react-horizontal-stacked-bar-chart';
+import numbro from 'numbro';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,10 +41,11 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`scrollable-force-tabpanel-${index}`}
       aria-labelledby={`scrollable-force-tab-${index}`}
+      style={{ position: 'relative', minHeight: '100px' }}
       {...other}
     >
       {value === index && (
-        <Box pt={2}>
+        <Box mt={2}>
           {children}
         </Box>
       )}
@@ -64,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+    position: 'relative',
   },
   circle: {
     width: '30px',
@@ -82,6 +90,47 @@ const useStyles = makeStyles((theme) => ({
     color: '#555',
     borderRadius: '5px',
   },
+  queryLoadingFull: {
+    width: 'calc(100% - 120px - 20px)',
+    marginTop: 'calc(64px + 10px)',
+    '& .MuiAlert-root': {
+      backgroundColor: 'rgba(255,255,255,.85)',
+    },
+  },
+  queryLoadingOpen: {
+    height: 'auto',
+    maxHeight: '400px',
+    width: '180px',
+    top: 'calc(50% - 35px)',
+    left: 'calc(50% - 90px)',
+    margin: 0,
+    transition: theme.transitions.create('max-height', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  overlayBg: {
+    background: 'rgba(0,0,0,.12)',
+    backgroundSize: 'cover',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    zIndex: 1300,
+    borderRadius: '4px',
+  },
+  colorPreviewBlock: {
+    width: '20px',
+    height: '20px',
+    marginRight: '8px',
+    display: 'inline-block',
+    verticalAlign: 'top',
+    borderRadius: '4px',
+  },
+  hsBar: {
+    borderTopLeftRadius: '4px',
+    borderTopRightRadius: '4px',
+    overflow: 'hidden',
+  }
 }));
 
 export default function AnalyticsPopupDetails({ map }) {
@@ -115,11 +164,13 @@ export default function AnalyticsPopupDetails({ map }) {
   };
 
   useEffect(() => {
-    map.map.on('mapPointClicked', () => {
-      setValue(0);
-      map.setMapMode('analyze');
-    });
-  }, []);
+    if (map && map.map) {
+      map.map.on('mapPointClicked', () => {
+        setValue(0);
+        map.setMapMode('analyze');
+      });
+    }
+  }, [map]);
 
   const setTrendIcon = (trend) => {
     const val = trend ? trend.toLowerCase() : '';
@@ -145,6 +196,61 @@ export default function AnalyticsPopupDetails({ map }) {
     }
   }, [map.mapMode]);
 
+  const Loader = () => (
+    <div className={classes.loader}>
+      <div className={clsx(classes.overlayBg)}>
+        <Box
+          className={clsx(classes.queryLoadingFull, classes.queryLoadingOpen)}
+          ml="60px"
+          top="60px"
+          zIndex={1400}
+          position="absolute"
+        >
+          <Alert severity="info" icon={<HourglassEmpty
+            style={{
+              width: '1.7em',
+              height: '1.7em',
+              animation: 'rotation 2s infinite linear',
+            }}
+          />}>
+            <span><strong style={{ fontSize: '16px' }}>Loading</strong><br />Please wait... &nbsp; </span>
+          </Alert>
+        </Box>
+      </div>
+    </div>
+  );
+
+  const barChartColors = [
+    { name: 'Agricultural Land', color: colors.green[400] },
+    { name: 'Barren Land', color: colors.grey[400], },
+    { name: 'Forest Land', color: colors.green[800] },
+    { name: 'Rangeland', color: colors.yellow[400] },
+    { name: 'Tundra', color: colors.orange[200] },
+    { name: 'Urban or Built-Up Land', color: colors.purple[400] },
+    { name: 'Water', color: colors.blue[800] },
+    { name: 'Wetland', color: colors.blue[300] },
+  ];
+
+  const fallbackBarChartColors = [
+    colors.purple[800],
+    colors.purple[500],
+    colors.purple[200],
+    colors.orange[800],
+    colors.orange[500],
+    colors.indigo[800],
+    colors.indigo[500],
+    colors.indigo[200],
+    colors.blue[800],
+    colors.blue[500],
+    colors.blue[200],
+  ];
+
+  const getChartColorByName = (name, index) => {
+    let color = barChartColors.filter(x => x.name === name)?.[0]?.color;
+    if (!color) color = fallbackBarChartColors[index];
+    return color;
+  };
+
   return (
     <div className={classes.root}>
       <Tabs
@@ -155,10 +261,16 @@ export default function AnalyticsPopupDetails({ map }) {
         textColor="primary"
         aria-label="scrollable force tabs example"
       >
-            <Tab label="Stats & Benchmarks" style={{display: map.mapMode === 'analyze' ? 'block' : 'none'}} icon={<DetailsIcon />} {...a11yProps(0)} />
-            <Tab label="Land Use" style={{display: map.mapMode === 'explore' ? 'block' : 'none'}} icon={<LandUseIcon />} {...a11yProps(1)} />
-            <Tab label="Monitoring Locations" style={{display: map.mapMode === 'explore' ? 'block' : 'none'}} icon={<AqVulnIcon />} {...a11yProps(2)} />
-            <Tab label="Nearby Results" style={{display: map.mapMode === 'analyze' ? 'block' : 'none'}} icon={<RoomIcon />} {...a11yProps(3)} />
+        <Tab label="Stats & Benchmarks" style={{ display: map.mapMode === 'analyze' ? 'block' : 'none' }}
+             icon={<DetailsIcon />} {...a11yProps(0)} />
+        <Tab label="Land Use" style={{ display: map.mapMode === 'explore' ? 'block' : 'none' }}
+             icon={<LandUseIcon />} {...a11yProps(1)} />
+        <Tab label="Monitoring Locations" style={{ display: map.mapMode === 'explore' ? 'block' : 'none' }}
+             icon={<AqVulnIcon />} {...a11yProps(2)} />
+        <Tab label="Nearby Results" style={{ display: map.mapMode === 'analyze' ? 'block' : 'none' }}
+             icon={<RoomIcon />} {...a11yProps(3)} />
+        <Tab label="Parcels" style={{ display: map.mapMode === 'explore' ? 'block' : 'none' }}
+             icon={<ParcelsIcon />} {...a11yProps(4)} />
 
       </Tabs>
       <TabPanel value={value} index={0}>
@@ -226,60 +338,94 @@ export default function AnalyticsPopupDetails({ map }) {
         </Paper>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Divider />
+        {(map.isLandUseDataLoading) && (
+          <Loader />
+        )}
         <Paper>
           {(!map.geometryData.length) &&
           <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>Please draw
             an area to intersect on the map above.</Typography>
           }
-          {(map.landUseData && map.geometryData.length > 0) &&
-          <TableContainer style={{
-            overflowY: 'scroll',
-            maxHeight: '201px',
-          }}>
-            <Table className={classes.table} size="small" aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Land Cover Type</TableCell>
-                  <TableCell>Acres</TableCell>
-                  <TableCell>Total Acres Selected</TableCell>
-                  <TableCell>% of Total</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {map.landUseData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell component="th" scope="row">
-                      {row.use_new}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.acres}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.total_acres}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.pct_of_total}
-                    </TableCell>
+          {(!map.isLandUseDataLoading && map.geometryData && map.geometryData.length > 0 && !map.landUseData.length) && (
+            <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>No land use data found within the query area.</Typography>
+          )}
+          {(map.landUseData && map.landUseData.length > 0 && map.geometryData.length > 0) &&
+          <>
+            <div className={classes.hsBar}>
+              <HSBar
+                data={
+                  map.landUseData.map((row, index) => {
+                    return {
+                      value: parseFloat(row.pct_of_total),
+                      color: getChartColorByName(row.use_new, index),
+                      description: `${row.use_new} (${row.pct_of_total})`,
+                    };
+                  })
+                }
+              />
+            </div>
+            <TableContainer style={{
+              overflowY: 'scroll',
+              maxHeight: '230px',
+            }}>
+              <Table className={classes.table} size="small" aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Land Cover Type</TableCell>
+                    <TableCell>Acres</TableCell>
+                    <TableCell>Total Acres Selected</TableCell>
+                    <TableCell>% of Total</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {map.landUseData.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          <div className={classes.colorPreviewBlock} style={{ backgroundColor: getChartColorByName(row.use_new, index) }} />
+                          {row.use_new}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {numbro(parseFloat(row.acres)).format({ thousandSeparated: true })}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {numbro(parseInt(row.total_acres)).format({ thousandSeparated: true })}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {row.pct_of_total}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
           }
         </Paper>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Divider />
+        {(map.isMonitoringLocationDataLoading) && (
+          <Loader />
+        )}
         <Paper>
           {(!map.geometryData.length) &&
           <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>Please draw
             an area to intersect on the map above.</Typography>
           }
-          {(map.stationData && map.geometryData.length > 0) &&
+          {(!map.isMonitoringLocationDataLoading && map.geometryData && map.geometryData.length > 0 && !map.stationData.length) && (
+            <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>No monitoring location data found within the query area.</Typography>
+          )}
+          {(map.stationData && map.stationData.length > 0 && map.geometryData.length > 0) &&
           <TableContainer style={{
             overflowY: 'scroll',
-            maxHeight: '201px',
+            maxHeight: '230px',
           }}>
             <Table className={classes.table} size="small" aria-label="simple table">
               <TableHead>
@@ -287,30 +433,13 @@ export default function AnalyticsPopupDetails({ map }) {
                   <TableCell>Name</TableCell>
                   <TableCell>Type</TableCell>
                   <TableCell>HUC 12</TableCell>
-                  <TableCell>Period of Record</TableCell>
-                  <TableCell>Available Parameters</TableCell>
+                  <TableCell title={'Period of Record'}>POR</TableCell>
+                  <TableCell>Details</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {map.stationData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell component="th" scope="row">
-                      <strong>{row.location_id}</strong><br />
-                      {row.location_name}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.loc_type}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.huc_name}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.por}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {row.params_c}
-                    </TableCell>
-                  </TableRow>
+                {map.stationData.map((station, index) => (
+                  <StationTableRow row={station} key={index} />
                 ))}
               </TableBody>
             </Table>
@@ -328,7 +457,7 @@ export default function AnalyticsPopupDetails({ map }) {
           {(map.renderedPointData) &&
           <TableContainer style={{
             overflowY: 'scroll',
-            maxHeight: '201px',
+            maxHeight: '230px',
           }}>
             <Table className={classes.table} size="small" aria-label="simple table">
               <TableHead>
@@ -383,6 +512,148 @@ export default function AnalyticsPopupDetails({ map }) {
           }
         </Paper>
       </TabPanel>
+      <TabPanel value={value} index={4}>
+        {(map.isParcelDataLoading) && (
+          <Loader />
+        )}
+        <Paper>
+          {(!map.geometryData.length) && (
+            <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>Please
+              draw
+              an area to intersect on the map above.</Typography>
+          )}
+          {(!map.isParcelDataLoading && map.geometryData && map.geometryData.length > 0 && !map.parcelData.length) && (
+            <Typography variant={'body1'} align={'center'} style={{ margin: '20px auto', padding: '20px 0' }}>No parcel data found within the query area.</Typography>
+          )}
+          {(map.parcelData && map.parcelData.length > 0 && map.geometryData.length > 0) && (
+            <TableContainer style={{
+              overflowY: 'scroll',
+              maxHeight: '201px',
+            }}>
+              <Table className={classes.table} size="small" aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Parcel Id</TableCell>
+                    <TableCell>Schedule #</TableCell>
+                    <TableCell>Acres</TableCell>
+                    <TableCell>Link</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {map.parcelData.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {row.parcel_id}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {row.schedule_n}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          {numbro(parseFloat(row.acres)).format({ thousandSeparated: true })}
+                        </Typography>
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography variant={'caption'}>
+                          <a href={row.url} target={'_blank'}>View</a>
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Paper>
+        {(map.parcelData && map.geometryData.length > 0 && map.parcelData.length >= 100) && (
+          <Typography variant='caption' align={'center'} style={{ display: 'block', marginTop: '4px' }}>Note: Results
+            limited to 100 parcels. Reduce query area for more precise results.</Typography>
+        )}
+      </TabPanel>
     </div>
+  );
+}
+
+const useRowStyles = makeStyles((theme) => ({
+  root: {
+    '& > *': {
+      //borderBottom: 'unset',
+    },
+  },
+  bookingDetails: {
+    color: 'black',
+    '& span': {
+      color: '#666',
+    },
+  },
+  badge: {
+    display: 'inline-block',
+    padding: '4px',
+    margin: '0 4px 4px 0',
+    backgroundColor: '#ccc',
+    color: '#555',
+    borderRadius: '5px',
+  },
+}));
+
+function StationTableRow(props) {
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+  const classes = useRowStyles();
+  const theme = useTheme();
+
+  return (
+    <React.Fragment>
+      <TableRow className={classes.root}>
+        <TableCell component="th" scope="row">
+          <Typography variant={'caption'}>
+            <strong>{row.location_id}</strong><br />
+            {row.location_name}
+          </Typography>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Typography variant={'caption'}>
+            {row.loc_type}
+          </Typography>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Typography variant={'caption'}>
+            {row.huc_name}
+          </Typography>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <Typography variant={'caption'}>
+            <span style={{whiteSpace: 'nowrap'}}>{row.por.split(' - ')[0]} -</span><br/><span style={{whiteSpace: 'nowrap'}}>{row.por.split(' - ')[1]}</span>
+          </Typography>
+        </TableCell>
+        <TableCell align={'right'}>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <TableRow style={{ backgroundColor: '#eee' }}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <Grid container spacing={2} className={classes.bookingDetails}>
+                <Grid item md={12}>
+                  <Typography variant="caption" gutterBottom>
+                    <strong>Available Parameters</strong><br />
+                    {row.params_c.split(', ').map((x, i) =>
+                      <div key={i} className={classes.badge}>{x}</div>,
+                    )}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
   );
 }

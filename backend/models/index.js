@@ -64,11 +64,6 @@ db.ControlsListParam2Model = require("./ControlsListParam2Model")(sequelize, Seq
 db.ControlsListParam3Model = require("./ControlsListParam3Model")(sequelize, Sequelize);
 db.ControlsListParamCustomModel = require("./ControlsListParamCustomModel")(sequelize, Sequelize);
 db.LandingControlsModel = require("./LandingControlsModel")(sequelize, Sequelize);
-db.ResultsModel = require("./ResultsModel")(sequelize, Sequelize);
-db.ResultsDetailsModel = require("./ResultsDetailsModel")(sequelize, Sequelize);
-db.ResultsDetailsParcelsModel = require("./ResultsDetailsParcelsModel")(sequelize, Sequelize);
-db.ResultsDetailsAqVulnModel = require("./ResultsDetailsAqVulnModel")(sequelize, Sequelize);
-db.ResultsDetailsLandUseModel = require("./ResultsDetailsLandUseModel")(sequelize, Sequelize);
 db.ListInputsModel = require("./ListInputsModel")(sequelize, Sequelize);
 db.ListInputTypesModel = require("./ListInputTypesModel")(sequelize, Sequelize);
 db.ListInputBinsModel = require("./ListInputBinsModel")(sequelize, Sequelize);
@@ -82,6 +77,7 @@ db.DynamicFinalForPortalPointsModel = require("./DynamicFinalForPortalPointsMode
 db.DynamicFinalForPortalTableModel = require("./DynamicFinalForPortalTableModel")(sequelize, Sequelize);
 db.GisUserIntersectLandUseModel = require("./GisUserIntersectLandUseModel")(sequelize, Sequelize);
 db.GisUserIntersectStationsModel = require("./GisUserIntersectStationsModel")(sequelize, Sequelize);
+db.GisUserIntersectParcelsModel = require("./GisUserIntersectParcelsModel")(sequelize, Sequelize);
 
 Sequelize.postgres.DECIMAL.parse = function (value) {
   return parseFloat(value);

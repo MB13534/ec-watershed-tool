@@ -1,18 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Drawer, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import HideIcon from '@material-ui/icons/VisibilityOff';
-import DrawerTabs from '../DrawerTabs/DrawerTabs';
 import DrawerTabPanel from '../DrawerTabPanel/DrawerTabPanel';
 import { MapContext, useMap } from '../../pages/Map/MapProvider';
 import LayersPanel from './LayersPanel';
 import ControlsPanel from './ControlsPanel';
-import useFetchData from '../../hooks/useFetchData';
-import axios from 'axios';
-import { useAuth0 } from '../../hooks/useAuth0';
-//import lreLogo from '../../images/lre-logo-grey.png';
 
 const drawerWidth = 340;
 
@@ -73,14 +68,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MapDrawer = ({
-                     setHasChanges = () => {},
-                     handleRefresh,
-}) => {
+const MapDrawer = () => {
   const classes = useStyles();
   const mapProvider = useMap();
 
-  const { getTokenSilently } = useAuth0();
   const {
     controls,
     handleControlsVisibility,
@@ -98,18 +89,6 @@ const MapDrawer = ({
       setActiveTab(1);
     }
   }, [mapProvider.mapMode]);
-
-  useEffect(() => {
-    fetchNewQueryResults();
-  }, [mapProvider.geometryData, handleRefresh]); // eslint-disable-line
-
-  const fetchNewQueryResults = async () => {
-    const token = await getTokenSilently();
-    const headers = { Authorization: `Bearer ${token}` };
-    const { data: results } = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/results`, { headers});
-
-    mapProvider.setQueryResults(results);
-  }
 
   return (
     <Drawer
@@ -155,14 +134,6 @@ const MapDrawer = ({
           </Button>
           {/* Necessary to create padding below btn */}
           <div className={classes.toolbar} />
-          {/*<a
-            href="https://lrewater.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={classes.lreLogo}
-          >
-            <img src={lreLogo} alt="LRE Water"/>
-          </a>*/}
         </>
       ) : (
         <IconButton onClick={() => handleControlsVisibility('drawer', true)}>

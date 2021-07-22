@@ -1,31 +1,31 @@
 module.exports = (sequelize, DataTypes) => {
-  const { TEXT } = DataTypes
+  const { TEXT, REAL } = DataTypes;
   const Model = sequelize.define(
-    'results_details_parcels',
+    "gis_userintersect_parcels",
     {
       userid: {
         type: TEXT,
-        primaryKey: true
+        primaryKey: true,
       },
       parcel_id: {
         type: TEXT,
+      },
+      acres: {
+        type: REAL,
+      },
+      schedule_n: {
+        type: TEXT,
         primaryKey: true,
       },
-      own_name: {
-        type: TEXT,
-      },
-      tenant_nam: {
-        type: TEXT,
-      },
-      cert_doc: {
+      url: {
         type: TEXT,
       },
     },
     {
       timestamps: false,
-      schema: 'web',
+      schema: "analysis",
       freezeTableName: true,
-    },
-  )
-  return Model
-}
+    }
+  );
+  return Model;
+};

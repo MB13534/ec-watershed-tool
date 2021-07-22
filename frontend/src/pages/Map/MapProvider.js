@@ -255,6 +255,7 @@ export const MapProvider = (props) => {
   const [geometryData, setGeometryData] = useState();
   const [landUseData, setLandUseData] = useState();
   const [stationData, setStationData] = useState();
+  const [parcelData, setParcelData] = useState();
   const [currentLocationData, setCurrentLocationData] = useState();
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
@@ -573,6 +574,7 @@ export const MapProvider = (props) => {
         fetchMonitoringPointData();
         fetchLandUseData();
         fetchStationData();
+        fetchParcelData();
         fetchAnalyticsTableForLocation();
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -626,6 +628,7 @@ export const MapProvider = (props) => {
       fetchMonitoringPointData();
       fetchLandUseData();
       fetchStationData();
+      fetchParcelData();
     }
   }, [kickoff, parameters, filters.parameters]);
 
@@ -643,6 +646,7 @@ export const MapProvider = (props) => {
   useEffect(() => {
     fetchLandUseData();
     fetchStationData();
+    fetchParcelData();
   }, [geometryData]);
 
   const fetchMonitoringPointData = () => {
@@ -753,7 +757,12 @@ export const MapProvider = (props) => {
     setRenderedPointData(features);
   }
 
+  const [isLandUseDataLoading, setIsLandUseDataLoading] = useState(false);
+  const [isMonitoringLocationDataLoading, setIsMonitoringLocationDataLoading] = useState(false);
+  const [isParcelDataLoading, setIsParcelDataLoading] = useState(false);
+
   const fetchLandUseData = () => {
+    setIsLandUseDataLoading(true);
     async function send() {
       try {
         const token = await getTokenSilently();
@@ -770,12 +779,15 @@ export const MapProvider = (props) => {
         } else {
           console.error(err);
         }
+      } finally {
+        setIsLandUseDataLoading(false);
       }
     }
     send();
   }
 
   const fetchStationData = () => {
+    setIsMonitoringLocationDataLoading(true);
     async function send() {
       try {
         const token = await getTokenSilently();
@@ -792,6 +804,33 @@ export const MapProvider = (props) => {
         } else {
           console.error(err);
         }
+      } finally {
+        setIsMonitoringLocationDataLoading(false);
+      }
+    }
+    send();
+  }
+
+  const fetchParcelData = () => {
+    setIsParcelDataLoading(true);
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        let query = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/parcels`,
+          { headers }
+        );
+        setParcelData(query.data);
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      } finally {
+        setIsParcelDataLoading(false);
       }
     }
     send();
@@ -1023,6 +1062,7 @@ export const MapProvider = (props) => {
         setGeometryData,
         landUseData,
         stationData,
+        parcelData,
         controls,
         activeZoomToLayer,
         activeBasemap,
@@ -1060,6 +1100,9 @@ export const MapProvider = (props) => {
         snackbarError,
         snackbarSuccessMessage,
         snackbarErrorMessage,
+        isLandUseDataLoading,
+        isMonitoringLocationDataLoading,
+        isParcelDataLoading,
         updateVisibleLayers,
         updateEnabledLayers,
         setSnackbarMessage,

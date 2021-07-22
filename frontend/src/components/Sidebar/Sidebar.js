@@ -14,7 +14,6 @@ import AccountIcon from "@material-ui/icons/AccountCircle";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import MapIcon from "@material-ui/icons/LocationOn";
-import StorageIcon from "@material-ui/icons/Storage";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";

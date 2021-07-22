@@ -3,7 +3,6 @@ import ReactDOMServer from 'react-dom/server';
 import ReactDOM from 'react-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAuth0 } from '../../hooks/useAuth0';
-import useFetchData from '../../hooks/useFetchData';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -22,7 +21,6 @@ import InitiateDrawingControl from '../InitiateDrawingControl';
 import PopupControl from '../PopupControl';
 import ResetZoomControl from './ResetZoom';
 import RoomIcon from '@material-ui/icons/Room';
-import Button from '@material-ui/core/Button';
 import LegendControl from '../LegendControl';
 
 const turf = require('@turf/turf');
@@ -74,7 +72,7 @@ const useStyles = makeStyles(theme => ({
 
 let counter = 0;
 
-const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleRefresh }) => {
+const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
   const classes = useStyles();
   const { getTokenSilently } = useAuth0();
   const {
@@ -95,6 +93,7 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
   } = useContext(MapContext);
   const mapProvider = useMap();
   const mapContainer = useRef(null); // create a reference to the map container
+
   const [draw, setDraw] = useState(
     new MapboxDraw({
       // eslint-disable-line
@@ -146,6 +145,9 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
     map.on('draw.create', () => {
       removeExistingDrawings();
       updateDrawings();
+      setTimeout(() => {
+        draw.changeMode('simple_select');
+      }, 50);
     });
 
     map.on('draw.delete', updateDrawings);
@@ -416,7 +418,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           if (hasPopup) popup.addTo(map);
 
           map.on('closeAllPopups', () => {
-            console.log('closingallpopups');
             popup.remove();
           });
         }
@@ -425,15 +426,12 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
   }, [map, mapIsLoaded, visibleLayers]); //eslint-disable-line
 
   useEffect(() => {
-    console.log('SETTING GEOM DATA', geometryData);
     mapProvider.setGeometryData(geometryData);
   }, [geometryData]); //eslint-disable-line
 
 
   useEffect(() => {
     setGeometryData(mapProvider.fetchedGeometryData);
-    console.log('setting geo data to ');
-    console.log(mapProvider.fetchedGeometryData);
 
     draw.deleteAll();
 
@@ -525,7 +523,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           }
           return layer;
         });
-        console.log('style loaded');
       });
     }
   }, [activeBasemap, map]); //eslint-disable-line
@@ -551,7 +548,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           visibleLayers
             .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
             .map(layer => {
-              console.log('adding layer', layer);
               if (!map.getSource(`${layer.name}-source`) && layer.paint !== null) {
                 if (layer.source.type === 'vector') {
                   map.addSource(`${layer.name}-source`, {
@@ -596,7 +592,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
                   delete newLayer.paint;
                 }
 
-                console.log('adding layer ' + layer.name + ' with visible of ' + layer.visible);
                 map.addLayer(newLayer);
               }
               return layer;
@@ -639,10 +634,8 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           });
 
           map.fire('zoom');
-          console.log('loaded map with ' + visibleLayers.length + ' visible layers');
           //map.setStyle(activeBasemap.styleURL);
 
-          console.log('visibleLayers before setting visibility', visibleLayers);
           visibleLayers.map(layer => {
             if (map.getSource(`${layer.name}-source`) && layer.paint !== null) {
               if (layer.source.type === 'geojson') {
@@ -771,19 +764,21 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
 
   const processQueryResults = () => {
     clearExistingPopups();
-    if (typeof map !== 'undefined' && map !== null && mapProvider.queryResults && geometryData.length > 0 && geometryData[0].geometry !== null) {
-      const center = turf.center(getFeatureGeometryObj(geometryData)).geometry.coordinates;
-
+    if (typeof map !== 'undefined' && map !== null && geometryData.length > 0 && geometryData[0].geometry !== null) {
       const area = turf.area(draw.getAll());
       const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
       mapProvider.setQueryAreaSize(`${roundedArea} acres`);
-
-      // const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
-      //   .setLngLat(center)
-      //   .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
-      //   .addTo(map);
-      //
-      // setMapPopups((prevState) => [...prevState, popup]);
+      console.log('setting queryareasize to ' + `${roundedArea} acres`);
+       // const center = turf.center(getFeatureGeometryObj(geometryData)).geometry.coordinates;
+       // const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
+       //   .setLngLat(center)
+       //   .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
+       //   .addTo(map);
+       //
+       // setMapPopups((prevState) => [...prevState, popup]);
+    } else {
+      mapProvider.setQueryAreaSize('');
+      console.log('setting queryareasize to empty')
     }
 
     if (typeof map !== 'undefined' && map !== null && mapProvider.mapMode === 'explore') {
@@ -823,7 +818,6 @@ const Map = ({ setHasChanges, setShowQueryTooBigError, setLastQuerySize, handleR
           rec.visible = !rec.visible;
         }
         if (!rec.visible && rec.enabled) {
-          console.log(rec.id);
         }
         return rec;
       });
