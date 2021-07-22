@@ -105,7 +105,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
       modes: Object.assign(MapboxDraw.modes, {
         draw_polygon: FreehandMode,
       }),
-    }),
+    })
   ); //eslint-disable-line
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [mapPopups, setMapPopups] = useState([]);
@@ -188,7 +188,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
           await axios.put(
             `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
             { features: data.features },
-            { headers },
+            { headers }
           );
           setGeometryData(data.features);
         } catch (err) {
@@ -307,7 +307,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
               <Typography variant={'h5'} align={'center'}>
                 {data.location_1}
               </Typography>,
-              heading,
+              heading
             );
 
             let subheading = document.createElement('div');
@@ -315,7 +315,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
               <Typography variant={'subtitle1'} align={'center'} color={'textSecondary'}>
                 ({data.loc_type})
               </Typography>,
-              subheading,
+              subheading
             );
 
             let body = document.createElement('div');
@@ -323,20 +323,20 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
               <Typography variant={'body1'} align={'center'}>
                 {data.location_n}
               </Typography>,
-              body,
+              body
             );
 
             popup.setLngLat({ lng: data.loc_long, lat: data.loc_lat });
 
             popup.setHTML(
               '<div class="' +
-              classes.popupIcon +
-              '"> ' +
-              icon.innerHTML +
-              '</div>' +
-              heading.innerHTML +
-              subheading.innerHTML +
-              body.innerHTML,
+                classes.popupIcon +
+                '"> ' +
+                icon.innerHTML +
+                '</div>' +
+                heading.innerHTML +
+                subheading.innerHTML +
+                body.innerHTML
             );
 
             map.fire('mapPointClicked');
@@ -353,19 +353,19 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
           } else if (layer && layer.popupType === 'table') {
             popup.setHTML(
               '<div class="' +
-              classes.popupWrap +
-              '"><h3>Properties</h3><table class="' +
-              classes.propTable +
-              '"><tbody>' +
-              Object.entries(pointFeatures[0].properties)
-                .map(([k, v]) => {
-                  if (k === 'hlink' || k === 'URL') {
-                    return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
-                  }
-                  return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-                })
-                .join('') +
-              '</tbody></table></div>',
+                classes.popupWrap +
+                '"><h3>Properties</h3><table class="' +
+                classes.propTable +
+                '"><tbody>' +
+                Object.entries(pointFeatures[0].properties)
+                  .map(([k, v]) => {
+                    if (k === 'hlink' || k === 'URL') {
+                      return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
+                    }
+                    return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+                  })
+                  .join('') +
+                '</tbody></table></div>'
             );
           } else {
             hasPopup = false;
@@ -429,7 +429,6 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
     mapProvider.setGeometryData(geometryData);
   }, [geometryData]); //eslint-disable-line
 
-
   useEffect(() => {
     setGeometryData(mapProvider.fetchedGeometryData);
 
@@ -444,7 +443,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
         await axios.put(
           `${process.env.REACT_APP_ENDPOINT}/api/user-geometry`,
           { features: mapProvider.fetchedGeometryData },
-          { headers },
+          { headers }
         );
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -541,117 +540,130 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
         if (error) throw error;
         map.loadImage('/images/marker_highcap-wells.png', function(error, highcapWellsImg) {
           if (error) throw error;
+          map.loadImage('/images/usgs-marker.png', function(error, usgsImg) {
+            if (error) throw error;
 
-          // map.addImage('allWells', allWellsImg);
-          // map.addImage('highcapWells', highcapWellsImg);
+            map.addImage('usgs', usgsImg);
 
-          visibleLayers
-            .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
-            .map(layer => {
-              if (!map.getSource(`${layer.name}-source`) && layer.paint !== null) {
-                if (layer.source.type === 'vector') {
-                  map.addSource(`${layer.name}-source`, {
-                    type: 'vector',
-                    lineMetrics: true,
-                    url: layer.source.url,
-                  });
-                } else if (layer.source.type === 'geojson') {
-                  map.addSource(`${layer.name}-source`, {
-                    type: 'geojson',
-                    lineMetrics: true,
-                    data: layer.spatial_data,
-                  });
+            // map.addImage('allWells', allWellsImg);
+            // map.addImage('highcapWells', highcapWellsImg);
+
+            visibleLayers
+              .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
+              .map(layer => {
+                if (!map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+                  if (layer.source.type === 'vector') {
+                    map.addSource(`${layer.name}-source`, {
+                      type: 'vector',
+                      lineMetrics: true,
+                      url: layer.source.url,
+                    });
+                  } else if (layer.source.type === 'geojson') {
+                    map.addSource(`${layer.name}-source`, {
+                      type: 'geojson',
+                      lineMetrics: true,
+                      data: layer.spatial_data,
+                    });
+                  }
+
+                  const newLayer = {
+                    id: layer.name,
+                    interactive: true,
+                    type: layer.geometry_type,
+                    source: `${layer.name}-source`,
+                    layout: {
+                      visibility: layer.visible ? 'visible' : 'none',
+                    },
+                    paint: layer.paint,
+                  };
+
+                  if (layer.source.type === 'vector') {
+                    newLayer['source-layer'] = layer.source.id;
+                  }
+
+                  if (layer.markerType === 'allWells') {
+                    newLayer.type = 'symbol';
+                    newLayer.layout['icon-image'] = 'allWells';
+                    newLayer.layout['icon-size'] = 1;
+                    delete newLayer.paint;
+                  }
+
+                  if (layer.markerType === 'highcapWells') {
+                    newLayer.type = 'symbol';
+                    newLayer.layout['icon-image'] = 'highcapWells';
+                    newLayer.layout['icon-size'] = 1;
+                    delete newLayer.paint;
+                  }
+
+                  if (layer.markerType === 'usgs') {
+                    newLayer.type = 'symbol';
+                    newLayer.layout['icon-image'] = 'usgs';
+                    newLayer.layout['icon-size'] = 0.8;
+                    newLayer.layout['icon-allow-overlap'] = true;
+                    delete newLayer.paint;
+                  }
+
+                  map.addLayer(newLayer);
                 }
+                return layer;
+              });
 
-                const newLayer = {
-                  id: layer.name,
-                  interactive: true,
-                  type: layer.geometry_type,
-                  source: `${layer.name}-source`,
+            [
+              'Stream Stations',
+              'Reservoir Stations',
+              'Effluent Stations',
+              'Mine Discharge Stations',
+              'Spring Stations',
+              'Groundwater Stations',
+            ].forEach(layer => {
+              if (!map.getLayer(`${layer}-labels`)) {
+                map.addLayer({
+                  id: layer + `-labels`,
+                  type: 'symbol',
+                  source: layer + '-source',
+                  minzoom: 10,
                   layout: {
-                    visibility: layer.visible ? 'visible' : 'none',
+                    'text-field': ['get', 'location_1'],
+                    'text-offset': [0, -2],
+                    'text-size': 14,
                   },
-                  paint: layer.paint,
-                };
+                  paint: {
+                    'text-halo-color': '#ffffff',
+                    'text-halo-width': 0.5,
+                  },
+                });
+              }
+            });
 
-                if (layer.source.type === 'vector') {
-                  newLayer['source-layer'] = layer.source.id;
+            map.on('mousemove', function(e) {
+              const bbox = [
+                [e.point.x - 5, e.point.y - 5],
+                [e.point.x + 5, e.point.y + 5],
+              ];
+              const features = map.queryRenderedFeatures(bbox, { layers: visibleLayers.map(x => x.name) });
+              map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+            });
+
+            map.fire('zoom');
+            //map.setStyle(activeBasemap.styleURL);
+
+            visibleLayers.map(layer => {
+              if (map.getSource(`${layer.name}-source`) && layer.paint !== null) {
+                if (layer.source.type === 'geojson') {
+                  map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
                 }
-
-                if (layer.markerType === 'allWells') {
-                  newLayer.type = 'symbol';
-                  newLayer.layout['icon-image'] = 'allWells';
-                  newLayer.layout['icon-size'] = 1;
-                  delete newLayer.paint;
+                if (map.getLayer(layer.name)) {
+                  map.setLayoutProperty(layer.name, 'visibility', layer.visible ? 'visible' : 'none');
                 }
-
-                if (layer.markerType === 'highcapWells') {
-                  newLayer.type = 'symbol';
-                  newLayer.layout['icon-image'] = 'highcapWells';
-                  newLayer.layout['icon-size'] = 1;
-                  delete newLayer.paint;
+                if (map.getLayer(layer.name + '-labels')) {
+                  map.setLayoutProperty(layer.name + '-labels', 'visibility', layer.visible ? 'visible' : 'none');
                 }
-
-                map.addLayer(newLayer);
               }
               return layer;
             });
 
-          [
-            'Stream Stations',
-            'Reservoir Stations',
-            'Effluent Stations',
-            'Mine Discharge Stations',
-            'Spring Stations',
-            'Groundwater Stations',
-          ].forEach(layer => {
-            if (!map.getLayer(`${layer}-labels`)) {
-              map.addLayer({
-                id: layer + `-labels`,
-                type: 'symbol',
-                source: layer + '-source',
-                minzoom: 10,
-                layout: {
-                  'text-field': ['get', 'location_1'],
-                  'text-offset': [0, -2],
-                  'text-size': 14,
-                },
-                paint: {
-                  'text-halo-color': '#ffffff',
-                  'text-halo-width': 0.5,
-                },
-              });
-            }
+            mapProvider.setKickoff(true);
           });
-
-          map.on('mousemove', function(e) {
-            const bbox = [
-              [e.point.x - 5, e.point.y - 5],
-              [e.point.x + 5, e.point.y + 5],
-            ];
-            const features = map.queryRenderedFeatures(bbox, { layers: visibleLayers.map(x => x.name) });
-            map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-          });
-
-          map.fire('zoom');
-          //map.setStyle(activeBasemap.styleURL);
-
-          visibleLayers.map(layer => {
-            if (map.getSource(`${layer.name}-source`) && layer.paint !== null) {
-              if (layer.source.type === 'geojson') {
-                map.getSource(`${layer.name}-source`).setData(layer.spatial_data);
-              }
-              if (map.getLayer(layer.name)) {
-                map.setLayoutProperty(layer.name, 'visibility', layer.visible ? 'visible' : 'none');
-              }
-              if (map.getLayer(layer.name + '-labels')) {
-                map.setLayoutProperty(layer.name + '-labels', 'visibility', layer.visible ? 'visible' : 'none');
-              }
-            }
-            return layer;
-          });
-
-          mapProvider.setKickoff(true);
         });
       });
     }
@@ -769,16 +781,16 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
       const roundedArea = numbro(parseInt(area / 4046.8564224)).format({ thousandSeparated: true });
       mapProvider.setQueryAreaSize(`${roundedArea} acres`);
       console.log('setting queryareasize to ' + `${roundedArea} acres`);
-       // const center = turf.center(getFeatureGeometryObj(geometryData)).geometry.coordinates;
-       // const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
-       //   .setLngLat(center)
-       //   .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
-       //   .addTo(map);
-       //
-       // setMapPopups((prevState) => [...prevState, popup]);
+      // const center = turf.center(getFeatureGeometryObj(geometryData)).geometry.coordinates;
+      // const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' })
+      //   .setLngLat(center)
+      //   .setHTML(ReactDOMServer.renderToStaticMarkup(<ResultsPopup />))
+      //   .addTo(map);
+      //
+      // setMapPopups((prevState) => [...prevState, popup]);
     } else {
       mapProvider.setQueryAreaSize('');
-      console.log('setting queryareasize to empty')
+      console.log('setting queryareasize to empty');
     }
 
     if (typeof map !== 'undefined' && map !== null && mapProvider.mapMode === 'explore') {
@@ -828,9 +840,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
     <>
       <div className={classes.toolbar}></div>
       <div ref={mapContainer} className={classes.map}>
-        {mapProvider.mapMode === 'explore' && (
-          <InitiateDrawingControl onInitiateDrawing={handleStartDrawing} />
-        )}
+        {mapProvider.mapMode === 'explore' && <InitiateDrawingControl onInitiateDrawing={handleStartDrawing} />}
         <BasemapControls
           layers={basemapLayers}
           open={controls.basemap.visible}
