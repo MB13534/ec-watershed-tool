@@ -19,6 +19,7 @@
     "mapbox-gl": "^1.12.0",
     "match-sorter": "^4.2.0",
     "material-table": "^1.57.2",
+    "material-ui-pickers": "^2.2.4",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "numbro": "^2.3.1",
@@ -29,7 +30,9 @@
     "react-markdown": "^4.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "react-syntax-highlighter": "^11.0.2"
+    "react-syntax-highlighter": "^11.0.2",
+    "recharts": "^2.0.10",
+    "slugify": "^1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",

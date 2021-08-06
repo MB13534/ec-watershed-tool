@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import FreehandMode from './FreehandMode';
 import InitiateDrawingControl from '../InitiateDrawingControl';
 import PopupControl from '../PopupControl';
-import ResetZoomControl from './ResetZoom';
+import ResetZoomControl from '../ResetZoomControl';
 import RoomIcon from '@material-ui/icons/Room';
 import LegendControl from '../LegendControl';
 

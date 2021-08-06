@@ -1,39 +1,40 @@
-const express = require("express");
-const dotenv = require("dotenv").config();
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const db = require("./models");
-const { setHeaders } = require("./middleware");
+const express = require('express');
+const dotenv = require('dotenv').config();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const db = require('./models');
+const { setHeaders } = require('./middleware');
 
 const PORT = process.env.PORT || 3005;
 
 const app = express();
-app.use(express.json({ limit: "25mb" }));
-app.use(bodyParser.json({ limit: "25mb" }));
-app.use(bodyParser.urlencoded({ limit: "25mb", extended: true }));
+app.use(express.json({ limit: '25mb' }));
+app.use(bodyParser.json({ limit: '25mb' }));
+app.use(bodyParser.urlencoded({ limit: '25mb', extended: true }));
 app.use(cors());
 
 // Configure headers
 app.use(setHeaders);
 
 // Set routes
-app.use("/api/example", require("./routes/Example"));
-app.use("/api/map-example", require("./routes/MapExample"));
-app.use("/api/user-geometry", require("./routes/UserGeometryRoutes"));
-app.use("/api/user-scenario", require("./routes/UserScenarioRoutes"));
-app.use("/api/controls-list-param", require("./routes/ControlsListParamRoutes"));
-app.use("/api/monitoring-point", require("./routes/MonitoringPointRoutes"));
-app.use("/api/landing-controls", require("./routes/LandingControlsRoutes"));
-app.use("/api/functions", require("./routes/FunctionRoutes"));
-app.use("/api/list-inputs", require("./routes/ListInputsRoutes"));
-app.use("/api/list-input-types", require("./routes/ListInputTypesRoutes"));
-app.use("/api/list-input-bins", require("./routes/ListInputBinsRoutes"));
-app.use("/api/list-input-value-types", require("./routes/ListInputValueTypesRoutes"));
+app.use('/api/example', require('./routes/Example'));
+app.use('/api/map-example', require('./routes/MapExample'));
+app.use('/api/user-geometry', require('./routes/UserGeometryRoutes'));
+app.use('/api/user-scenario', require('./routes/UserScenarioRoutes'));
+app.use('/api/controls-list-param', require('./routes/ControlsListParamRoutes'));
+app.use('/api/monitoring-point', require('./routes/MonitoringPointRoutes'));
+app.use('/api/usgs', require('./routes/UsgsRoutes'));
+app.use('/api/landing-controls', require('./routes/LandingControlsRoutes'));
+app.use('/api/functions', require('./routes/FunctionRoutes'));
+app.use('/api/list-inputs', require('./routes/ListInputsRoutes'));
+app.use('/api/list-input-types', require('./routes/ListInputTypesRoutes'));
+app.use('/api/list-input-bins', require('./routes/ListInputBinsRoutes'));
+app.use('/api/list-input-value-types', require('./routes/ListInputValueTypesRoutes'));
 
 // send 404 if no other route matched
 app.use((req, res) => {
   res.status(404).json({
-    message: "Route Not Found",
+    message: 'Route Not Found',
   });
 });
 

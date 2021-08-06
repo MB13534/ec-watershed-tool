@@ -10,11 +10,11 @@ import { useMap } from './MapProvider';
 import clsx from 'clsx';
 import Alert from '@material-ui/lab/Alert';
 import AnalyticsPopupDetails from '../../components/Map/AnalyticsPopupDetails';
-import MapLegend from '../../components/Map/MapLegend';
+import Legend from '../../components/Legend';
 import FormSnackbar from '../../components/FormSnackbar';
 
 // create page styles
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     overflowX: `hidden`,
     [theme.breakpoints.up('md')]: {
@@ -112,6 +112,14 @@ const MapPage = () => {
   const [showQueryTooBigError, setShowQueryTooBigError] = useState(false);
   const [lastQuerySize, setLastQuerySize] = useState(null);
 
+  const monitoringLegendColors = [
+    { name: `0 - Constituent not detected`, color: `#228044` },
+    { name: `1 - Below benchmark`, color: `#16f465` },
+    { name: `2 - Approaching benchmark`, color: `#FFEB3B` },
+    { name: `3 - Above benchmark`, color: `#F9A825` },
+    { name: `4 - Above secondary benchmark`, color: `#c61717` },
+  ];
+
   useEffect(() => {
     document.getElementsByTagName('body')[0].style.overflow = 'hidden';
     return () => {
@@ -135,13 +143,14 @@ const MapPage = () => {
             position="absolute"
           >
             <Alert severity="error">
-              <strong>Please Reduce Query Area</strong> &mdash; Selected area is currently {lastQuerySize} out of a max of 1,200,000 acres.
+              <strong>Please Reduce Query Area</strong> &mdash; Selected area is currently {lastQuerySize} out of a max
+              of 1,200,000 acres.
             </Alert>
           </Box>
 
-          <MapLegend/>
+          <Legend legendColors={monitoringLegendColors} />
           <Box bgcolor="#f1f1f1" width="100%">
-            <Map setShowQueryTooBigError={setShowQueryTooBigError} setLastQuerySize={setLastQuerySize}/>
+            <Map setShowQueryTooBigError={setShowQueryTooBigError} setLastQuerySize={setLastQuerySize} />
           </Box>
 
           <Box
@@ -150,16 +159,16 @@ const MapPage = () => {
               [classes.boxClose]: !map.controls.dataViz.visible,
             })}
             ml="30px"
-            bottom={map.mapMode === 'explore' || map.mapMode === 'analyze' ? '94px' : '30px' }
+            bottom={map.mapMode === 'explore' || map.mapMode === 'analyze' ? '94px' : '30px'}
             zIndex={1200}
             position="absolute"
           >
             <Paper style={{ padding: 24, paddingTop: 8 }}>
-              {(map.analyticsResults || map.geometryData) &&
-              <>
-                <AnalyticsPopupDetails map={map} />
-              </>
-              }
+              {(map.analyticsResults || map.geometryData) && (
+                <>
+                  <AnalyticsPopupDetails map={map} />
+                </>
+              )}
             </Paper>
           </Box>
         </div>

@@ -1,6 +1,7 @@
-const express = require("express");
-const { checkAccessToken } = require("../middleware/auth.js");
-const { Layers, ParcelLayers, StreamLayers } = require("../layers/Layers");
+const express = require('express');
+const { checkAccessToken } = require('../middleware/auth.js');
+const { Layers, ParcelLayers, StreamLayers } = require('../layers/Layers');
+const { StoriesLayers } = require('../layers/StoriesLayers');
 // Create Express Router
 const router = express.Router();
 
@@ -10,21 +11,28 @@ const router = express.Router();
 /**
  * GET /api/layers
  */
-router.get("/layers", (req, res, next) => {
+router.get('/layers', (req, res, next) => {
   res.json(Layers);
+});
+
+/**
+ * GET /api/stories-layers
+ */
+router.get('/stories-layers', (req, res, next) => {
+  res.json(StoriesLayers);
 });
 
 /**
  * GET /api/layers/parcels
  */
-router.get("/layers/parcels", (req, res, next) => {
+router.get('/layers/parcels', (req, res, next) => {
   res.json(ParcelLayers);
 });
 
 /**
  * GET /api/layers/streams
  */
-router.get("/layers/streams", (req, res, next) => {
+router.get('/layers/streams', (req, res, next) => {
   res.json(StreamLayers);
 });
 

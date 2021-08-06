@@ -1,19 +1,19 @@
-import React, { Suspense } from "react";
-import { Route, BrowserRouter, Switch, Redirect } from "react-router-dom";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { useAuth0 } from "./hooks/useAuth0";
-import PrivateRoute from "./components/PrivateRoute";
-import NotFound from "./components/NotFound";
-import Loading from "./components/Loading";
-import theme from "./theme";
-import { MapProvider } from "./pages/Map/MapProvider";
+import React, { Suspense } from 'react';
+import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { useAuth0 } from './hooks/useAuth0';
+import PrivateRoute from './components/PrivateRoute';
+import NotFound from './components/NotFound';
+import Loading from './components/Loading';
+import theme from './theme';
+import { MapProvider } from './pages/Map/MapProvider';
 
-const MapPage = React.lazy(() => import("./pages/Map"));
-const StoriesPage = React.lazy(() => import("./pages/Stories"));
-const DataListInputsPage = React.lazy(() => import("./pages/DataManagement/Inputs"));
-const DataListInputTypesPage = React.lazy(() => import("./pages/DataManagement/InputTypes"));
-const DataListInputBinsPage = React.lazy(() => import("./pages/DataManagement/InputBins"));
+const MapPage = React.lazy(() => import('./pages/Map'));
+const StoriesPage = React.lazy(() => import('./pages/Stories'));
+const DataListInputsPage = React.lazy(() => import('./pages/DataManagement/Inputs'));
+const DataListInputTypesPage = React.lazy(() => import('./pages/DataManagement/InputTypes'));
+const DataListInputBinsPage = React.lazy(() => import('./pages/DataManagement/InputBins'));
 
 const App = () => {
   const { loading } = useAuth0();
@@ -38,34 +38,10 @@ const App = () => {
                 </MapProvider>
               )}
             />
-            <PrivateRoute
-              path="/stories"
-              exact
-              render={() => (
-                <StoriesPage/>
-              )}
-            />
-            <PrivateRoute
-              path="/data/inputs"
-              exact
-              render={() => (
-                <DataListInputsPage/>
-              )}
-            />
-            <PrivateRoute
-              path="/data/input-types"
-              exact
-              render={() => (
-                <DataListInputTypesPage/>
-              )}
-            />
-            <PrivateRoute
-              path="/data/input-bins"
-              exact
-              render={() => (
-                <DataListInputBinsPage/>
-              )}
-            />
+            <PrivateRoute path="/stories" exact render={() => <StoriesPage />} />
+            <PrivateRoute path="/data/inputs" exact render={() => <DataListInputsPage />} />
+            <PrivateRoute path="/data/input-types" exact render={() => <DataListInputTypesPage />} />
+            <PrivateRoute path="/data/input-bins" exact render={() => <DataListInputBinsPage />} />
             <Route path="*">
               <NotFound />
             </Route>
