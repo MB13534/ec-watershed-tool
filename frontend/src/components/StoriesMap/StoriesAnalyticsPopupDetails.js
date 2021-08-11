@@ -1,12 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
@@ -141,162 +136,166 @@ export default function StoriesAnalyticsPopupDetails({
         </Alert>
       )}
 
-      {hydrographData != null && hydrographData.length != 0 && tableStatsData != null && tableStatsData.length != 0 && (
-        <>
-          {isDataLoading && <Loader />}
+      {hydrographData !== null &&
+        hydrographData.length !== 0 &&
+        tableStatsData !== null &&
+        tableStatsData.length !== 0 && (
+          <>
+            {isDataLoading && <Loader />}
 
-          <Paper elevation={2}>
-            <Grid container elevation={0} className={classes.root}>
-              <Grid item xs={8}>
-                <Card style={{ margin: '12px' }}>
-                  <Typography variant={'h6'} align={'center'} style={{ padding: '10px 0' }}>
-                    Daily Flow Hydrograph
-                  </Typography>
+            <Paper elevation={2}>
+              <Grid container elevation={0} className={classes.root}>
+                <Grid item xs={8}>
+                  <Card style={{ margin: '12px' }}>
+                    <Typography variant={'h6'} align={'center'} style={{ padding: '10px 0' }}>
+                      Daily Flow Hydrograph
+                    </Typography>
 
-                  <ResponsiveContainer height={332}>
-                    <LineChart data={hydrographData}>
-                      <Legend verticalAlign="bottom" align="center" />
-                      <Tooltip />
+                    <ResponsiveContainer height={332}>
+                      <LineChart data={hydrographData}>
+                        <Legend verticalAlign="bottom" align="center" />
+                        <Tooltip />
 
-                      <Line
-                        type="monotone"
-                        dataKey="flow_cfs"
-                        strokeWidth={3}
-                        //blue
-                        stroke="blue"
-                        dot={false}
-                        name={'Daily Average CFS'}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="high_cfs"
-                        strokeWidth={3}
-                        //green
-                        stroke="green"
-                        dot={false}
-                        name={'Wettest Year'}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="low_cfs"
-                        strokeWidth={3}
-                        //yellow
-                        stroke="#999900"
-                        dot={false}
-                        name={'Driest Year'}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="median_cfs"
-                        strokeWidth={3}
-                        //dark grey
-                        stroke="#2F4F4F"
-                        dot={false}
-                        name={'Record Median'}
-                      />
-                      <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-                      <XAxis dataKey="x_axis_label" minTickGap={25} />
-                      <YAxis label={{ value: 'CFS', angle: -90, position: 'insideLeft' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </Card>
+                        <Line
+                          type="monotone"
+                          dataKey="flow_cfs"
+                          strokeWidth={3}
+                          //blue
+                          stroke="blue"
+                          dot={false}
+                          name={'Daily Average CFS'}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="high_cfs"
+                          strokeWidth={3}
+                          //green
+                          stroke="green"
+                          dot={false}
+                          name={'Wettest Year'}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="low_cfs"
+                          strokeWidth={3}
+                          //yellow
+                          stroke="#999900"
+                          dot={false}
+                          name={'Driest Year'}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="median_cfs"
+                          strokeWidth={3}
+                          //dark grey
+                          stroke="#2F4F4F"
+                          dot={false}
+                          name={'Record Median'}
+                        />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+                        <XAxis dataKey="x_axis_label" minTickGap={25} />
+                        <YAxis label={{ value: 'CFS', angle: -90, position: 'insideLeft' }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </Card>
+                </Grid>
+                <Grid item xs={4}>
+                  <Card
+                    style={{
+                      overflowY: 'scroll',
+                      maxHeight: '384px',
+                      margin: '12px',
+                    }}
+                  >
+                    <Typography variant={'h6'} align={'center'}>
+                      {tableStatsData.station_desc}
+                    </Typography>
+                    <Typography variant={'h6'} align={'center'} style={{ color: theme.palette.text.secondary }}>
+                      {tableStatsData.usgs_site_no}
+                    </Typography>
+                    <Grid item xs={12}>
+                      <List dense>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Selected Water Year</ListItemText>
+                          <ListItemText>{tableStatsData.wateryear}</ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Through the Month of</ListItemText>
+                          <ListItemText>{tableStatsData.month_name}</ListItemText>
+                        </ListItem>
+                        <Divider variant={'middle'} className={classes.divider} />
+                        <Typography variant={'h6'} align={'center'}>
+                          Selected Period Statistics
+                        </Typography>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Cumulative Flows</ListItemText>
+                          <ListItemText>{tableStatsData.cumulative_af} AF</ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Percent of Median</ListItemText>
+                          <ListItemText>{tableStatsData.pct_of_normal}</ListItemText>
+                        </ListItem>
+                        <Divider variant={'middle'} className={classes.divider} />
+                        <Typography variant={'h6'} align={'center'}>
+                          Period of Record Statistics
+                        </Typography>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Period of Record</ListItemText>
+                          <ListItemText>
+                            {tableStatsInfo[tableStatsData.station_ndx].porminyear} -{' '}
+                            {tableStatsInfo[tableStatsData.station_ndx].pormaxyear}
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Driest Year on Record</ListItemText>
+                          <ListItemText>
+                            {tableStatsInfo[tableStatsData.station_ndx].lowest_year} (
+                            {convertToPercent(
+                              tableStatsData.lowest_year_cumulative_af,
+                              tableStatsData.median_year_cumulative_af
+                            )}
+                            % of Med)
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
+                          <ListItemText>{tableStatsData.lowest_year_cumulative_af} AF</ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Wettest Year on Record</ListItemText>
+                          <ListItemText>
+                            {tableStatsInfo[tableStatsData.station_ndx].highest_year} (
+                            {convertToPercent(
+                              tableStatsData.highest_year_cumulative_af,
+                              tableStatsData.median_year_cumulative_af
+                            )}
+                            % of Med)
+                          </ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
+                          <ListItemText>{tableStatsData.highest_year_cumulative_af} AF</ListItemText>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <ListItemText>For More Info</ListItemText>
+                          <ListItemText>
+                            <a
+                              href={`https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${tableStatsData.usgs_site_no}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {tableStatsData.usgs_site_no}
+                            </a>
+                          </ListItemText>
+                        </ListItem>
+                      </List>
+                    </Grid>
+                  </Card>
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <Card
-                  style={{
-                    overflowY: 'scroll',
-                    maxHeight: '384px',
-                    margin: '12px',
-                  }}
-                >
-                  <Typography variant={'h6'} align={'center'}>
-                    {tableStatsData.station_desc}
-                  </Typography>
-                  <Typography variant={'h6'} align={'center'} style={{ color: theme.palette.text.secondary }}>
-                    {tableStatsData.usgs_site_no}
-                  </Typography>
-                  <Grid item xs={12}>
-                    <List dense>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Selected Water Year</ListItemText>
-                        <ListItemText>{tableStatsData.wateryear}</ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Through the Month of</ListItemText>
-                        <ListItemText>{tableStatsData.month_name}</ListItemText>
-                      </ListItem>
-                      <Divider variant={'middle'} className={classes.divider} />
-                      <Typography variant={'h6'} align={'center'}>
-                        Selected Period Statistics
-                      </Typography>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Cumulative Flows</ListItemText>
-                        <ListItemText>{tableStatsData.cumulative_af} AF</ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Percent of Median</ListItemText>
-                        <ListItemText>{tableStatsData.pct_of_normal}</ListItemText>
-                      </ListItem>
-                      <Divider variant={'middle'} className={classes.divider} />
-                      <Typography variant={'h6'} align={'center'}>
-                        Period of Record Statistics
-                      </Typography>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Period of Record</ListItemText>
-                        <ListItemText>
-                          {tableStatsInfo[tableStatsData.station_ndx].porminyear} -{' '}
-                          {tableStatsInfo[tableStatsData.station_ndx].pormaxyear}
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Driest Year on Record</ListItemText>
-                        <ListItemText>
-                          {tableStatsInfo[tableStatsData.station_ndx].lowest_year} (
-                          {convertToPercent(
-                            tableStatsData.lowest_year_cumulative_af,
-                            tableStatsData.median_year_cumulative_af
-                          )}
-                          % of Med)
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
-                        <ListItemText>{tableStatsData.lowest_year_cumulative_af} AF</ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Wettest Year on Record</ListItemText>
-                        <ListItemText>
-                          {tableStatsInfo[tableStatsData.station_ndx].highest_year} (
-                          {convertToPercent(
-                            tableStatsData.highest_year_cumulative_af,
-                            tableStatsData.median_year_cumulative_af
-                          )}
-                          % of Med)
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
-                        <ListItemText>{tableStatsData.highest_year_cumulative_af} AF</ListItemText>
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>For More Info</ListItemText>
-                        <ListItemText>
-                          <a
-                            href={`https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${tableStatsData.usgs_site_no}`}
-                            target="_blank"
-                          >
-                            {tableStatsData.usgs_site_no}
-                          </a>
-                        </ListItemText>
-                      </ListItem>
-                    </List>
-                  </Grid>
-                </Card>
-              </Grid>
-            </Grid>
-          </Paper>
-        </>
-      )}
+            </Paper>
+          </>
+        )}
     </>
   );
 }

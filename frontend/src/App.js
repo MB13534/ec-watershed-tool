@@ -4,6 +4,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { useAuth0 } from './hooks/useAuth0';
 import PrivateRoute from './components/PrivateRoute';
+import PrivateRouteWithRoles from './components/PrivateRouteWithRoles';
 import NotFound from './components/NotFound';
 import Loading from './components/Loading';
 import theme from './theme';
@@ -38,7 +39,7 @@ const App = () => {
                 </MapProvider>
               )}
             />
-            <PrivateRoute path="/stories" exact render={() => <StoriesPage />} />
+            <PrivateRouteWithRoles path="/stories" exact component={StoriesPage} roles={['Stories Testing']} />
             <PrivateRoute path="/data/inputs" exact render={() => <DataListInputsPage />} />
             <PrivateRoute path="/data/input-types" exact render={() => <DataListInputTypesPage />} />
             <PrivateRoute path="/data/input-bins" exact render={() => <DataListInputBinsPage />} />

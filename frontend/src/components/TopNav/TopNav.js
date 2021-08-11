@@ -21,7 +21,7 @@ import ScenarioDialog from '../ScenarioDialog/ScenarioDialog';
 import LoadIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     position: `relative`,
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TopNav = (props) => {
+const TopNav = props => {
   const classes = useStyles();
   let history = useHistory();
   const map = useMap();
@@ -104,7 +104,7 @@ const TopNav = (props) => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -112,7 +112,7 @@ const TopNav = (props) => {
     setAnchorEl(null);
   };
 
-  const goTo = (route) => {
+  const goTo = route => {
     history.push(`/${route}`);
     localStorage.setItem('last_url', history.location.pathname);
   };
@@ -136,11 +136,11 @@ const TopNav = (props) => {
       link: 'stories',
       title: 'Stories',
       activePath: 'stories',
+      rolesRequired: ['Stories Testing'],
       exact: true,
       loginRequired: true,
     },
   ];
-
 
   const returnMenuItem = (item, isAuthenticated, user) => {
     let li = null;
@@ -158,11 +158,7 @@ const TopNav = (props) => {
       );
     } else {
       li = (
-        <Link
-          key={item.link}
-          onClick={handleClick}
-          className={handleActive(item.activePath, item.exact)}
-        >
+        <Link key={item.link} onClick={handleClick} className={handleActive(item.activePath, item.exact)}>
           {item.title}
         </Link>
       );
@@ -186,7 +182,7 @@ const TopNav = (props) => {
         if (child.loginRequired && child.rolesRequired && user) {
           let roleSwitch = false;
           const roles = [...child.rolesRequired];
-          roles.forEach((role) => {
+          roles.forEach(role => {
             if (user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(role)) {
               roleSwitch = true;
             }
@@ -225,7 +221,7 @@ const TopNav = (props) => {
     if (item.loginRequired && item.rolesRequired && user) {
       let roleSwitch = false;
       const roles = [...item.rolesRequired];
-      roles.forEach((role) => {
+      roles.forEach(role => {
         if (user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(role)) {
           roleSwitch = true;
         }
@@ -255,31 +251,32 @@ const TopNav = (props) => {
           {isAuthenticated && (
             <>
               <Link
-                key='explore'
+                key="explore"
                 onClick={() => map.setMapMode('explore')}
-                className={map.mapMode === 'explore' && checkActive(history, 'map', true) ? classes.activeLink : classes.link}
+                className={
+                  map.mapMode === 'explore' && checkActive(history, 'map', true) ? classes.activeLink : classes.link
+                }
               >
                 Explore
               </Link>
               <Link
-                key='analyze'
+                key="analyze"
                 onClick={() => map.setMapMode('analyze')}
-                className={map.mapMode === 'analyze' && checkActive(history, 'map', true) ? classes.activeLink : classes.link}
+                className={
+                  map.mapMode === 'analyze' && checkActive(history, 'map', true) ? classes.activeLink : classes.link
+                }
               >
                 Analyze
               </Link>
             </>
           )}
-          {MenuItems.map((item) => returnMenuItem(item, isAuthenticated, user))}
+          {MenuItems.map(item => returnMenuItem(item, isAuthenticated, user))}
           {isAuthenticated ? (
             <Link className={handleActive('/logout')} onClick={() => logout()}>
               Logout
             </Link>
           ) : (
-            <Link
-              className={handleActive('/login')}
-              onClick={() => loginWithRedirect()}
-            >
+            <Link className={handleActive('/login')} onClick={() => loginWithRedirect()}>
               Login
             </Link>
           )}
@@ -287,7 +284,7 @@ const TopNav = (props) => {
         {(map.mapMode === 'analyze' || map.mapMode === 'explore') && (
           <Toolbar className={clsx(classes.subNav, 'subnav')}>
             <Flex justifyContent={'flex-start'}>
-              <ScenarioDialog isOpen={map.scenarioDialogIsOpen} mode={map.scenarioDialogMode}/>
+              <ScenarioDialog isOpen={map.scenarioDialogIsOpen} mode={map.scenarioDialogMode} />
               <Button
                 color="secondary"
                 variant="outlined"
@@ -316,53 +313,53 @@ const TopNav = (props) => {
                 Save Scenario
               </Button>
             </Flex>
-            {(map.mapMode === 'analyze') && (
-            <Flex justifyContent={'flex-end'}>
-              <DatePicker
-                className={classes.picker}
-                name={'startDate'}
-                label={'Start Date'}
-                value={map.filters.startDate}
-                variant={'outlined'}
-                width={'100%'}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(event) => map.handleFilters('startDate', event.target.value, true)}
-                style={{
-                  backgroundColor: 'white',
-                  width: '100%'
-                }}
-              />
-              <DatePicker
-                className={classes.picker}
-                name={'endDate'}
-                label={'End Date'}
-                value={map.filters.endDate}
-                variant={'outlined'}
-                width={'100%'}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(event) => map.handleFilters('endDate', event.target.value, true)}
-                style={{
-                  backgroundColor: 'white',
-                  width: '100%',
-                  height: '40px',
-                  marginLeft: theme.spacing(1),
-                }}
-              />
-              <Button
-                color="secondary"
-                variant="contained"
-                disableElevation
-                onClick={map.handleControlsSubmit}
-                className={classes.btn}
-                startIcon={<SubmitIcon />}
-              >
-                Recalculate
-              </Button>
-            </Flex>
+            {map.mapMode === 'analyze' && (
+              <Flex justifyContent={'flex-end'}>
+                <DatePicker
+                  className={classes.picker}
+                  name={'startDate'}
+                  label={'Start Date'}
+                  value={map.filters.startDate}
+                  variant={'outlined'}
+                  width={'100%'}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={event => map.handleFilters('startDate', event.target.value, true)}
+                  style={{
+                    backgroundColor: 'white',
+                    width: '100%',
+                  }}
+                />
+                <DatePicker
+                  className={classes.picker}
+                  name={'endDate'}
+                  label={'End Date'}
+                  value={map.filters.endDate}
+                  variant={'outlined'}
+                  width={'100%'}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={event => map.handleFilters('endDate', event.target.value, true)}
+                  style={{
+                    backgroundColor: 'white',
+                    width: '100%',
+                    height: '40px',
+                    marginLeft: theme.spacing(1),
+                  }}
+                />
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  disableElevation
+                  onClick={map.handleControlsSubmit}
+                  className={classes.btn}
+                  startIcon={<SubmitIcon />}
+                >
+                  Recalculate
+                </Button>
+              </Flex>
             )}
           </Toolbar>
         )}
