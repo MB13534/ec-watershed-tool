@@ -59,7 +59,7 @@ const Stories = () => {
   const currentMonth = new Date().getMonth();
   const [waterYear, setWaterYear] = useState({ wateryear: 2021 });
   //a water year is oct to sep, so oct is default, watermonth is for value/query, month_abbrev is for display
-  const [startMonth, setStartMonth] = useState({ watermonth: 1, month_abbrev: 'Oct' });
+  const [startMonth, setStartMonth] = useState({ watermonth: 7, month_abbrev: 'Apr' });
   //transfer new Date month to water year
   const months = {
     0: 4,
@@ -114,11 +114,11 @@ const Stories = () => {
 
   //legend display
   const monitoringLegendColors = [
-    { name: `> 90th percentile`, color: `#0000FE` },
-    { name: `76th - 90th percentile`, color: `#19CCCB` },
-    { name: `25th - 75th percentile`, color: `#00FE00` },
-    { name: `10th - 24th percentile`, color: `#FE7700` },
-    { name: `< 10th percentile`, color: `#B22619` },
+    { name: `Much Wetter than Normal`, color: `#000087` },
+    { name: `Wetter than Normal`, color: `#A8D1DF` },
+    { name: `Normal`, color: `#008140` },
+    { name: `Drier than Normal`, color: `#F76300` },
+    { name: `Much Drier than Normal`, color: `#E20000` },
     { name: `No data`, color: `#fff` },
   ];
 

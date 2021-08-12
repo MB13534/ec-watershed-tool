@@ -121,18 +121,18 @@ const StoriesMap = ({
     send();
   }
 
-  const getHexColorForGradient = percent => {
+  const getHexColorForGradient = pctnorm_num => {
     switch (true) {
-      case percent >= 90:
-        return '#0000FE';
-      case percent >= 76 && percent < 90:
-        return '#19CCCB';
-      case percent >= 25 && percent < 76:
-        return '#00FE00';
-      case percent >= 10 && percent < 25:
-        return '#FE7700';
-      case percent < 10:
-        return '#B22619';
+      case pctnorm_num >= 200:
+        return '#000087';
+      case pctnorm_num >= 120 && pctnorm_num < 200:
+        return '#A8D1DF';
+      case pctnorm_num >= 80 && pctnorm_num < 120:
+        return '#008140';
+      case pctnorm_num >= 50 && pctnorm_num < 80:
+        return '#F76300';
+      case pctnorm_num < 50:
+        return '#E20000';
       default:
         return '#fff';
     }
