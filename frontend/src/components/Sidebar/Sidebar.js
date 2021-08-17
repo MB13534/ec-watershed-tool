@@ -1,48 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
-import Collapse from "@material-ui/core/Collapse";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import LogoutIcon from "@material-ui/icons/ExitToApp";
-import AccountIcon from "@material-ui/icons/AccountCircle";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import MapIcon from "@material-ui/icons/LocationOn";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import LogoutIcon from '@material-ui/icons/ExitToApp';
+import AccountIcon from '@material-ui/icons/AccountCircle';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import MapIcon from '@material-ui/icons/LocationOn';
+import LinkIcon from '@material-ui/icons/Link';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
-import logo from "../../images/logo-ec.svg";
-import lreLogo from "../../images/lre-logo-grey.png"
+import logo from '../../images/logo-ec.svg';
+import lreLogo from '../../images/lre-logo-grey.png';
 
-import { useAuth0 } from "../../hooks/useAuth0";
-import useVisibility from "../../hooks/useVisibility";
+import { useAuth0 } from '../../hooks/useAuth0';
+import useVisibility from '../../hooks/useVisibility';
 
 const drawerWidth = 270;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   drawer: {
-    [theme.breakpoints.up("md")]: {
+    [theme.breakpoints.up('md')]: {
       width: drawerWidth,
       flexShrink: 0,
     },
   },
   appBar: {
     marginLeft: drawerWidth,
-    [theme.breakpoints.up("md")]: {
+    [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
     },
   },
   menuButton: {
     marginRight: 20,
-    [theme.breakpoints.up("md")]: {
-      display: "none",
+    [theme.breakpoints.up('md')]: {
+      display: 'none',
     },
   },
   mobileToolbar: {
@@ -50,17 +51,17 @@ const useStyles = makeStyles((theme) => ({
     color: `#ffffff`,
   },
   toolbar: {
-    textAlign: "center",
+    textAlign: 'center',
     padding: theme.spacing(4, 0),
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     ...theme.mixins.toolbar,
   },
   drawerPaper: {
     width: drawerWidth,
     overflowY: `auto!important`,
-    overflowX: "hidden",
+    overflowX: 'hidden',
     backgroundColor: theme.palette.primary.main,
-    borderRight: "1px solid #ddd",
+    borderRight: '1px solid #ddd',
   },
   content: {
     flexGrow: 1,
@@ -70,14 +71,14 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 200,
   },
   lreLogo: {
-    display: "block",
-    width: "100%",
-    textAlign: "center",
-    position: "absolute",
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    position: 'absolute',
     bottom: 20,
-    "& img": {
+    '& img': {
       maxWidth: 120,
-    }
+    },
   },
   nav: {
     color: `#ffffff`,
@@ -86,12 +87,12 @@ const useStyles = makeStyles((theme) => ({
     color: `#ffffff`,
   },
   navText: {
-    "& span": {
+    '& span': {
       fontSize: `18px!important`,
     },
   },
   nestedNavText: {
-    "& span": {
+    '& span': {
       fontSize: `14px!important`,
     },
   },
@@ -100,19 +101,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Sidebar = (props) => {
+const Sidebar = props => {
   const classes = useStyles();
   let history = useHistory();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
-  const [
-    dataManagementVisibility,
-    handleDataManagementVisibility,
-  ] = useVisibility(false);
+  const [dataManagementVisibility, handleDataManagementVisibility] = useVisibility(false);
   let location = useLocation();
 
   useEffect(() => {
-    if (location.pathname.includes("data")) {
+    if (location.pathname.includes('data')) {
       handleDataManagementVisibility(true);
     }
   }, [location]); //eslint-disable-line
@@ -122,16 +120,16 @@ const Sidebar = (props) => {
   };
 
   // function for naviating to a specific page in the app
-  const goTo = (route) => {
+  const goTo = route => {
     history.push(`/${route}`);
-    localStorage.setItem("last_url", history.location.pathname);
+    localStorage.setItem('last_url', history.location.pathname);
   };
 
   /**
    * Utility function used to determine if a menu link is active
    * @param {*} item
    */
-  const setActive = (item) => {
+  const setActive = item => {
     if (item.exact) {
       return history.location.pathname === `/${item.activePath}`;
     } else {
@@ -142,49 +140,47 @@ const Sidebar = (props) => {
   // Configure sidebar menu items
   const MenuItems = [
     {
-      link: "map",
-      title: "Map",
-      activePath: "map",
+      link: 'map',
+      title: 'Map',
+      activePath: 'map',
       exact: true,
       icon: MapIcon,
       loginRequired: true,
-    }
+    },
+    {
+      link: 'external-links',
+      title: 'External Links',
+      activePath: 'external-links',
+      rolesRequired: false,
+      exact: true,
+      icon: LinkIcon,
+      loginRequired: true,
+    },
   ];
 
   const returnMenuItem = (item, isAuthenticated, user) => {
     const li = (
       <ListItem button selected={setActive(item)}>
-        <ListItemIcon
-          className={classes.navIcon}
-          onClick={() => goTo(item.link)}
-        >
+        <ListItemIcon className={classes.navIcon} onClick={() => goTo(item.link)}>
           <item.icon />
         </ListItemIcon>
-        <ListItemText
-          className={classes.navText}
-          primary={item.title}
-          onClick={() => goTo(item.link)}
-        />
+        <ListItemText className={classes.navText} primary={item.title} onClick={() => goTo(item.link)} />
 
-        {item.visibilityVarName === "dataManagementVisibility" &&
-        (dataManagementVisibility ? (
-          <ExpandLess onClick={handleDataManagementVisibility} />
-        ) : (
-          <ExpandMore onClick={handleDataManagementVisibility} />
-        ))}
+        {item.visibilityVarName === 'dataManagementVisibility' &&
+          (dataManagementVisibility ? (
+            <ExpandLess onClick={handleDataManagementVisibility} />
+          ) : (
+            <ExpandMore onClick={handleDataManagementVisibility} />
+          ))}
       </ListItem>
     );
 
     const NestedUl = () => {
-      if (
-        item.visibilityVarName === "dataManagementVisibility" &&
-        item.children
-      ) {
+      if (item.visibilityVarName === 'dataManagementVisibility' && item.children) {
         return (
           <Collapse in={dataManagementVisibility} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {item.children.map((child) => {
-
+              {item.children.map(child => {
                 let cli = (
                   <ListItem
                     button
@@ -193,17 +189,14 @@ const Sidebar = (props) => {
                     key={Math.random() * 9999999}
                     className={classes.nested}
                   >
-                    <ListItemText
-                      className={classes.nestedNavText}
-                      primary={child.title}
-                    />
+                    <ListItemText className={classes.nestedNavText} primary={child.title} />
                   </ListItem>
                 );
 
                 if (child.loginRequired && child.rolesRequired && user) {
                   let roleSwitch = false;
                   const roles = [...child.rolesRequired];
-                  roles.forEach((role) => {
+                  roles.forEach(role => {
                     if (user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(role)) {
                       roleSwitch = true;
                     }
@@ -237,7 +230,7 @@ const Sidebar = (props) => {
     if (item.loginRequired && item.rolesRequired && user) {
       let roleSwitch = false;
       const roles = [...item.rolesRequired];
-      roles.forEach((role) => {
+      roles.forEach(role => {
         if (user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(role)) {
           roleSwitch = true;
         }
@@ -260,38 +253,25 @@ const Sidebar = (props) => {
         <img src={logo} className={classes.logo} alt="Logo" />
       </div>
       <List className={classes.nav}>
-        {MenuItems.map((item) => returnMenuItem(item, isAuthenticated, user))}
+        {MenuItems.map(item => returnMenuItem(item, isAuthenticated, user))}
         {isAuthenticated ? (
           <ListItem button>
             <ListItemIcon className={classes.navIcon}>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText
-              className={classes.navText}
-              primary="Logout"
-              onClick={() => logout()}
-            />
+            <ListItemText className={classes.navText} primary="Logout" onClick={() => logout()} />
           </ListItem>
         ) : (
           <ListItem button>
             <ListItemIcon className={classes.navIcon}>
               <AccountIcon />
             </ListItemIcon>
-            <ListItemText
-              className={classes.navText}
-              primary="Login"
-              onClick={() => loginWithRedirect()}
-            />
+            <ListItemText className={classes.navText} primary="Login" onClick={() => loginWithRedirect()} />
           </ListItem>
         )}
       </List>
-      <a
-        href="https://lrewater.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={classes.lreLogo}
-      >
-        <img src={lreLogo} alt="LRE Water"/>
+      <a href="https://lrewater.com" target="_blank" rel="noopener noreferrer" className={classes.lreLogo}>
+        <img src={lreLogo} alt="LRE Water" />
       </a>
     </div>
   );

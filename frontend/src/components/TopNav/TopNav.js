@@ -133,10 +133,32 @@ const TopNav = props => {
   // Configure sidebar menu items
   const MenuItems = [
     {
-      link: 'stories',
-      title: 'Stories',
-      activePath: 'stories',
-      rolesRequired: ['Stories Testing'],
+      title: 'Streamflow Explorer',
+      activePath: 'usgs',
+      children: [
+        {
+          link: 'usgs',
+          title: 'USGS',
+          activePath: 'usgs',
+          rolesRequired: false,
+          exact: true,
+          loginRequired: true,
+        },
+        // {
+        //   link: 'stories2',
+        //   title: 'Stories2',
+        //   activePath: 'stories2',
+        //   rolesRequired: false,
+        //   exact: true,
+        //   loginRequired: true,
+        // },
+      ],
+    },
+    {
+      link: 'external-links',
+      title: 'External Links',
+      activePath: 'external-links',
+      rolesRequired: false,
       exact: true,
       loginRequired: true,
     },
@@ -168,6 +190,7 @@ const TopNav = props => {
       const children = item.children.map(child => {
         let cli = (
           <MenuItem
+            className={handleActive(item.activePath, item.exact)}
             key={child.link}
             className={classes.menuItem}
             onClick={() => {
@@ -270,7 +293,9 @@ const TopNav = props => {
               </Link>
             </>
           )}
+
           {MenuItems.map(item => returnMenuItem(item, isAuthenticated, user))}
+
           {isAuthenticated ? (
             <Link className={handleActive('/logout')} onClick={() => logout()}>
               Logout
@@ -281,9 +306,10 @@ const TopNav = props => {
             </Link>
           )}
         </Toolbar>
+
         {(map.mapMode === 'analyze' || map.mapMode === 'explore') && (
           <Toolbar className={clsx(classes.subNav, 'subnav')}>
-            <Flex justifyContent={'flex-start'}>
+            <Flex justifyContent={'start'}>
               <ScenarioDialog isOpen={map.scenarioDialogIsOpen} mode={map.scenarioDialogMode} />
               <Button
                 color="secondary"

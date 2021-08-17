@@ -74,6 +74,7 @@ db.SeasonalAnalysisStartDateModel = require('./SeasonalAnalysisStartDateModel')(
 db.SeasonalAnalysisEndDateModel = require('./SeasonalAnalysisEndDateModel')(sequelize, Sequelize);
 db.DynamicFinalForPortalPointsModel = require('./DynamicFinalForPortalPointsModel')(sequelize, Sequelize);
 db.DynamicFinalForPortalTableModel = require('./DynamicFinalForPortalTableModel')(sequelize, Sequelize);
+db.DynamicFinalForPortalTimeSeriesModel = require('./DynamicFinalForPortalTimeSeriesModel')(sequelize, Sequelize);
 db.GisUserIntersectLandUseModel = require('./GisUserIntersectLandUseModel')(sequelize, Sequelize);
 db.GisUserIntersectStationsModel = require('./GisUserIntersectStationsModel')(sequelize, Sequelize);
 db.GisUserIntersectParcelsModel = require('./GisUserIntersectParcelsModel')(sequelize, Sequelize);

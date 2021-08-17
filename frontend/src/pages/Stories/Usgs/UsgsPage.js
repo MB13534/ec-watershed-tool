@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import StoriesMap from '../../components/StoriesMap';
-import StoriesLayout from '../../components/StoriesLayout';
-import StoriesDrawer from '../../components/StoriesDrawer';
+import StoriesMap from '../../../components/StoriesMap';
+import StoriesLayout from '../../../components/StoriesLayout';
+import StoriesDrawer from '../../../components/StoriesDrawer';
 import { Box } from '@material-ui/core';
-import Legend from '../../components/Legend';
-import StoriesAnalyticsPopupDetails from '../../components/StoriesMap/StoriesAnalyticsPopupDetails';
+import Legend from '../../../components/Legend';
+import StoriesAnalyticsPopupDetails from '../../../components/StoriesMap/StoriesAnalyticsPopupDetails';
 import clsx from 'clsx';
 
 // create page styles
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Stories = () => {
+const UsgsPage = () => {
   const classes = useStyles();
 
   //track visibility of side drawer to change css styles
@@ -114,11 +114,11 @@ const Stories = () => {
 
   //legend display
   const monitoringLegendColors = [
-    { name: `Much Wetter than Normal`, color: `#000087` },
-    { name: `Wetter than Normal`, color: `#A8D1DF` },
-    { name: `Normal`, color: `#008140` },
-    { name: `Drier than Normal`, color: `#F76300` },
-    { name: `Much Drier than Normal`, color: `#E20000` },
+    { name: `Much Wetter than Normal (> 140%)`, color: `#000087` },
+    { name: `Wetter than Normal (120-140%)`, color: `#A8D1DF` },
+    { name: `Normal (80-120%)`, color: `#008140` },
+    { name: `Drier than Normal (60-80%)`, color: `#F76300` },
+    { name: `Much Drier than Normal (< 60%)`, color: `#E20000` },
     { name: `No data`, color: `#fff` },
   ];
 
@@ -132,7 +132,7 @@ const Stories = () => {
       setEndMonth={setEndMonth}
     >
       <div className={classes.root}>
-        <StoriesDrawer drawerVisible={drawerVisible} setDrawerVisible={setDrawerVisible} />
+        {/* <StoriesDrawer drawerVisible={drawerVisible} setDrawerVisible={setDrawerVisible} /> */}
         <div className={classes.content}>
           <Legend legendColors={monitoringLegendColors} />
           <Box bgcolor="#f1f1f1" width="100%">
@@ -181,4 +181,4 @@ const Stories = () => {
   );
 };
 
-export default Stories;
+export default UsgsPage;

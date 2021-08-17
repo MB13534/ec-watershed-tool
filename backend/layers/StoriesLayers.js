@@ -80,7 +80,7 @@ const StoriesLayers = [
     legendOrder: 4,
     enabled: true,
     visible: true,
-    popupType: 'table',
+    popupType: 'none',
     geometry_type_ndx: 3,
     layer_categories: [3],
     paint: {

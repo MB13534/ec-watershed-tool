@@ -14,6 +14,8 @@ import Flex from '../Flex/Flex';
 import useTheme from '@material-ui/core/styles/useTheme';
 import MonthPicker from '../FilterBar/MonthPicker';
 import YearPicker from '../FilterBar/YearPicker';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Menu } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -91,6 +93,21 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
   const theme = useTheme();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const goTo = route => {
+    history.push(`/${route}`);
+    localStorage.setItem('last_url', history.location.pathname);
+  };
+
   /**
    * Assign appropriate class name to menu item based
    * on if menu item is active or not
@@ -114,9 +131,32 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
       loginRequired: true,
     },
     {
-      link: 'stories',
-      title: 'Stories',
-      activePath: 'stories',
+      title: 'Streamflow Explorer',
+      activePath: 'usgs',
+      children: [
+        {
+          link: 'usgs',
+          title: 'USGS',
+          activePath: 'usgs',
+          rolesRequired: false,
+          exact: true,
+          loginRequired: true,
+        },
+        // {
+        //   link: 'stories2',
+        //   title: 'Stories2',
+        //   activePath: 'stories2',
+        //   rolesRequired: false,
+        //   exact: true,
+        //   loginRequired: true,
+        // },
+      ],
+    },
+    {
+      link: 'external-links',
+      title: 'External Links',
+      activePath: 'external-links',
+      rolesRequired: false,
       exact: true,
       loginRequired: true,
     },
@@ -125,11 +165,79 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
   const returnMenuItem = (item, isAuthenticated, user) => {
     let li = null;
 
-    li = (
-      <Link key={item.link} component={RouterLink} to={item.link} className={handleActive(item.activePath, item.exact)}>
-        {item.title}
-      </Link>
-    );
+    if (!item.children) {
+      li = (
+        <Link
+          key={item.link}
+          component={RouterLink}
+          to={item.link}
+          className={handleActive(item.activePath, item.exact)}
+        >
+          {item.title}
+        </Link>
+      );
+    } else {
+      li = (
+        <Link key={item.link} onClick={handleClick} className={handleActive(item.activePath, item.exact)}>
+          {item.title}
+        </Link>
+      );
+    }
+
+    if (item.children) {
+      const children = item.children.map(child => {
+        let cli = (
+          <MenuItem
+            className={handleActive(item.activePath, item.exact)}
+            key={child.link}
+            className={classes.menuItem}
+            onClick={() => {
+              goTo(child.link);
+              handleClose();
+            }}
+          >
+            {child.title}
+          </MenuItem>
+        );
+
+        if (child.loginRequired && child.rolesRequired && user) {
+          let roleSwitch = false;
+          const roles = [...child.rolesRequired];
+          roles.forEach(role => {
+            if (user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(role)) {
+              roleSwitch = true;
+            }
+          });
+          if (isAuthenticated && roleSwitch) {
+            return cli;
+          }
+        } else if (child.loginRequired) {
+          if (isAuthenticated) {
+            return cli;
+          }
+        } else {
+          return cli;
+        }
+
+        return null;
+      });
+
+      li = (
+        <div key={item.title}>
+          {li}
+          <Menu
+            className={classes.menu}
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            style={{ zIndex: 1500 }}
+          >
+            {children}
+          </Menu>
+        </div>
+      );
+    }
 
     if (item.loginRequired && item.rolesRequired && user) {
       let roleSwitch = false;

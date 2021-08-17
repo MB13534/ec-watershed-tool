@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
   boxOpen: {
     height: 'auto',
-    maxHeight: '400px',
+    maxHeight: '500px',
     transition: theme.transitions.create('max-height', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => ({
   },
   unsentOpen: {
     height: 'auto',
-    maxHeight: '400px',
+    maxHeight: '500px',
     transition: theme.transitions.create('max-height', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
   },
   tooBigErrorOpen: {
     height: 'auto',
-    maxHeight: '400px',
+    maxHeight: '500px',
     transition: theme.transitions.create('max-height', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,

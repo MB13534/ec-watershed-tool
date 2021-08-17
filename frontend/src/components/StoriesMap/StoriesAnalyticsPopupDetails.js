@@ -215,17 +215,10 @@ export default function StoriesAnalyticsPopupDetails({
                     </Typography>
                     <Grid item xs={12}>
                       <List dense>
-                        <ListItem className={classes.listItem}>
-                          <ListItemText>Selected Water Year</ListItemText>
-                          <ListItemText>{tableStatsData.wateryear}</ListItemText>
-                        </ListItem>
-                        <ListItem className={classes.listItem}>
-                          <ListItemText>Through the Month of</ListItemText>
-                          <ListItemText>{tableStatsData.month_name}</ListItemText>
-                        </ListItem>
                         <Divider variant={'middle'} className={classes.divider} />
                         <Typography variant={'h6'} align={'center'}>
-                          Selected Period Statistics
+                          Selected Water Year Statistics: <br />
+                          {`October - ${tableStatsData.month_name} ${tableStatsData.wateryear}`}
                         </Typography>
                         <ListItem className={classes.listItem}>
                           <ListItemText>Cumulative Flows</ListItemText>
@@ -237,7 +230,7 @@ export default function StoriesAnalyticsPopupDetails({
                         </ListItem>
                         <Divider variant={'middle'} className={classes.divider} />
                         <Typography variant={'h6'} align={'center'}>
-                          Period of Record Statistics
+                          Period of Record Statistics:
                         </Typography>
                         <ListItem className={classes.listItem}>
                           <ListItemText>Period of Record</ListItemText>
@@ -258,7 +251,11 @@ export default function StoriesAnalyticsPopupDetails({
                           </ListItemText>
                         </ListItem>
                         <ListItem className={classes.listItem}>
-                          <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
+                          <ListItemText>
+                            {`${tableStatsInfo[tableStatsData.station_ndx].lowest_year} Flows, Oct - ${
+                              tableStatsData.month_abbrev
+                            }`}
+                          </ListItemText>
                           <ListItemText>{tableStatsData.lowest_year_cumulative_af} AF</ListItemText>
                         </ListItem>
                         <ListItem className={classes.listItem}>
@@ -273,7 +270,9 @@ export default function StoriesAnalyticsPopupDetails({
                           </ListItemText>
                         </ListItem>
                         <ListItem className={classes.listItem}>
-                          <ListItemText>Flows through {tableStatsData.month_name}</ListItemText>
+                          <ListItemText>{`${tableStatsInfo[tableStatsData.station_ndx].highest_year} Flows, Oct - ${
+                            tableStatsData.month_abbrev
+                          }`}</ListItemText>
                           <ListItemText>{tableStatsData.highest_year_cumulative_af} AF</ListItemText>
                         </ListItem>
                         <ListItem className={classes.listItem}>

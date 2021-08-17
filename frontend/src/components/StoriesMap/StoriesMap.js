@@ -123,15 +123,15 @@ const StoriesMap = ({
 
   const getHexColorForGradient = pctnorm_num => {
     switch (true) {
-      case pctnorm_num >= 200:
+      case pctnorm_num >= 140:
         return '#000087';
-      case pctnorm_num >= 120 && pctnorm_num < 200:
+      case pctnorm_num >= 120 && pctnorm_num < 140:
         return '#A8D1DF';
       case pctnorm_num >= 80 && pctnorm_num < 120:
         return '#008140';
-      case pctnorm_num >= 50 && pctnorm_num < 80:
+      case pctnorm_num >= 60 && pctnorm_num < 80:
         return '#F76300';
-      case pctnorm_num < 50:
+      case pctnorm_num < 60:
         return '#E20000';
       default:
         return '#fff';
@@ -393,21 +393,27 @@ const StoriesMap = ({
       function setupPopups(e) {
         //queryRenderedFeatures is a mapbox function
         const pointFeatures = map.queryRenderedFeatures(e.point);
-        setDataVizVisible(true);
 
         if (pointFeatures.length) {
           map.fire('closeAllPopups');
 
           let layer = myLayers.filter(x => x.name === pointFeatures[0].layer.id)[0];
-          console.log(pointFeatures[0]);
+
           //sets the name of the last location that was clicked
-          setLastLocationNdx(pointFeatures[0].properties.site_ndx);
 
           const popup = new mapboxgl.Popup({ closeOnClick: false, maxWidth: '400px' }).setLngLat(e.lngLat);
 
           let hasPopup = true;
 
           if (layer && layer.popupType === 'table') {
+            map.flyTo({
+              center: [pointFeatures[0].properties.site_lon, pointFeatures[0].properties.site_lat],
+              zoom: 12,
+              padding: { bottom: 200 },
+            });
+
+            setLastLocationNdx(pointFeatures[0].properties.site_ndx);
+            setDataVizVisible(true);
             popup.setHTML(
               '<div class="' +
                 classes.popupWrap +

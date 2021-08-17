@@ -242,6 +242,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
   useEffect(() => {
     mapProvider.setLastLocationId(lastLocationIdClicked);
     mapProvider.fetchAnalyticsTableForLocation(lastLocationIdClicked);
+    mapProvider.fetchAnalyticsTimeSeriesForLocation(lastLocationIdClicked);
   }, [lastLocationIdClicked]); //eslint-disable-line
 
   // useEffect(() => {
@@ -346,9 +347,11 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
             setLastLocationIdClicked(pointFeatures[0].properties.location_i);
 
             mapProvider.handleControlsVisibility('dataViz', true);
+
             map.flyTo({
               center: [pointFeatures[0].properties.loc_long, pointFeatures[0].properties.loc_lat],
               zoom: 12,
+              padding: { bottom: 340 },
             });
           } else if (layer && layer.popupType === 'table') {
             popup.setHTML(

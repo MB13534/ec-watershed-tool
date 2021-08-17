@@ -20,8 +20,7 @@ import useFormSubmitStatus from '../../hooks/useFormSubmitStatus';
  */
 export const MapContext = React.createContext({
   map: {},
-  controls: {
-  },
+  controls: {},
   activeZoomToLayer: {},
   activeBasemap: {},
   basemapLayers: [],
@@ -33,7 +32,7 @@ export const MapContext = React.createContext({
   filteredLayers: [],
   visibleLayers: [],
   filterValues: {},
-  searchValue: "",
+  searchValue: '',
   filterActive: false,
   updateRenderedPoints: () => {},
   onMapChange: () => {},
@@ -56,18 +55,18 @@ export const MapContext = React.createContext({
 
 export const DummyBasemapLayers = [
   {
-    name: "Streets",
-    styleURL: "mapbox://styles/mapbox/streets-v11",
+    name: 'Streets',
+    styleURL: 'mapbox://styles/mapbox/streets-v11',
     image: StreetsImg,
   },
   {
-    name: "Outdoors",
-    styleURL: "mapbox://styles/mapbox/outdoors-v11",
+    name: 'Outdoors',
+    styleURL: 'mapbox://styles/mapbox/outdoors-v11',
     image: OutdoorsImg,
   },
   {
-    name: "Satellite",
-    styleURL: "mapbox://styles/mapbox/satellite-streets-v11",
+    name: 'Satellite',
+    styleURL: 'mapbox://styles/mapbox/satellite-streets-v11',
     //styleURL: "mapbox://styles/lrewater/ckfmqvtng6cad19r1wgf9acz8",
     image: SatelliteImg,
   },
@@ -78,13 +77,13 @@ export const DummyBasemapLayers = [
  * @param {*} val
  */
 const checkControlOpen = (val, defaultVisibility = true) => {
-  if (val === null || val === "undefined") {
+  if (val === null || val === 'undefined') {
     return defaultVisibility;
     //eslint-disable-next-line
-  } else if (val == "true") {
+  } else if (val == 'true') {
     return true;
     //eslint-disable-next-line
-  } else if (val == "false") {
+  } else if (val == 'false') {
     return false;
   }
 };
@@ -93,12 +92,12 @@ const checkControlOpen = (val, defaultVisibility = true) => {
  * Create the context provider for the map context
  * @param {*} props
  */
-export const MapProvider = (props) => {
+export const MapProvider = props => {
   const { getTokenSilently } = useAuth0();
 
   const analysisTypes = [
-    { value: "85", display: "85th percentile" },
-    { value: "med", display: "Median" },
+    { value: '85', display: '85th percentile' },
+    { value: 'med', display: 'Median' },
   ];
 
   const [mapMode, setMapMode] = useState('explore');
@@ -106,24 +105,24 @@ export const MapProvider = (props) => {
   const defaultFilters = {
     startDate: '2020-04-01',
     endDate: '2020-10-30',
-    analysisType: "Median",
-    priorities: ["Field/Chemistry", "Metals/Ions", "Nutrients/Solids", "Pathogens"],
+    analysisType: 'Median',
+    priorities: ['Field/Chemistry', 'Metals/Ions', 'Nutrients/Solids', 'Pathogens'],
     threats: [
-      "Agriculture",
-      "Development",
-      "Mining",
-      "Natural",
-      "OWTS",
-      "Oil and Gas",
-      "Recreation",
-      "Transportation",
-      "WWTPs",
-      "Wildfire",
+      'Agriculture',
+      'Development',
+      'Mining',
+      'Natural',
+      'OWTS',
+      'Oil and Gas',
+      'Recreation',
+      'Transportation',
+      'WWTPs',
+      'Wildfire',
     ],
     parameters: [
-//      "Hardness",
-      "TP",
-      "Cu-D",
+      //      "Hardness",
+      'TP',
+      'Cu-D',
     ],
   };
 
@@ -148,22 +147,17 @@ export const MapProvider = (props) => {
     setSnackbarErrorMessage(error);
   };
 
-  const {
-    setWaitingState,
-    snackbarOpen,
-    snackbarError,
-    handleSnackbarClose,
-  } = useFormSubmitStatus();
+  const { setWaitingState, snackbarOpen, snackbarError, handleSnackbarClose } = useFormSubmitStatus();
 
   const [fetchedGeometryData, setFetchedGeometryData] = useState([]);
 
-  const triggerLoadGeometryData = (data) => {
+  const triggerLoadGeometryData = data => {
     setFetchedGeometryData(data);
   };
 
   const handleRefresh = () => {
-    setRefresh((state) => !state);
-  }
+    setRefresh(state => !state);
+  };
 
   const [first, setFirst] = useState(true);
 
@@ -173,22 +167,21 @@ export const MapProvider = (props) => {
     }
 
     setFirst(false);
-
   }, [refresh]);
 
   const handleScenarioLoadClick = () => {
     setScenarioDialogMode('load');
     setScenarioDialogIsOpen(true);
-  }
+  };
 
   const handleScenarioSaveClick = () => {
     setScenarioDialogMode('save');
     setScenarioDialogIsOpen(true);
-  }
+  };
 
   useEffect(() => {
     if (startDate && endDate) {
-      setFilters((prevState) => {
+      setFilters(prevState => {
         return {
           ...prevState,
           ['startDate']: startDate,
@@ -198,21 +191,21 @@ export const MapProvider = (props) => {
     }
   }, [startDate, endDate]);
 
-  const getPriorityIndexByName = (name) => {
+  const getPriorityIndexByName = name => {
     let priority = priorities.find(x => x.priority_desc === name);
     return priority?.priority_index;
-  }
-  const getThreatIndexByName = (name) => {
+  };
+  const getThreatIndexByName = name => {
     let threat = threats.find(x => x.threat_desc === name);
     return threat?.threat_index;
-  }
-  const getParameterIndexByName = (name) => {
+  };
+  const getParameterIndexByName = name => {
     let parameter = parameters.find(x => x.parameter_abbrev === name);
     if (typeof parameter === 'undefined') {
       console.log(name + ' wasnt found... why?');
     }
     return parameter.parameter_index;
-  }
+  };
 
   const [isControlsLoaded, setIsControlsLoaded] = useState(false);
 
@@ -240,7 +233,6 @@ export const MapProvider = (props) => {
       }
     }
     send();
-
   }, [filters.priorities, filters.threats, isControlsLoaded]);
 
   useEffect(() => {
@@ -260,29 +252,30 @@ export const MapProvider = (props) => {
   const [queryAreaSize, setQueryAreaSize] = useState('');
   const [queryResults, setQueryResults] = useState(null);
   const [analyticsResults, setAnalyticsResults] = useState(null);
+  const [timeSeriesResults, setTimeSeriesResults] = useState(null);
   const [lastLocationId, setLastLocationId] = useState(null);
   const [monitoringPointData, setMonitoringPointData] = useState(null);
   const [renderedPointData, setRenderedPointData] = useState(null);
   const [filterActive, setFilterActive] = useState(false);
   const [activeZoomToLayer, setActiveZoomToLayer] = useState(null);
   const [activeBasemap, setActiveBasemap] = useState({
-    name: "Streets",
-    styleURL: "mapbox://styles/mapbox/streets-v11",
+    name: 'Streets',
+    styleURL: 'mapbox://styles/mapbox/streets-v11',
     //styleURL: "mapbox://styles/lrewater/ckfmqvtng6cad19r1wgf9acz8",
   });
   const [basemapLayers] = useState(DummyBasemapLayers);
   const [
     myLayers,
     isLayersLoading, //eslint-disable-line
-  ] = useFetchData("map-example/layers", []);
+  ] = useFetchData('map-example/layers', []);
   const [
     parcelLayers,
     isParcelLayersLoading, //eslint-disable-line
-  ] = useFetchData("map-example/layers/parcels", []);
+  ] = useFetchData('map-example/layers/parcels', []);
   const [
     streamLayers,
     isStreamLayersLoading, //eslint-disable-line
-  ] = useFetchData("map-example/layers/streams", []);
+  ] = useFetchData('map-example/layers/streams', []);
 
   const [layers, setLayers] = useState([]);
   const [filteredLayers, setFilteredLayers] = useState([]);
@@ -292,8 +285,7 @@ export const MapProvider = (props) => {
     layerCategories: [],
     geometryTypes: [],
   });
-  const [searchValue, setSearchValue] = useState("");
-
+  const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
     if (!isLayersLoading && !isParcelLayersLoading && !isStreamLayersLoading) {
@@ -301,59 +293,36 @@ export const MapProvider = (props) => {
       setFilteredLayers([...myLayers, ...parcelLayers, ...streamLayers]);
       setVisibleLayers([...myLayers, ...parcelLayers, ...streamLayers]);
       console.log('setting visible layers', [...myLayers, ...parcelLayers, ...streamLayers]);
-      onVisibleLayerChange([...myLayers, ...parcelLayers, ...streamLayers])
+      onVisibleLayerChange([...myLayers, ...parcelLayers, ...streamLayers]);
     }
   }, [map, isLayersLoading, isParcelLayersLoading, isStreamLayersLoading]); //eslint-disable-line
 
-
   const [controls, setControls] = useState({
     drawer: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_drawer_control"),
-        true
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_drawer_control'), true),
     },
     basemap: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_basemap_control"),
-        false
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_basemap_control'), false),
     },
     layers: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_layers_control"),
-        false
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_layers_control'), false),
     },
     filterLayers: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_filterLayers_control"),
-        false
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_filterLayers_control'), false),
     },
     dataViz: {
       visible: false,
     },
     popup: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_popup_control"),
-        true
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_popup_control'), true),
     },
     legend: {
-      visible: checkControlOpen(
-        sessionStorage.getItem("sk_legend_control"),
-        true
-      ),
+      visible: checkControlOpen(sessionStorage.getItem('sk_legend_control'), true),
     },
   });
 
   useEffect(() => {
-    if (
-      searchValue !== "" ||
-      filterValues.geometryTypes.length !== 0 ||
-      filterValues.layerCategories.length !== 0
-    ) {
+    if (searchValue !== '' || filterValues.geometryTypes.length !== 0 || filterValues.layerCategories.length !== 0) {
       setFilterActive(true);
     } else {
       setFilterActive(false);
@@ -361,38 +330,30 @@ export const MapProvider = (props) => {
   }, [searchValue, filterValues]);
 
   useEffect(() => {
-    if (
-      searchValue === "" &&
-      filterValues.geometryTypes.length === 0 &&
-      filterValues.layerCategories === 0
-    ) {
+    if (searchValue === '' && filterValues.geometryTypes.length === 0 && filterValues.layerCategories === 0) {
       setFilteredLayers(layers);
     } else {
       let filteredByChips = [...layers];
 
       if (filterValues.geometryTypes.length > 0) {
-        filteredByChips = filteredByChips.filter((layer) =>
-          filterValues.geometryTypes.includes(layer.geometry_type_ndx)
-        );
+        filteredByChips = filteredByChips.filter(layer => filterValues.geometryTypes.includes(layer.geometry_type_ndx));
       }
 
       if (filterValues.layerCategories.length > 0) {
-        filteredByChips = filteredByChips.filter((layer) => {
-          return filterValues.layerCategories.some((r) =>
-            layer.layer_categories.includes(r)
-          );
+        filteredByChips = filteredByChips.filter(layer => {
+          return filterValues.layerCategories.some(r => layer.layer_categories.includes(r));
         });
       }
 
       const filtered = matchSorter(filteredByChips, searchValue, {
-        keys: ["name"],
+        keys: ['name'],
       });
       setFilteredLayers(filtered);
     }
   }, [searchValue, layers, filterValues]); //eslint-disable-line
 
   const resetFilters = () => {
-    setSearchValue("");
+    setSearchValue('');
     setFilterValues({
       geometryTypes: [],
       layerCategories: [],
@@ -400,8 +361,8 @@ export const MapProvider = (props) => {
   };
 
   const onSelectAllLayers = () => {
-    setFilteredLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setFilteredLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.enabled = true;
         rec.visible = true;
@@ -409,8 +370,8 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setVisibleLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setVisibleLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.enabled = true;
         rec.visible = true;
@@ -418,10 +379,10 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
-        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+        if (filteredLayers.map(dd => dd.name).includes(d.name)) {
           rec.enabled = true;
           rec.visible = true;
         }
@@ -432,8 +393,8 @@ export const MapProvider = (props) => {
   };
 
   const onSelectNoneLayers = () => {
-    setFilteredLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setFilteredLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.enabled = false;
         rec.visible = false;
@@ -441,8 +402,8 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setVisibleLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setVisibleLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.enabled = false;
         rec.visible = false;
@@ -450,10 +411,10 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
-        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+        if (filteredLayers.map(dd => dd.name).includes(d.name)) {
           rec.enabled = false;
           rec.visible = false;
         }
@@ -464,39 +425,36 @@ export const MapProvider = (props) => {
   };
 
   const onSelectAllParameters = () => {
-    setFilters((prevState) => {
+    setFilters(prevState => {
       return {
         ...prevState,
-        ['parameters']: parameters.map(x => x.parameter_abbrev)
-      }
+        ['parameters']: parameters.map(x => x.parameter_abbrev),
+      };
     });
-  }
+  };
 
   const onSelectNoneParameters = () => {
-    setFilters((prevState) => {
+    setFilters(prevState => {
       return {
         ...prevState,
-        ['parameters']: []
-      }
+        ['parameters']: [],
+      };
     });
   };
 
   const handleControlsVisibility = (control, state) => {
-    setControls((prevState) => {
+    setControls(prevState => {
       let newValues = { ...prevState };
 
-      if (typeof state === "undefined" || state === null) {
-        sessionStorage.setItem(
-          `sk_${control}_control`,
-          !newValues[control].visible
-        );
+      if (typeof state === 'undefined' || state === null) {
+        sessionStorage.setItem(`sk_${control}_control`, !newValues[control].visible);
 
-        if (control === "basemap" && !newValues.basemap.visible) {
+        if (control === 'basemap' && !newValues.basemap.visible) {
           newValues.layers.visible = false;
           sessionStorage.setItem(`sk_layers_control`, false);
         }
 
-        if (control === "layers" && !newValues.layers.visible) {
+        if (control === 'layers' && !newValues.layers.visible) {
           newValues.basemap.visible = false;
           sessionStorage.setItem(`sk_basemap_control`, false);
         }
@@ -506,12 +464,12 @@ export const MapProvider = (props) => {
         sessionStorage.setItem(`sk_${control}_control`, state);
         newValues[control].visible = state;
 
-        if (control === "basemap" && state === true) {
+        if (control === 'basemap' && state === true) {
           newValues.layers.visible = false;
           sessionStorage.setItem(`sk_layers_control`, false);
         }
 
-        if (control === "layers" && state === true) {
+        if (control === 'layers' && state === true) {
           newValues.basemap.visible = false;
           sessionStorage.setItem(`sk_basemap_control`, false);
         }
@@ -520,7 +478,7 @@ export const MapProvider = (props) => {
     });
   };
 
-  const cleanParams = (params) => {
+  const cleanParams = params => {
     const newParams = [];
 
     parameters.forEach(x => {
@@ -530,23 +488,23 @@ export const MapProvider = (props) => {
     });
 
     return newParams;
-  }
+  };
 
   const handleFilters = (name, value, simpleMode = false) => {
-    if (name !== "analysisType" && simpleMode === false) { // toggle only this one on/off
+    if (name !== 'analysisType' && simpleMode === false) {
+      // toggle only this one on/off
       setFilters(prevState => {
         const existingVals = [...prevState[name]];
         const existingIndex = existingVals.indexOf(value);
-        existingIndex > -1
-          ? existingVals.splice(existingIndex, 1)
-          : existingVals.push(value);
+        existingIndex > -1 ? existingVals.splice(existingIndex, 1) : existingVals.push(value);
 
-                return {
+        return {
           ...prevState,
           [name]: existingVals,
         };
       });
-    } else { // toggle all off and then toggle this one
+    } else {
+      // toggle all off and then toggle this one
       setFilters(prevState => {
         return {
           ...prevState,
@@ -576,6 +534,7 @@ export const MapProvider = (props) => {
         fetchStationData();
         fetchParcelData();
         fetchAnalyticsTableForLocation();
+        fetchAnalyticsTimeSeriesForLocation();
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -586,7 +545,7 @@ export const MapProvider = (props) => {
       }
     }
     send();
-  }
+  };
 
   function fetchAnalyticsTableForLocation(location_index) {
     if (!location_index) location_index = lastLocationId;
@@ -601,9 +560,41 @@ export const MapProvider = (props) => {
           {
             parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
           },
-          { headers });
+          { headers }
+        );
 
         setAnalyticsResults(results.reverse());
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+
+    send();
+  }
+
+  function fetchAnalyticsTimeSeriesForLocation(location_index) {
+    if (!location_index) location_index = lastLocationId;
+    if (!location_index) return;
+
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const { data: results } = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series/${location_index}`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers }
+        );
+
+        // console.log('analytics time series: ', results);
+        setTimeSeriesResults(results);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -620,6 +611,7 @@ export const MapProvider = (props) => {
   useEffect(() => {
     fetchMonitoringPointData();
     fetchAnalyticsTableForLocation();
+    fetchAnalyticsTimeSeriesForLocation();
   }, [filters.parameters, filters.analysisType]);
 
   useEffect(() => {
@@ -634,7 +626,7 @@ export const MapProvider = (props) => {
 
   useEffect(() => {
     if (filters.parameters.length && parameters.length) {
-      setFilters((prevState) => {
+      setFilters(prevState => {
         return {
           ...prevState,
           ['parameters']: cleanParams(filters.parameters),
@@ -664,7 +656,8 @@ export const MapProvider = (props) => {
         setMonitoringPointData(query.data);
         updateRenderedPoints(query.data);
         recolorPointsForLayers(query.data);
-        //fetchAnalyticsTableForLocation();
+        // fetchAnalyticsTableForLocation();
+        // fetchAnalyticsTimeSeriesForLocation()
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
@@ -675,7 +668,7 @@ export const MapProvider = (props) => {
       }
     }
     send();
-  }
+  };
 
   // const debouncedUpdate = useCallback(debounce(() => {
   //   updateRenderedPoints(monitoringPointData);
@@ -693,7 +686,7 @@ export const MapProvider = (props) => {
   //   }
   // }, [kickoff, monitoringPointData, oneTime]);
 
-  const updateRenderedPoints = (myData) => {
+  const updateRenderedPoints = myData => {
     if (myData === null || typeof myData === 'undefined') {
       myData = monitoringPointData;
     }
@@ -735,13 +728,7 @@ export const MapProvider = (props) => {
         'Spring Stations',
         'Groundwater Stations',
       ],
-      filter: [
-        'match',
-        ['get', 'location_i'],
-        Object.keys(locationValues).map(x => parseInt(x)),
-        true,
-        false
-      ]
+      filter: ['match', ['get', 'location_i'], Object.keys(locationValues).map(x => parseInt(x)), true, false],
     });
 
     features = features.map(x => {
@@ -752,10 +739,10 @@ export const MapProvider = (props) => {
       };
     });
 
-    features.sort((a,b) => (a.score < b.score) ? 1 : ((b.score < a.score) ? -1 : 0));
+    features.sort((a, b) => (a.score < b.score ? 1 : b.score < a.score ? -1 : 0));
 
     setRenderedPointData(features);
-  }
+  };
 
   const [isLandUseDataLoading, setIsLandUseDataLoading] = useState(false);
   const [isMonitoringLocationDataLoading, setIsMonitoringLocationDataLoading] = useState(false);
@@ -767,10 +754,7 @@ export const MapProvider = (props) => {
       try {
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        let query = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/landuse`,
-          { headers }
-        );
+        let query = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user-geometry/landuse`, { headers });
         setLandUseData(query.data);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -784,7 +768,7 @@ export const MapProvider = (props) => {
       }
     }
     send();
-  }
+  };
 
   const fetchStationData = () => {
     setIsMonitoringLocationDataLoading(true);
@@ -792,10 +776,7 @@ export const MapProvider = (props) => {
       try {
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        let query = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/stations`,
-          { headers }
-        );
+        let query = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user-geometry/stations`, { headers });
         setStationData(query.data);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -809,7 +790,7 @@ export const MapProvider = (props) => {
       }
     }
     send();
-  }
+  };
 
   const fetchParcelData = () => {
     setIsParcelDataLoading(true);
@@ -817,10 +798,7 @@ export const MapProvider = (props) => {
       try {
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        let query = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-geometry/parcels`,
-          { headers }
-        );
+        let query = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user-geometry/parcels`, { headers });
         setParcelData(query.data);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -834,9 +812,9 @@ export const MapProvider = (props) => {
       }
     }
     send();
-  }
+  };
 
-  const getHexColorForScore = (score) => {
+  const getHexColorForScore = score => {
     switch (score) {
       case 4:
         return '#c61717';
@@ -851,7 +829,7 @@ export const MapProvider = (props) => {
       default:
         return '#999999';
     }
-  }
+  };
 
   const recolorPointsForLayers = (data = null) => {
     const layerIds = [
@@ -870,7 +848,7 @@ export const MapProvider = (props) => {
       return;
     }
     // sort by location_index ascending
-    data.sort((a,b) => (a.location_index > b.location_index) ? 1 : ((b.location_index > a.location_index) ? -1 : 0));
+    data.sort((a, b) => (a.location_index > b.location_index ? 1 : b.location_index > a.location_index ? -1 : 0));
 
     const colorData = [];
     const locationValues = {};
@@ -882,9 +860,9 @@ export const MapProvider = (props) => {
       }
 
       if (filters.analysisType === '85th percentile') {
-          if (row.all_85_bmk > locationValues[row.location_index]) {
-            locationValues[row.location_index] = row.all_85_bmk;
-          }
+        if (row.all_85_bmk > locationValues[row.location_index]) {
+          locationValues[row.location_index] = row.all_85_bmk;
+        }
       } else {
         if (row.all_med_bmk > locationValues[row.location_index]) {
           locationValues[row.location_index] = row.all_med_bmk;
@@ -894,7 +872,7 @@ export const MapProvider = (props) => {
 
     for (const [loc_id, score] of Object.entries(locationValues)) {
       colorData.push(parseInt(loc_id));
-      colorData.push(getHexColorForScore(score))
+      colorData.push(getHexColorForScore(score));
     }
 
     layerIds.forEach(id => {
@@ -903,7 +881,7 @@ export const MapProvider = (props) => {
         ['get', 'location_i'],
         Object.keys(locationValues).map(x => parseInt(x)),
         true,
-        false
+        false,
       ]);
 
       map.setFilter(id + '-labels', [
@@ -911,34 +889,29 @@ export const MapProvider = (props) => {
         ['get', 'location_i'],
         Object.keys(locationValues).map(x => parseInt(x)),
         true,
-        false
+        false,
       ]);
 
       map.setPaintProperty(id, 'circle-opacity', 1);
       map.setPaintProperty(id, 'circle-stroke-opacity', 1);
-      map.setPaintProperty(id, 'circle-color', [
-        'interpolate',
-        ['linear'],
-        ['get', 'location_i'],
-        ...colorData,
-      ]);
-    })
-  }
+      map.setPaintProperty(id, 'circle-color', ['interpolate', ['linear'], ['get', 'location_i'], ...colorData]);
+    });
+  };
 
   useEffect(() => {
     console.log('parameters changed to', parameters);
   }, [parameters]);
 
-  const onMapChange = (val) => setMap(val);
-  const onBasemapChange = (val) => {
+  const onMapChange = val => setMap(val);
+  const onBasemapChange = val => {
     setActiveBasemap(val);
   };
-  const onZoomToLayerChange = (val) => setActiveZoomToLayer(val);
-  const onLayerChange = (val) => setLayers(val);
-  const onFilteredLayerChange = (val) => setFilteredLayers(val);
-  const onVisibleLayerChange = (val) => setVisibleLayers(val);
+  const onZoomToLayerChange = val => setActiveZoomToLayer(val);
+  const onLayerChange = val => setLayers(val);
+  const onFilteredLayerChange = val => setFilteredLayers(val);
+  const onVisibleLayerChange = val => setVisibleLayers(val);
   const onFilterValuesChange = (name, val) => {
-    setFilterValues((prevState) => {
+    setFilterValues(prevState => {
       let newValues = { ...prevState };
       let filterVals = [...newValues[name]];
       const existingIndex = filterVals.indexOf(val);
@@ -951,11 +924,11 @@ export const MapProvider = (props) => {
       return newValues;
     });
   };
-  const onSearchValueChange = (val) => setSearchValue(val);
+  const onSearchValueChange = val => setSearchValue(val);
 
-  const updateVisibleLayers = (layers) => {
-    setFilteredLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+  const updateVisibleLayers = layers => {
+    setFilteredLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.visible = false;
         rec.enabled = false;
@@ -971,8 +944,8 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setVisibleLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setVisibleLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
         rec.visible = false;
         rec.enabled = false;
@@ -988,10 +961,10 @@ export const MapProvider = (props) => {
       });
       return newValues;
     });
-    setLayers((prevState) => {
-      let newValues = [...prevState].map((d) => {
+    setLayers(prevState => {
+      let newValues = [...prevState].map(d => {
         let rec = { ...d };
-        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+        if (filteredLayers.map(dd => dd.name).includes(d.name)) {
           rec.visible = false;
           rec.enabled = false;
 
@@ -1008,10 +981,10 @@ export const MapProvider = (props) => {
     });
   };
 
-  const updateEnabledLayers = (layers) => {
+  const updateEnabledLayers = layers => {
     if (!layers || layers.length === 0) return;
-    setFilteredLayers((prevState) => {
-      return [...prevState].map((d) => {
+    setFilteredLayers(prevState => {
+      return [...prevState].map(d => {
         let rec = { ...d };
         layers.forEach(layer => {
           if (rec.id === layer) {
@@ -1021,8 +994,8 @@ export const MapProvider = (props) => {
         return rec;
       });
     });
-    setVisibleLayers((prevState) => {
-      return [...prevState].map((d) => {
+    setVisibleLayers(prevState => {
+      return [...prevState].map(d => {
         let rec = { ...d };
         layers.forEach(layer => {
           if (rec.id === layer) {
@@ -1032,10 +1005,10 @@ export const MapProvider = (props) => {
         return rec;
       });
     });
-    setLayers((prevState) => {
-      return [...prevState].map((d) => {
+    setLayers(prevState => {
+      return [...prevState].map(d => {
         let rec = { ...d };
-        if (filteredLayers.map((dd) => dd.name).includes(d.name)) {
+        if (filteredLayers.map(dd => dd.name).includes(d.name)) {
           layers.forEach(layer => {
             if (rec.id === layer) {
               rec.enabled = true;
@@ -1085,6 +1058,8 @@ export const MapProvider = (props) => {
         setQueryResults,
         analyticsResults,
         setAnalyticsResults,
+        setTimeSeriesResults,
+        timeSeriesResults,
         setLastLocationId,
         monitoringPointData,
         renderedPointData,
@@ -1114,6 +1089,7 @@ export const MapProvider = (props) => {
         updateRenderedPoints,
         getHexColorForScore,
         fetchAnalyticsTableForLocation,
+        fetchAnalyticsTimeSeriesForLocation,
         handleFilters,
         handleControlsVisibility,
         onMapChange,
