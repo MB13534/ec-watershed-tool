@@ -185,6 +185,34 @@ const StoriesMap = ({
       ['get', 'site_ndx'],
       ...colorData,
     ]);
+
+    if (!map.getLayer(`USGS Streamflow Stations-labels`)) {
+      map.addLayer({
+        id: 'USGS Streamflow Stations-labels',
+        type: 'symbol',
+        source: 'USGS Streamflow Stations-source',
+        'source-layer': 'USGS_StreamflowStations-5qor4i',
+        minzoom: 10,
+        layout: {
+          'text-field': ['get', 'site_desc'],
+          'text-offset': [0, -2],
+          'text-size': 14,
+        },
+        paint: {
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 0.5,
+        },
+      });
+      console.log(Object.keys(siteIndexes));
+
+      map.setFilter('USGS Streamflow Stations-labels', [
+        'match',
+        ['get', 'site_ndx'],
+        Object.keys(siteIndexes).map(x => parseInt(x)),
+        true,
+        false,
+      ]);
+    }
   };
 
   function fetchHydrographData(year, startMonth, endMonth, station_ndx) {
