@@ -133,34 +133,26 @@ const TopNav = props => {
   // Configure sidebar menu items
   const MenuItems = [
     {
-      title: 'Streamflow Explorer',
-      activePath: 'usgs',
+      title: 'Stories',
+      activePath: 'stories',
       children: [
         {
-          link: 'usgs',
-          title: 'USGS',
-          activePath: 'usgs',
+          link: 'streamflow-explore',
+          title: 'Streamflow Explore',
+          activePath: 'streamflow-explore',
           rolesRequired: false,
           exact: true,
           loginRequired: true,
         },
-        // {
-        //   link: 'stories2',
-        //   title: 'Stories2',
-        //   activePath: 'stories2',
-        //   rolesRequired: false,
-        //   exact: true,
-        //   loginRequired: true,
-        // },
+        {
+          link: 'external-links',
+          title: 'External Links',
+          activePath: 'external-links',
+          rolesRequired: false,
+          exact: true,
+          loginRequired: true,
+        },
       ],
-    },
-    {
-      link: 'external-links',
-      title: 'External Links',
-      activePath: 'external-links',
-      rolesRequired: false,
-      exact: true,
-      loginRequired: true,
     },
   ];
 

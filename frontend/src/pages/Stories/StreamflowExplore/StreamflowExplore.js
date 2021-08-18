@@ -23,10 +23,10 @@ const useStyles = makeStyles(theme => ({
     marginTop: '64px',
   },
   boxFull: {
-    width: 'calc(100% - 60px)',
+    width: 'calc(100% - 120px - 20px)',
   },
   boxCollapsed: {
-    width: 'calc(100% - 60px)',
+    width: 'calc(100% - 120px - 20px)',
   },
   boxOpen: {
     height: 'auto',
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const UsgsPage = () => {
+const StreamflowExplorePage = () => {
   const classes = useStyles();
 
   //track visibility of side drawer to change css styles
@@ -161,7 +161,7 @@ const UsgsPage = () => {
               [classes.boxOpen]: dataVizVisible,
               [classes.boxClose]: !dataVizVisible,
             })}
-            ml="30px"
+            ml="60px"
             bottom="30px"
             zIndex={1200}
             position="absolute"
@@ -181,4 +181,4 @@ const UsgsPage = () => {
   );
 };
 
-export default UsgsPage;
+export default StreamflowExplorePage;

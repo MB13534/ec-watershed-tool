@@ -34,10 +34,10 @@ const useStyles = makeStyles(theme => ({
     marginTop: '64px',
   },
   boxFull: {
-    width: 'calc(100% - 60px)',
+    width: 'calc(100% - 120px - 20px)',
   },
   boxCollapsed: {
-    width: 'calc(100% - 60px)',
+    width: 'calc(100% - 120px - 20px)',
   },
   boxOpen: {
     height: 'auto',
@@ -158,7 +158,7 @@ const MapPage = () => {
               [classes.boxOpen]: map.controls.dataViz.visible,
               [classes.boxClose]: !map.controls.dataViz.visible,
             })}
-            ml="30px"
+            ml="60px"
             bottom={map.mapMode === 'explore' || map.mapMode === 'analyze' ? '94px' : '30px'}
             zIndex={1200}
             position="absolute"

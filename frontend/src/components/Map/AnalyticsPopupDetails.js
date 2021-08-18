@@ -702,19 +702,17 @@ function TimeSeriesGraphRow(props) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Card style={{ margin: '12px' }}>
-              <Typography variant={'h6'} align={'center'} style={{ padding: '10px 0' }}>
-                Time Series
-              </Typography>
               <ResponsiveContainer height={200}>
                 <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
-                  <Tooltip />
+                  <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
                   <Line
                     type="monotone"
                     dataKey="data_value"
                     strokeWidth={3}
-                    //blue
                     stroke="blue"
                     dot={true}
+                    name={'Value'}
+                    isAnimationActive={false}
                   />
                   <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                   <XAxis
