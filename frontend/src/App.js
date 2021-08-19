@@ -12,7 +12,6 @@ import { MapProvider } from './pages/Map/MapProvider';
 
 const MapPage = React.lazy(() => import('./pages/Map'));
 const StreamflowExplorePage = React.lazy(() => import('./pages/Stories/StreamflowExplore'));
-const Stories2 = React.lazy(() => import('./pages/Stories/Stories2'));
 const ExternalLinks = React.lazy(() => import('./pages/ExternalLinks'));
 const DataListInputsPage = React.lazy(() => import('./pages/DataManagement/Inputs'));
 const DataListInputTypesPage = React.lazy(() => import('./pages/DataManagement/InputTypes'));
@@ -43,7 +42,6 @@ const App = () => {
             />
             <PrivateRoute path="/external-links" exact render={() => <ExternalLinks />} />
             <PrivateRoute path="/streamflow-explore" exact render={() => <StreamflowExplorePage />} />
-            <PrivateRoute path="/stories2" exact render={() => <Stories2 />} />
             <PrivateRoute path="/data/inputs" exact render={() => <DataListInputsPage />} />
             <PrivateRoute path="/data/input-types" exact render={() => <DataListInputTypesPage />} />
             <PrivateRoute path="/data/input-bins" exact render={() => <DataListInputBinsPage />} />

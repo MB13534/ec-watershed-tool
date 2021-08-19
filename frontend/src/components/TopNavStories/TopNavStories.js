@@ -11,7 +11,7 @@ import { useAuth0 } from '../../hooks/useAuth0';
 import logo from '../../images/logo-ec.svg';
 import clsx from 'clsx';
 import Flex from '../Flex/Flex';
-import useTheme from '@material-ui/core/styles/useTheme';
+
 import MonthPicker from '../FilterBar/MonthPicker';
 import YearPicker from '../FilterBar/YearPicker';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -90,7 +90,6 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
   const classes = useStyles();
   let history = useHistory();
 
-  const theme = useTheme();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -180,9 +179,8 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
       const children = item.children.map(child => {
         let cli = (
           <MenuItem
-            className={handleActive(item.activePath, item.exact)}
+            className={(handleActive(item.activePath, item.exact), classes.menuItem)}
             key={child.link}
-            className={classes.menuItem}
             onClick={() => {
               goTo(child.link);
               handleClose();

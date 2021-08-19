@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -32,7 +32,18 @@ import Grid from '@material-ui/core/Grid';
 import { colors } from '@material-ui/core';
 import HSBar from 'react-horizontal-stacked-bar-chart';
 import numbro from 'numbro';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  ReferenceArea,
+  Line,
+  Label,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import moment from 'moment';
 
 function TabPanel(props) {
@@ -562,7 +573,7 @@ export default function AnalyticsPopupDetails({ map }) {
                       </TableCell>
                       <TableCell component="th" scope="row">
                         <Typography variant={'caption'}>
-                          <a href={row.url} target={'_blank'}>
+                          <a href={row.url} target={'_blank'} rel="noopener noreferrer">
                             View
                           </a>
                         </Typography>
@@ -619,12 +630,24 @@ function TimeSeriesGraphRow(props) {
   const { row, map } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const theme = useTheme();
+
+  const [showBenchmark, setShowBenchmark] = useState(false);
+
+  const onMouseOver = (y1, y2) => {
+    setShowBenchmark(true);
+  };
+
+  const onMouseOut = () => {
+    setShowBenchmark(false);
+  };
 
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
   //convert each date to int
   data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
+
+  // console.log('this is the time series data ', data);
+  // console.log('this is the row ', row);
 
   const formatStatistic = row => {
     if (map.filters.analysisType === '85th percentile') {
@@ -704,7 +727,48 @@ function TimeSeriesGraphRow(props) {
             <Card style={{ margin: '12px' }}>
               <ResponsiveContainer height={200}>
                 <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
+                  {/* {showBenchmark ? <Label value={`test`} position="topCenter" /> : null} */}
                   <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
+
+                  <ReferenceArea
+                    y1={0}
+                    // stroke="#16f465"
+                    fill="#E7FEEF"
+                    fillOpacity={1}
+                    // strokeOpacity={1}
+                  />
+                  <ReferenceArea
+                    y1={data[0]?.bmk_1_2}
+                    // stroke="#FFEB3B"
+                    fill="#FFFDEB"
+                    fillOpacity={1}
+                    // strokeOpacity={1}
+                  />
+                  <ReferenceArea
+                    y1={data[0]?.bmk_2_3}
+                    // stroke="#F9A825"
+                    fill="#FEF6E9"
+                    fillOpacity={1}
+                    // strokeOpacity={1}
+                  />
+                  <ReferenceArea
+                    y1={data[0]?.bmk_3_4}
+                    // stroke="#c61717"
+                    fill="#F9E7E7"
+                    fillOpacity={1}
+                    onMouseOut={onMouseOut}
+                    onMouseOver={onMouseOver}
+                    // strokeOpacity={1}
+                  ></ReferenceArea>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+
+                  <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
+                    <Label
+                      value={`${map.filters.analysisType}: ${formatStatistic(row)}`}
+                      position="insideBottomRight"
+                    />
+                  </ReferenceLine>
+
                   <Line
                     type="monotone"
                     dataKey="data_value"
@@ -714,7 +778,7 @@ function TimeSeriesGraphRow(props) {
                     name={'Value'}
                     isAnimationActive={false}
                   />
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+
                   <XAxis
                     dataKey="activity_date"
                     type="number"
@@ -722,7 +786,13 @@ function TimeSeriesGraphRow(props) {
                     domain={['auto', 'auto']}
                     tickFormatter={unixTime => moment(unixTime).format('MMM Do YYYY')}
                   />
-                  <YAxis label={{ value: `${row.parameter_abbrev}`, angle: -90, position: 'insideLeft' }} />
+                  <YAxis
+                    label={{
+                      value: `${row.parameter_abbrev} (${row.units})`,
+                      angle: -90,
+                      position: 'insideBottomLeft',
+                    }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -737,7 +807,6 @@ function StationTableRow(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
-  const theme = useTheme();
 
   return (
     <React.Fragment>

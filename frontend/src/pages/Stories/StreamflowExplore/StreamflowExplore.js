@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import StoriesMap from '../../../components/StoriesMap';
 import StoriesLayout from '../../../components/StoriesLayout';
-import StoriesDrawer from '../../../components/StoriesDrawer';
 import { Box } from '@material-ui/core';
 import Legend from '../../../components/Legend';
 import StoriesAnalyticsPopupDetails from '../../../components/StoriesMap/StoriesAnalyticsPopupDetails';
@@ -22,10 +21,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     marginTop: '64px',
   },
-  boxFull: {
-    width: 'calc(100% - 120px - 20px)',
-  },
-  boxCollapsed: {
+  box: {
     width: 'calc(100% - 120px - 20px)',
   },
   boxOpen: {
@@ -48,9 +44,6 @@ const useStyles = makeStyles(theme => ({
 
 const StreamflowExplorePage = () => {
   const classes = useStyles();
-
-  //track visibility of side drawer to change css styles
-  const [drawerVisible, setDrawerVisible] = useState(true);
 
   //track visibility of data popup info to change css styles
   const [dataVizVisible, setDataVizVisible] = useState(true);
@@ -132,14 +125,12 @@ const StreamflowExplorePage = () => {
       setEndMonth={setEndMonth}
     >
       <div className={classes.root}>
-        {/* <StoriesDrawer drawerVisible={drawerVisible} setDrawerVisible={setDrawerVisible} /> */}
         <div className={classes.content}>
           <Legend legendColors={monitoringLegendColors} />
           <Box bgcolor="#f1f1f1" width="100%">
             <StoriesMap
               lastLocationNdx={lastLocationNdx}
               setLastLocationNdx={setLastLocationNdx}
-              drawerVisible={drawerVisible}
               waterYear={waterYear}
               startMonth={startMonth}
               endMonth={endMonth}
@@ -157,7 +148,7 @@ const StreamflowExplorePage = () => {
           </Box>
 
           <Box
-            className={clsx(drawerVisible ? classes.boxFull : classes.boxCollapsed, {
+            className={clsx(classes.box, {
               [classes.boxOpen]: dataVizVisible,
               [classes.boxClose]: !dataVizVisible,
             })}

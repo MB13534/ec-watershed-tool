@@ -182,9 +182,8 @@ const TopNav = props => {
       const children = item.children.map(child => {
         let cli = (
           <MenuItem
-            className={handleActive(item.activePath, item.exact)}
+            className={(handleActive(item.activePath, item.exact), classes.menuItem)}
             key={child.link}
-            className={classes.menuItem}
             onClick={() => {
               goTo(child.link);
               handleClose();
@@ -332,14 +331,14 @@ const TopNav = props => {
               </Button>
             </Flex>
             {map.mapMode === 'analyze' && (
-              <Flex justifyContent={'flex-end'}>
+              <Flex justifyContent={'end'}>
                 <DatePicker
                   className={classes.picker}
                   name={'startDate'}
                   label={'Start Date'}
                   value={map.filters.startDate}
                   variant={'outlined'}
-                  width={'100%'}
+                  width={100}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -355,7 +354,7 @@ const TopNav = props => {
                   label={'End Date'}
                   value={map.filters.endDate}
                   variant={'outlined'}
-                  width={'100%'}
+                  width={100}
                   InputLabelProps={{
                     shrink: true,
                   }}

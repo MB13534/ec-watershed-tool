@@ -38,7 +38,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import { ExpandMore } from '@material-ui/icons';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 
-const styles = (theme) => ({
+const styles = theme => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DialogTitle = withStyles(styles)((props) => {
+const DialogTitle = withStyles(styles)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
@@ -96,13 +96,13 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
-const DialogContent = withStyles((theme) => ({
+const DialogContent = withStyles(theme => ({
   root: {
     padding: theme.spacing(2),
   },
 }))(MuiDialogContent);
 
-const DialogActions = withStyles((theme) => ({
+const DialogActions = withStyles(theme => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),
@@ -129,11 +129,7 @@ function TabPanel(props) {
   );
 }
 
-export default function CustomizedDialogs({
-                                            isOpen = false,
-                                            mode = 'save',
-                                          }) {
-
+export default function CustomizedDialogs({ isOpen = false, mode = 'save' }) {
   const { getTokenSilently } = useAuth0();
   const context = useMap();
   const theme = useTheme();
@@ -187,7 +183,8 @@ export default function CustomizedDialogs({
   const handleSaveClick = () => {
     context.setSnackbarMessage('Scenario saved successfully!', 'Unable to save scenario.');
 
-    if (value === 0) { // new
+    if (value === 0) {
+      // new
       if (!scenarioName || !scenarioName.trim().length) {
         setError(true);
         setErrorMessage('Please provide a scenario name.');
@@ -211,7 +208,7 @@ export default function CustomizedDialogs({
                 visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
                 enabled_layers: JSON.stringify(context.layers.filter(x => x.enabled).map(x => x.id)),
               },
-              { headers },
+              { headers }
             );
 
             if (query.data) {
@@ -235,7 +232,8 @@ export default function CustomizedDialogs({
         context.setScenarioDialogIsOpen(false);
       }
     }
-    if (value === 1) { // overwrite
+    if (value === 1) {
+      // overwrite
       async function overwrite() {
         try {
           context.setWaitingState('in progress');
@@ -251,7 +249,7 @@ export default function CustomizedDialogs({
               visible_layers: JSON.stringify(context.visibleLayers.filter(x => x.visible).map(x => x.id)),
               enabled_layers: JSON.stringify(context.layers.filter(x => x.enabled).map(x => x.id)),
             },
-            { headers },
+            { headers }
           );
 
           if (query.data) {
@@ -285,23 +283,20 @@ export default function CustomizedDialogs({
     setValue(newValue);
   };
 
-  const handleExistingScenarioChange = (event) => {
+  const handleExistingScenarioChange = event => {
     setExistingScenario(event.target.value);
   };
 
-  const handleNameChange = (event) => {
+  const handleNameChange = event => {
     setScenarioName(event.target.value);
   };
 
-  const handleDeleteClick = (ndx) => {
+  const handleDeleteClick = ndx => {
     async function remove() {
       try {
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        const query = await axios.delete(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-scenario/${ndx}`,
-          { headers },
-        );
+        const query = await axios.delete(`${process.env.REACT_APP_ENDPOINT}/api/user-scenario/${ndx}`, { headers });
 
         if (query.data) {
           loadScenarios();
@@ -321,17 +316,14 @@ export default function CustomizedDialogs({
     }
   };
 
-  const handleLoadClick = (ndx) => {
+  const handleLoadClick = ndx => {
     async function load() {
       try {
         context.setSnackbarMessage('Scenario loaded successfully!', 'Unable to load scenario.');
         context.setWaitingState('in progress');
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        const query = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/user-scenario/${ndx}`,
-          { headers },
-        );
+        const query = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user-scenario/${ndx}`, { headers });
 
         if (query.data) {
           setExistingScenario(ndx);
@@ -359,8 +351,12 @@ export default function CustomizedDialogs({
 
   return (
     <div>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}
-              style={{ marginTop: '128px' }}>
+      <Dialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        style={{ marginTop: '128px' }}
+      >
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
           {mode.charAt(0).toUpperCase() + mode.slice(1)} Scenario
         </DialogTitle>
@@ -371,44 +367,80 @@ export default function CustomizedDialogs({
               <Tab label="Overwrite Existing Scenario" {...a11yProps(1)} />
             </Tabs>
             <TabPanel value={value} index={0}>
-              <Typography variant={'body1'} align={'center'} gutterBottom>Create a new scenario with the following
-                data:</Typography>
-              <TextField id="outlined-basic" label="Scenario Name" variant="outlined" value={scenarioName} fullWidth
-                         error={error} onChange={handleNameChange} style={{ marginTop: theme.spacing(1) }} />
-              {error && <Box pl={1} pr={1}><FormHelperText error>{errorMessage}</FormHelperText></Box>}
+              <Typography variant={'body1'} align={'center'} gutterBottom>
+                Create a new scenario with the following data:
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                label="Scenario Name"
+                variant="outlined"
+                value={scenarioName}
+                fullWidth
+                error={error}
+                onChange={handleNameChange}
+                style={{ marginTop: theme.spacing(1) }}
+              />
+              {error && (
+                <Box pl={1} pr={1}>
+                  <FormHelperText error>{errorMessage}</FormHelperText>
+                </Box>
+              )}
               <Paper style={{ backgroundColor: '#e0e0e0', marginBottom: 0 }}>
-                <ul className={classes.preview}
-                    style={{ padding: theme.spacing(2), listStyleType: 'none', marginBottom: 0 }}>
+                <ul
+                  className={classes.preview}
+                  style={{ padding: theme.spacing(2), listStyleType: 'none', marginBottom: 0 }}
+                >
                   <li>
                     <Grid container>
                       <Grid item xs={6}>
-                        <strong>Analysis</strong><br />{context.filters.analysisType}
+                        <strong>Analysis</strong>
+                        <br />
+                        {context.filters.analysisType}
                       </Grid>
                       <Grid item xs={6}>
-                        <strong>Date
-                          Range</strong><br />{moment(context.filters.startDate).format('l')} - {moment(context.filters.endDate).format('l')}
+                        <strong>Date Range</strong>
+                        <br />
+                        {moment(context.filters.startDate).format('l')} - {moment(context.filters.endDate).format('l')}
                       </Grid>
                     </Grid>
                   </li>
                   <li className={'accordion'} style={{ paddingTop: theme.spacing(1) }}>
                     <Accordion>
-                      <AccordionSummary
-                        expandIcon={<ExpandMore />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                      >
+                      <AccordionSummary expandIcon={<ExpandMore />} aria-controls="panel1a-content" id="panel1a-header">
                         <Typography className={classes.heading}>Scenario Details</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
-                        <ul style={{listStyleType: 'none', padding: 0}}>
-                          <li><strong>Parameter Groups</strong><br />{context.filters.priorities.map(x =>
-                            <span>{x}</span>)}</li>
-                          <li><strong>Categories</strong><br />{context.filters.threats.map(x => <span>{x}</span>)}</li>
-                          <li><strong>Parameters</strong><br />{context.filters.parameters.map(x => <span>{x}</span>)}
+                        <ul style={{ listStyleType: 'none', padding: 0 }}>
+                          <li>
+                            <strong>Parameter Groups</strong>
+                            <br />
+                            {context.filters.priorities.map(x => (
+                              <span key={x}>{x}</span>
+                            ))}
                           </li>
-                          <li><strong>Visible
-                            Layers</strong><br />{Object.values(context.visibleLayers).filter(x => x.visible).map(x =>
-                            <span>{x.name}</span>)}</li>
+                          <li>
+                            <strong>Categories</strong>
+                            <br />
+                            {context.filters.threats.map(x => (
+                              <span key={x}>{x}</span>
+                            ))}
+                          </li>
+                          <li>
+                            <strong>Parameters</strong>
+                            <br />
+                            {context.filters.parameters.map(x => (
+                              <span key={x}>{x}</span>
+                            ))}
+                          </li>
+                          <li>
+                            <strong>Visible Layers</strong>
+                            <br />
+                            {Object.values(context.visibleLayers)
+                              .filter(x => x.visible)
+                              .map(x => (
+                                <span key={x.name}>{x.name}</span>
+                              ))}
+                          </li>
                         </ul>
                       </AccordionDetails>
                     </Accordion>
@@ -445,9 +477,11 @@ export default function CustomizedDialogs({
                     label="Scenario"
                     fullWidth
                   >
-                    {existingScenarioData.map(x =>
-                      <MenuItem key={x.user_scenario_ndx} value={x.user_scenario_ndx}>{x.name}</MenuItem>,
-                    )}
+                    {existingScenarioData.map(x => (
+                      <MenuItem key={x.user_scenario_ndx} value={x.user_scenario_ndx}>
+                        {x.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </TabPanel>
@@ -482,7 +516,7 @@ export default function CustomizedDialogs({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {existingScenarioData.map((row) => (
+                      {existingScenarioData.map(row => (
                         <TableRow
                           key={row.user_scenario_ndx}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -501,8 +535,11 @@ export default function CustomizedDialogs({
                           <TableCell component="th" scope="row">
                             {row.name}
                           </TableCell>
-                          <TableCell
-                            align="right">{moment(row.created_timestamp).tz('America/Denver').fromNow()}</TableCell>
+                          <TableCell align="right">
+                            {moment(row.created_timestamp)
+                              .tz('America/Denver')
+                              .fromNow()}
+                          </TableCell>
                           <TableCell align="right">
                             <Button
                               variant={'contained'}
