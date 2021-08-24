@@ -774,6 +774,12 @@ function TimeSeriesGraphRow(props) {
                     fillOpacity={1}
                   />
 
+                  <ReferenceArea
+                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_0_1 : data[0]?.bmk_3_4}
+                    fill={data[0]?.pctile_basis === 15 ? '#E8F2EC' : '#F9E7E7'}
+                    fillOpacity={1}
+                  />
+
                   <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
 
                   <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
