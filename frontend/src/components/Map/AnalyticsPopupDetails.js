@@ -633,14 +633,6 @@ function TimeSeriesGraphRow(props) {
 
   const [showBenchmark, setShowBenchmark] = useState(false);
 
-  const onMouseOver = (y1, y2) => {
-    setShowBenchmark(true);
-  };
-
-  const onMouseOut = () => {
-    setShowBenchmark(false);
-  };
-
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
   //convert each date to int
@@ -698,6 +690,34 @@ function TimeSeriesGraphRow(props) {
     }
   };
 
+  const formatAnalysisType = (row, data) => {
+    if (map.filters.analysisType === '85th percentile') {
+      return `${data?.pctile_basis}th percentile`;
+    }
+    return map.filters.analysisType;
+  };
+
+  // const renderReferenceAreas = data => {
+  //   if (data.pctile_basis === 15) {
+  //     return (
+  //       <>
+  //         <ReferenceArea y1={0} fill="#F9E7E7" />
+  //         <ReferenceArea y1={data?.bmk_1_2} fill="#FEF6E9" />
+  //         <ReferenceArea y1={data?.bmk_2_3} fill="#FFFDEB" />
+  //         <ReferenceArea y1={data?.bmk_3_4} fill="#E7FEEF" />
+  //       </>
+  //     );
+  //   }
+  //   return (
+  //     <>
+  //       <ReferenceArea y1={data?.bmk_3_4} fill="#F9E7E7" />
+  //       <ReferenceArea y1={data?.bmk_2_3} fill="#FEF6E9" />
+  //       <ReferenceArea y1={data?.bmk_1_2} fill="#FFFDEB" />
+  //       <ReferenceArea y1={0} fill="#E7FEEF" />
+  //     </>
+  //   );
+  // };
+
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
@@ -730,41 +750,35 @@ function TimeSeriesGraphRow(props) {
                   {/* {showBenchmark ? <Label value={`test`} position="topCenter" /> : null} */}
                   <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
 
+                  {/* E8F2EC */}
+
+                  <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#F9E7E7' : '#E8F2EC'} fillOpacity={1} />
                   <ReferenceArea
-                    y1={0}
-                    // stroke="#16f465"
-                    fill="#E7FEEF"
+                    y1={data[0]?.pctile_basis === 15 ? 0 : data[0]?.bmk_0_1}
+                    fill={data[0]?.pctile_basis === 15 ? '#F9E7E7' : '#E7FEEF'}
                     fillOpacity={1}
-                    // strokeOpacity={1}
                   />
                   <ReferenceArea
-                    y1={data[0]?.bmk_1_2}
-                    // stroke="#FFEB3B"
-                    fill="#FFFDEB"
+                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_3_4 : data[0]?.bmk_1_2}
+                    fill={data[0]?.pctile_basis === 15 ? '#FEF6E9' : '#FFFDEB'}
                     fillOpacity={1}
-                    // strokeOpacity={1}
                   />
                   <ReferenceArea
-                    y1={data[0]?.bmk_2_3}
-                    // stroke="#F9A825"
-                    fill="#FEF6E9"
+                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_2_3 : data[0]?.bmk_2_3}
+                    fill={data[0]?.pctile_basis === 15 ? '#FFFDEB' : '#FEF6E9'}
                     fillOpacity={1}
-                    // strokeOpacity={1}
                   />
                   <ReferenceArea
-                    y1={data[0]?.bmk_3_4}
-                    // stroke="#c61717"
-                    fill="#F9E7E7"
+                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_1_2 : data[0]?.bmk_3_4}
+                    fill={data[0]?.pctile_basis === 15 ? '#E7FEEF' : '#F9E7E7'}
                     fillOpacity={1}
-                    onMouseOut={onMouseOut}
-                    onMouseOver={onMouseOver}
-                    // strokeOpacity={1}
-                  ></ReferenceArea>
+                  />
+
                   <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
 
                   <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
                     <Label
-                      value={`${map.filters.analysisType}: ${formatStatistic(row)}`}
+                      value={`${formatAnalysisType(row, data[0])}: ${formatStatistic(row)}`}
                       position="insideBottomRight"
                     />
                   </ReferenceLine>
