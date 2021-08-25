@@ -32,6 +32,10 @@ import Grid from '@material-ui/core/Grid';
 import { colors } from '@material-ui/core';
 import HSBar from 'react-horizontal-stacked-bar-chart';
 import numbro from 'numbro';
+import Popover from '@material-ui/core/Popover';
+import BenchmarkPopover from '../BenchmarkPopover';
+import Link from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   LineChart,
   ReferenceArea,
@@ -317,7 +321,11 @@ export default function AnalyticsPopupDetails({ map }) {
                     <TableRow>
                       <TableCell>Parameter</TableCell>
                       <TableCell align="center">{map.filters.analysisType}</TableCell>
-                      <TableCell align="center">Benchmark</TableCell>
+                      <TableCell align="center">
+                        <Link component={RouterLink} to="resources-links" target="_blank">
+                          Benchmarks
+                        </Link>
+                      </TableCell>
                       <TableCell align="center">Trend</TableCell>
                       <TableCell align="center">Count</TableCell>
                       <TableCell align="center">Analysis POR</TableCell>
@@ -624,6 +632,13 @@ const useRowStyles = makeStyles(theme => ({
     color: 'white',
     lineHeight: '45px',
   },
+  popover: {
+    pointerEvents: 'none',
+    borderRadius: 4,
+  },
+  paper: {
+    backgroundColor: 'transparent',
+  },
 }));
 
 function TimeSeriesGraphRow(props) {
@@ -631,7 +646,17 @@ function TimeSeriesGraphRow(props) {
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
 
-  const [showBenchmark, setShowBenchmark] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handlePopoverOpen = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openPopover = Boolean(anchorEl);
 
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
@@ -690,33 +715,12 @@ function TimeSeriesGraphRow(props) {
     }
   };
 
-  const formatAnalysisType = (row, data) => {
+  const formatAnalysisType = data => {
     if (map.filters.analysisType === '85th percentile') {
       return `${data?.pctile_basis}th percentile`;
     }
     return map.filters.analysisType;
   };
-
-  // const renderReferenceAreas = data => {
-  //   if (data.pctile_basis === 15) {
-  //     return (
-  //       <>
-  //         <ReferenceArea y1={0} fill="#F9E7E7" />
-  //         <ReferenceArea y1={data?.bmk_1_2} fill="#FEF6E9" />
-  //         <ReferenceArea y1={data?.bmk_2_3} fill="#FFFDEB" />
-  //         <ReferenceArea y1={data?.bmk_3_4} fill="#E7FEEF" />
-  //       </>
-  //     );
-  //   }
-  //   return (
-  //     <>
-  //       <ReferenceArea y1={data?.bmk_3_4} fill="#F9E7E7" />
-  //       <ReferenceArea y1={data?.bmk_2_3} fill="#FEF6E9" />
-  //       <ReferenceArea y1={data?.bmk_1_2} fill="#FFFDEB" />
-  //       <ReferenceArea y1={0} fill="#E7FEEF" />
-  //     </>
-  //   );
-  // };
 
   return (
     <React.Fragment>
@@ -727,7 +731,39 @@ function TimeSeriesGraphRow(props) {
         <TableCell align="center">
           {formatStatistic(row)} {row.units}
         </TableCell>
-        <TableCell align="center">{formatValue(row)}</TableCell>
+        <TableCell align="center">
+          <div
+            aria-owns={openPopover ? 'mouse-over-popover' : undefined}
+            aria-haspopup="true"
+            onMouseEnter={handlePopoverOpen}
+            onMouseLeave={handlePopoverClose}
+            // onClick={handlePopoverOpen}
+            style={{ cursor: 'pointer' }}
+          >
+            {formatValue(row)}
+          </div>
+        </TableCell>
+        <Popover
+          id="mouse-over-popover"
+          className={classes.popover}
+          classes={{
+            paper: classes.paper,
+          }}
+          open={openPopover}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          onClose={handlePopoverClose}
+          // disableRestoreFocus
+        >
+          <BenchmarkPopover data={data[0]} />
+        </Popover>
         <TableCell align="center">
           <Icon>{setTrendIcon(row.trend)}</Icon>
           <br />
@@ -747,36 +783,32 @@ function TimeSeriesGraphRow(props) {
             <Card style={{ margin: '12px' }}>
               <ResponsiveContainer height={200}>
                 <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
-                  {/* {showBenchmark ? <Label value={`test`} position="topCenter" /> : null} */}
                   <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
 
-                  {/* E8F2EC */}
-
-                  <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#F9E7E7' : '#E8F2EC'} fillOpacity={1} />
+                  <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'} fillOpacity={1} />
                   <ReferenceArea
                     y1={data[0]?.pctile_basis === 15 ? 0 : data[0]?.bmk_0_1}
-                    fill={data[0]?.pctile_basis === 15 ? '#F9E7E7' : '#E7FEEF'}
+                    fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
                     fillOpacity={1}
                   />
                   <ReferenceArea
                     y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_3_4 : data[0]?.bmk_1_2}
-                    fill={data[0]?.pctile_basis === 15 ? '#FEF6E9' : '#FFFDEB'}
+                    fill={data[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
                     fillOpacity={1}
                   />
                   <ReferenceArea
                     y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_2_3 : data[0]?.bmk_2_3}
-                    fill={data[0]?.pctile_basis === 15 ? '#FFFDEB' : '#FEF6E9'}
+                    fill={data[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
                     fillOpacity={1}
                   />
                   <ReferenceArea
                     y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_1_2 : data[0]?.bmk_3_4}
-                    fill={data[0]?.pctile_basis === 15 ? '#E7FEEF' : '#F9E7E7'}
+                    fill={data[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
                     fillOpacity={1}
                   />
-
                   <ReferenceArea
                     y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_0_1 : data[0]?.bmk_3_4}
-                    fill={data[0]?.pctile_basis === 15 ? '#E8F2EC' : '#F9E7E7'}
+                    fill={data[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
                     fillOpacity={1}
                   />
 
@@ -784,7 +816,7 @@ function TimeSeriesGraphRow(props) {
 
                   <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
                     <Label
-                      value={`${formatAnalysisType(row, data[0])}: ${formatStatistic(row)}`}
+                      value={`${formatAnalysisType(data[0])}: ${formatStatistic(row)} ${row.units}`}
                       position="insideBottomRight"
                     />
                   </ReferenceLine>

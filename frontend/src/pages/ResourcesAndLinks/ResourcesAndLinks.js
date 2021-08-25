@@ -17,14 +17,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ExternalLinks = props => {
+const ResourcesAndLinks = props => {
   const classes = useStyles();
 
   return (
     <Layout>
       <Container maxWidth="md" className={classes.container}>
         <Typography variant="h4" gutterBottom>
-          External Links
+          Resources & Links
         </Typography>
         <Typography variant="body1" className={classes.description} paragraph>
           This will be a list of external links and resources
@@ -34,4 +34,4 @@ const ExternalLinks = props => {
   );
 };
 
-export default ExternalLinks;
+export default ResourcesAndLinks;

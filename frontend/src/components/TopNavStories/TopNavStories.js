@@ -142,9 +142,9 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
           loginRequired: true,
         },
         {
-          link: 'external-links',
-          title: 'External Links',
-          activePath: 'external-links',
+          link: 'resources-links',
+          title: 'Resources & Links',
+          activePath: 'resources-links',
           rolesRequired: false,
           exact: true,
           loginRequired: true,
