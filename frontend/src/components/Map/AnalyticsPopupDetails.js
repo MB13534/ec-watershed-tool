@@ -661,6 +661,7 @@ function TimeSeriesGraphRow(props) {
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
 
+  console.log('this is the timeSeriesResults: ', map.timeSeriesResults);
   console.log('this is the time series data ', data);
   console.log('this is the row ', row);
   //convert each date to int
@@ -725,135 +726,137 @@ function TimeSeriesGraphRow(props) {
   };
 
   return (
-    <React.Fragment>
-      <TableRow className={classes.root}>
-        <TableCell component="th" scope="row">
-          {row.parameter_abbrev}
-        </TableCell>
-        <TableCell align="center">
-          {formatStatistic(row)} {row.units}
-        </TableCell>
-        <TableCell align="center">
-          <div
-            aria-owns={openPopover ? 'mouse-over-popover' : undefined}
-            aria-haspopup="true"
-            onMouseEnter={handlePopoverOpen}
-            onMouseLeave={handlePopoverClose}
-            // onClick={handlePopoverOpen}
-            style={{ cursor: 'pointer' }}
+    typeof data !== 'undefined' && (
+      <React.Fragment>
+        <TableRow className={classes.root}>
+          <TableCell component="th" scope="row">
+            {row.parameter_abbrev}
+          </TableCell>
+          <TableCell align="center">
+            {formatStatistic(row)} {row.units}
+          </TableCell>
+          <TableCell align="center">
+            <div
+              aria-owns={openPopover ? 'mouse-over-popover' : undefined}
+              aria-haspopup="true"
+              onMouseEnter={handlePopoverOpen}
+              onMouseLeave={handlePopoverClose}
+              // onClick={handlePopoverOpen}
+              style={{ cursor: 'pointer' }}
+            >
+              {formatValue(row)}
+            </div>
+          </TableCell>
+          <Popover
+            id="mouse-over-popover"
+            className={classes.popover}
+            classes={{
+              paper: classes.paper,
+            }}
+            open={openPopover}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            onClose={handlePopoverClose}
+            // disableRestoreFocus
           >
-            {formatValue(row)}
-          </div>
-        </TableCell>
-        <Popover
-          id="mouse-over-popover"
-          className={classes.popover}
-          classes={{
-            paper: classes.paper,
-          }}
-          open={openPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          onClose={handlePopoverClose}
-          // disableRestoreFocus
-        >
-          <BenchmarkPopover data={data[0]} />
-        </Popover>
-        <TableCell align="center">
-          <Icon>{setTrendIcon(row.trend)}</Icon>
-          <br />
-          {row.trend}
-        </TableCell>
-        <TableCell align="center">{row.recordcount}</TableCell>
-        <TableCell align="center">{row.analysis_period}</TableCell>
-        <TableCell align={'right'}>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-      </TableRow>
-      <TableRow style={{ backgroundColor: '#eee' }}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Card style={{ margin: '12px' }}>
-              <ResponsiveContainer height={200}>
-                <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
-                  <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
+            <BenchmarkPopover data={data[0]} />
+          </Popover>
+          <TableCell align="center">
+            <Icon>{setTrendIcon(row.trend)}</Icon>
+            <br />
+            {row.trend}
+          </TableCell>
+          <TableCell align="center">{row.recordcount}</TableCell>
+          <TableCell align="center">{row.analysis_period}</TableCell>
+          <TableCell align={'right'}>
+            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+        </TableRow>
+        <TableRow style={{ backgroundColor: '#eee' }}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Card style={{ margin: '12px' }}>
+                <ResponsiveContainer height={200}>
+                  <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
+                    <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
 
-                  <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'} fillOpacity={1} />
-                  <ReferenceArea
-                    y1={data[0]?.pctile_basis === 15 ? 0 : data[0]?.bmk_0_1}
-                    fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
-                    fillOpacity={1}
-                  />
-                  <ReferenceArea
-                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_3_4 : data[0]?.bmk_1_2}
-                    fill={data[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
-                    fillOpacity={1}
-                  />
-                  <ReferenceArea
-                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_2_3 : data[0]?.bmk_2_3}
-                    fill={data[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
-                    fillOpacity={1}
-                  />
-                  <ReferenceArea
-                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_1_2 : data[0]?.bmk_3_4}
-                    fill={data[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
-                    fillOpacity={1}
-                  />
-                  <ReferenceArea
-                    y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_0_1 : data[0]?.bmk_3_4}
-                    fill={data[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
-                    fillOpacity={1}
-                  />
-
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-
-                  <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
-                    <Label
-                      value={`${formatAnalysisType(data[0])}: ${formatStatistic(row)} ${row.units}`}
-                      position="insideBottomRight"
+                    <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'} fillOpacity={1} />
+                    <ReferenceArea
+                      y1={data[0]?.pctile_basis === 15 ? 0 : data[0]?.bmk_0_1}
+                      fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
+                      fillOpacity={1}
                     />
-                  </ReferenceLine>
+                    <ReferenceArea
+                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_3_4 : data[0]?.bmk_1_2}
+                      fill={data[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_2_3 : data[0]?.bmk_2_3}
+                      fill={data[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_1_2 : data[0]?.bmk_3_4}
+                      fill={data[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_0_1 : data[0]?.bmk_3_4}
+                      fill={data[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
+                      fillOpacity={1}
+                    />
 
-                  <Line
-                    type="monotone"
-                    dataKey="data_value"
-                    strokeWidth={3}
-                    stroke="blue"
-                    dot={true}
-                    name={'Value'}
-                    isAnimationActive={false}
-                  />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
 
-                  <XAxis
-                    dataKey="activity_date"
-                    type="number"
-                    // minTickGap={25}
-                    domain={['auto', 'auto']}
-                    tickFormatter={unixTime => moment(unixTime).format('MMM Do YYYY')}
-                  />
-                  <YAxis
-                    label={{
-                      value: `${row.parameter_abbrev} (${row.units})`,
-                      angle: -90,
-                      position: 'insideBottomLeft',
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Card>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
+                    <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
+                      <Label
+                        value={`${formatAnalysisType(data[0])}: ${formatStatistic(row)} ${row.units}`}
+                        position="insideBottomRight"
+                      />
+                    </ReferenceLine>
+
+                    <Line
+                      type="monotone"
+                      dataKey="data_value"
+                      strokeWidth={3}
+                      stroke="blue"
+                      dot={true}
+                      name={'Value'}
+                      isAnimationActive={false}
+                    />
+
+                    <XAxis
+                      dataKey="activity_date"
+                      type="number"
+                      // minTickGap={25}
+                      domain={['auto', 'auto']}
+                      tickFormatter={unixTime => moment(unixTime).format('MMM Do YYYY')}
+                    />
+                    <YAxis
+                      label={{
+                        value: `${row.parameter_abbrev} (${row.units})`,
+                        angle: -90,
+                        position: 'insideBottomLeft',
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Card>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+    )
   );
 }
 
