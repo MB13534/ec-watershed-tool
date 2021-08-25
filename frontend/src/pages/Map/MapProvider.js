@@ -122,7 +122,7 @@ export const MapProvider = props => {
     parameters: [
       //      "Hardness",
       'TP',
-      'Cu-D',
+      // 'Cu-D',
     ],
   };
 
