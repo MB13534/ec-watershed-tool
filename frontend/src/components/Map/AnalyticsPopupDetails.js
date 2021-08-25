@@ -660,11 +660,11 @@ function TimeSeriesGraphRow(props) {
 
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
-  //convert each date to int
-  data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
 
-  // console.log('this is the time series data ', data);
-  // console.log('this is the row ', row);
+  console.log('this is the time series data ', data);
+  console.log('this is the row ', row);
+  //convert each date to int
+  data.length > 0 && data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
 
   const formatStatistic = row => {
     if (map.filters.analysisType === '85th percentile') {
