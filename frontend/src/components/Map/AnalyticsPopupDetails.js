@@ -664,7 +664,9 @@ function TimeSeriesGraphRow(props) {
   console.log('this is the time series data ', data);
   console.log('this is the row ', row);
   //convert each date to int
-  data.length > 0 && data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
+  if (typeof data !== 'undefined') {
+    data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
+  }
 
   const formatStatistic = row => {
     if (map.filters.analysisType === '85th percentile') {
