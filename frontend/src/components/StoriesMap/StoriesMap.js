@@ -86,7 +86,7 @@ const StoriesMap = ({
   //track visibility of side legend to toggle
   const [legendVisible, setLegendVisible] = useState(true);
 
-  const [popupVisible, setPopupVisible] = useState(true);
+  const [popupVisible, setPopupVisible] = useState(false);
 
   //data results
   //static layers array to be rendered to map
@@ -462,6 +462,7 @@ const StoriesMap = ({
             hasPopup = false;
           }
 
+          //popup on click is currently disabled here
           if (hasPopup) popup.addTo(map);
 
           map.on('closeAllPopups', () => {
