@@ -362,7 +362,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
                 '"><tbody>' +
                 Object.entries(pointFeatures[0].properties)
                   .map(([k, v]) => {
-                    if (k === 'hlink' || k === 'URL') {
+                    if (k === 'hlink' || k === 'URL' || k === 'MoreInfo' || k === 'datacall') {
                       return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
                     }
                     return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;

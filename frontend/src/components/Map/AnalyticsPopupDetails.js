@@ -661,9 +661,9 @@ function TimeSeriesGraphRow(props) {
   //create the dataset for the time series graph
   const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
 
-  console.log('this is the timeSeriesResults: ', map.timeSeriesResults);
-  console.log('this is the time series data ', data);
-  console.log('this is the row ', row);
+  // console.log('this is the timeSeriesResults: ', map.timeSeriesResults);
+  // console.log('this is the time series data ', data);
+  // console.log('this is the row ', row);
   //convert each date to int
   if (typeof data !== 'undefined') {
     data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
