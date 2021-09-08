@@ -3,6 +3,7 @@ const { checkAccessToken } = require('../middleware/auth.js');
 const { DynamicFinalForPortalPointsModel } = require('../models');
 const { DynamicFinalForPortalTableModel } = require('../models');
 const { DynamicFinalForPortalTimeSeriesModel } = require('../models');
+const { DynamicFinalForPortalAnnualModel } = require('../models');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -54,9 +55,9 @@ router.post('/table/:id', (req, res, next) => {
 });
 
 /**
- * POST /api/monitoring-point/time-series
+ * POST /api/monitoring-point/time-series-line
  */
-router.post('/time-series/:id', (req, res, next) => {
+router.post('/time-series-line/:id', (req, res, next) => {
   const where = {};
 
   where.location_index = req.params.id;
@@ -65,6 +66,28 @@ router.post('/time-series/:id', (req, res, next) => {
   };
 
   DynamicFinalForPortalTimeSeriesModel.findAll({
+    where: where,
+  })
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+/**
+ * POST /api/monitoring-point/time-series-bar
+ */
+router.post('/time-series-bar/:id', (req, res, next) => {
+  const where = {};
+
+  where.location_index = req.params.id;
+  where.parameter_index = {
+    [Op.in]: req.body.parameters,
+  };
+
+  DynamicFinalForPortalAnnualModel.findAll({
     where: where,
   })
     .then(data => {

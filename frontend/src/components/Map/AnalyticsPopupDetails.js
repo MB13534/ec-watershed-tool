@@ -36,7 +36,11 @@ import Popover from '@material-ui/core/Popover';
 import BenchmarkPopover from '../BenchmarkPopover';
 import Link from '@material-ui/core/Link';
 import { Link as RouterLink } from 'react-router-dom';
+
 import {
+  Bar,
+  Legend,
+  BarChart,
   LineChart,
   ReferenceArea,
   Line,
@@ -329,7 +333,7 @@ export default function AnalyticsPopupDetails({ map }) {
                       <TableCell align="center">Trend</TableCell>
                       <TableCell align="center">Count</TableCell>
                       <TableCell align="center">Analysis POR</TableCell>
-                      <TableCell align="center">Time Series Graph</TableCell>
+                      <TableCell align="center">Visualizations</TableCell>
                     </TableRow>
                   </TableHead>
 
@@ -659,15 +663,19 @@ function TimeSeriesGraphRow(props) {
   const openPopover = Boolean(anchorEl);
 
   //create the dataset for the time series graph
-  const data = map.timeSeriesResults?.filter(r => r.parameter_index === row.parameter_index);
+  const filteredData = map.timeSeriesResults?.line?.filter(r => r.parameter_index === row.parameter_index);
+  const filteredBarData = map.timeSeriesResults?.bar?.filter(r => r.parameter_index === row.parameter_index);
 
-  // console.log('this is the timeSeriesResults: ', map.timeSeriesResults);
-  // console.log('this is the time series data ', data);
-  // console.log('this is the row ', row);
-  //convert each date to int
-  if (typeof data !== 'undefined') {
-    data.forEach(el => (el.activity_date = new Date(el.activity_date).getTime()));
-  }
+  console.log(map.timeSeriesResults?.bar);
+
+  const dateToInt = data => {
+    const mutatedData = data.map(({ ...el }) => {
+      el.activity_date = new Date(el.activity_date).getTime();
+      return el;
+    });
+
+    return mutatedData;
+  };
 
   const formatStatistic = row => {
     if (map.filters.analysisType === '85th percentile') {
@@ -726,7 +734,7 @@ function TimeSeriesGraphRow(props) {
   };
 
   return (
-    typeof data !== 'undefined' && (
+    typeof filteredData !== 'undefined' && (
       <React.Fragment>
         <TableRow className={classes.root}>
           <TableCell component="th" scope="row">
@@ -766,7 +774,7 @@ function TimeSeriesGraphRow(props) {
             onClose={handlePopoverClose}
             // disableRestoreFocus
           >
-            <BenchmarkPopover data={data[0]} />
+            <BenchmarkPopover data={filteredData[0]} />
           </Popover>
           <TableCell align="center">
             <Icon>{setTrendIcon(row.trend)}</Icon>
@@ -786,33 +794,37 @@ function TimeSeriesGraphRow(props) {
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Card style={{ margin: '12px' }}>
                 <ResponsiveContainer height={200}>
-                  <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={data}>
+                  <LineChart margin={{ top: 25, right: 75, bottom: 25, left: 75 }} data={dateToInt(filteredData)}>
                     <Tooltip labelFormatter={unixTime => `Date: ${moment(unixTime).format('MMM Do YYYY')}`} />
 
-                    <ReferenceArea y1={0} fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'} fillOpacity={1} />
                     <ReferenceArea
-                      y1={data[0]?.pctile_basis === 15 ? 0 : data[0]?.bmk_0_1}
-                      fill={data[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
+                      y1={0}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'}
                       fillOpacity={1}
                     />
                     <ReferenceArea
-                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_3_4 : data[0]?.bmk_1_2}
-                      fill={data[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
+                      y1={filteredData[0]?.pctile_basis === 15 ? 0 : filteredData[0]?.bmk_0_1}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
                       fillOpacity={1}
                     />
                     <ReferenceArea
-                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_2_3 : data[0]?.bmk_2_3}
-                      fill={data[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_3_4 : filteredData[0]?.bmk_1_2}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
                       fillOpacity={1}
                     />
                     <ReferenceArea
-                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_1_2 : data[0]?.bmk_3_4}
-                      fill={data[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_2_3 : filteredData[0]?.bmk_2_3}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
                       fillOpacity={1}
                     />
                     <ReferenceArea
-                      y1={data[0]?.pctile_basis === 15 ? data[0]?.bmk_0_1 : data[0]?.bmk_3_4}
-                      fill={data[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_1_2 : filteredData[0]?.bmk_3_4}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_0_1 : filteredData[0]?.bmk_3_4}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
                       fillOpacity={1}
                     />
 
@@ -820,7 +832,7 @@ function TimeSeriesGraphRow(props) {
 
                     <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
                       <Label
-                        value={`${formatAnalysisType(data[0])}: ${formatStatistic(row)} ${row.units}`}
+                        value={`${formatAnalysisType(filteredData[0])}: ${formatStatistic(row)} ${row.units}`}
                         position="insideBottomRight"
                       />
                     </ReferenceLine>
@@ -851,6 +863,94 @@ function TimeSeriesGraphRow(props) {
                     />
                   </LineChart>
                 </ResponsiveContainer>
+                {/* ************************** */}
+                {/* ************************** */}
+                {/* ************************** */}
+                <ResponsiveContainer height={200}>
+                  <BarChart
+                    // barGap={10}
+                    barSize={50}
+                    margin={{ top: 25, right: 75, bottom: 25, left: 75 }}
+                    data={filteredBarData}
+                  >
+                    <Tooltip labelFormatter={unixTime => `Year: ${unixTime}`} />
+
+                    <ReferenceArea
+                      y1={0}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#E28B8B' : '#90BFA1'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? 0 : filteredData[0]?.bmk_0_1}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#E28B8B' : '#8AF9B2'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_3_4 : filteredData[0]?.bmk_1_2}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#FCD392' : '#FFF59D'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_2_3 : filteredData[0]?.bmk_2_3}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#FFF59D' : '#FCD392'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_1_2 : filteredData[0]?.bmk_3_4}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#8AF9B2' : '#E28B8B'}
+                      fillOpacity={1}
+                    />
+                    <ReferenceArea
+                      y1={filteredData[0]?.pctile_basis === 15 ? filteredData[0]?.bmk_0_1 : filteredData[0]?.bmk_3_4}
+                      fill={filteredData[0]?.pctile_basis === 15 ? '#90BFA1' : '#E28B8B'}
+                      fillOpacity={1}
+                    />
+
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+                    <Legend />
+                    <Bar
+                      type="monotone"
+                      dataKey="stat_median"
+                      name={'Median'}
+                      fill="#8884d8"
+                      isAnimationActive={false}
+                      // barSize={35}
+                      // maxBarSize={50}
+                      // barGap={10}
+                    />
+
+                    <Bar
+                      type="monotone"
+                      dataKey="stat_85"
+                      name={'85th percentile'}
+                      fill="#A5A5A5"
+                      isAnimationActive={false}
+                      // barSize={35}
+                      // maxBarSize={50}
+                      // barGap={10}
+                    />
+
+                    <ReferenceLine y={formatStatistic(row)} stroke="red" strokeWidth={3} strokeDasharray="3 3">
+                      <Label
+                        value={`${formatAnalysisType(filteredData[0])}: ${formatStatistic(row)} ${row.units}`}
+                        position="insideBottomRight"
+                      />
+                    </ReferenceLine>
+
+                    <XAxis dataKey="meas_year" />
+
+                    <YAxis
+                      label={{
+                        value: `${row.parameter_abbrev} (${row.units})`,
+                        angle: -90,
+                        position: 'insideBottomLeft',
+                      }}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+                {/* ************************** */}
+                {/* ************************** */}
+                {/* ************************** */}
               </Card>
             </Collapse>
           </TableCell>

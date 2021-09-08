@@ -585,16 +585,26 @@ export const MapProvider = props => {
       try {
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
-        const { data: results } = await axios.post(
-          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series/${location_index}`,
+        const { data: line } = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series-line/${location_index}`,
           {
             parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
           },
           { headers }
         );
 
-        // console.log('analytics time series: ', results);
-        setTimeSeriesResults(results);
+        const { data: bar } = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series-bar/${location_index}`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers }
+        );
+
+        setTimeSeriesResults({
+          line: line,
+          bar: bar,
+        });
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {
