@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const { REAL, INTEGER, TEXT, BIGINT } = DataTypes;
   const Model = sequelize.define(
-    "_dynamic_final_for_portal_table",
+    '_dynamic_final_for_portal_table',
     {
       parameter_abbrev: {
         type: TEXT,
@@ -41,10 +41,13 @@ module.exports = (sequelize, DataTypes) => {
       analysis_period: {
         type: TEXT,
       },
+      organizations: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,
-      schema: "analysis",
+      schema: 'analysis',
       freezeTableName: true,
     }
   );

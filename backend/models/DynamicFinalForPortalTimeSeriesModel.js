@@ -46,6 +46,9 @@ module.exports = (sequelize, DataTypes) => {
       pctile_basis: {
         type: INTEGER,
       },
+      org_name: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,

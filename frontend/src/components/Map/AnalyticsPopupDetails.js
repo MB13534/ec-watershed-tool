@@ -333,6 +333,7 @@ export default function AnalyticsPopupDetails({ map }) {
                       <TableCell align="center">Trend</TableCell>
                       <TableCell align="center">Count</TableCell>
                       <TableCell align="center">Analysis POR</TableCell>
+                      <TableCell align="center">Organizations</TableCell>
                       <TableCell align="center">Visualizations</TableCell>
                     </TableRow>
                   </TableHead>
@@ -665,8 +666,8 @@ function TimeSeriesGraphRow(props) {
   //create the dataset for the time series graph
   const filteredData = map.timeSeriesResults?.line?.filter(r => r.parameter_index === row.parameter_index);
   const filteredBarData = map.timeSeriesResults?.bar?.filter(r => r.parameter_index === row.parameter_index);
-
-  console.log(map.timeSeriesResults?.bar);
+  console.log('filtered data TS: ', filteredData);
+  console.log('filtered data BAR: ', filteredBarData);
 
   const dateToInt = data => {
     const mutatedData = data.map(({ ...el }) => {
@@ -783,6 +784,7 @@ function TimeSeriesGraphRow(props) {
           </TableCell>
           <TableCell align="center">{row.recordcount}</TableCell>
           <TableCell align="center">{row.analysis_period}</TableCell>
+          <TableCell align="center">{row.organizations}</TableCell>
           <TableCell align={'right'}>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -790,7 +792,7 @@ function TimeSeriesGraphRow(props) {
           </TableCell>
         </TableRow>
         <TableRow style={{ backgroundColor: '#eee' }}>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Card style={{ margin: '12px' }}>
                 <ResponsiveContainer height={200}>
