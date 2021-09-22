@@ -838,7 +838,8 @@ function TimeSeriesGraphRow(props) {
                         position="insideBottomRight"
                       />
                     </ReferenceLine>
-
+                    {/* this line is just responsible for adding info to the tooltip without having to create a custom tooltip */}
+                    <Line dataKey="org_name" stroke="black" name={'Organization'} />
                     <Line
                       type="monotone"
                       dataKey="data_value"
