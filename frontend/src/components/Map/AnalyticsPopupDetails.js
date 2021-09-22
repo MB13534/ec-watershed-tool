@@ -326,7 +326,7 @@ export default function AnalyticsPopupDetails({ map }) {
                       <TableCell>Parameter</TableCell>
                       <TableCell align="center">{map.filters.analysisType}</TableCell>
                       <TableCell align="center">
-                        <Link component={RouterLink} to="resources-links" target="_blank">
+                        <Link component={RouterLink} to="resources-links/benchmarks" target="_blank">
                           Benchmarks
                         </Link>
                       </TableCell>

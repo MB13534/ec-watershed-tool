@@ -1,0 +1,1 @@
+export { DataStudioEmbed } from './DataStudioEmbed';
