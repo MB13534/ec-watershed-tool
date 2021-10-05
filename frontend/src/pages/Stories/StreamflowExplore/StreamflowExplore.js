@@ -85,8 +85,11 @@ const StreamflowExplorePage = () => {
   };
   //current month is default, watermonth is for value/query, month_abbrev is for display
   const [endMonth, setEndMonth] = useState({
-    watermonth: months[currentMonth],
-    month_abbrev: waterMonths[months[currentMonth]],
+    //this sets the end month to the current month
+    // watermonth: months[currentMonth],
+    // month_abbrev: waterMonths[months[currentMonth]],
+    watermonth: 12,
+    month_abbrev: 'Sep',
   });
 
   //gradient results to render points on map - gradient used to color points
