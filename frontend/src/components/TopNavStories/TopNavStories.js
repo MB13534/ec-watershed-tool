@@ -261,6 +261,16 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
           </Typography>
 
           {MenuItems.map(item => returnMenuItem(item, isAuthenticated, user))}
+
+          <Link
+            component={RouterLink}
+            to="/resources-links/help"
+            target="_blank"
+            className={(classes.menuItem, classes.link)}
+          >
+            Help
+          </Link>
+
           {isAuthenticated ? (
             <Link className={handleActive('/logout')} onClick={() => logout()}>
               Logout

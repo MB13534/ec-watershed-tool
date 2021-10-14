@@ -17,16 +17,16 @@ const useStyles = makeStyles(theme => ({
     bottom: '0',
     width: 'calc(100% - 280px)',
   },
-  // description: {
-  //   marginTop: 0,
-  //   marginBottom: theme.spacing(2),
-  //   lineHeight: 1.8,
-  //   fontSize: 18,
-  //   textAlign: 'left',
-  // },
+  description: {
+    marginTop: 0,
+    marginBottom: theme.spacing(2),
+    lineHeight: 1.8,
+    fontSize: 18,
+    textAlign: 'left',
+  },
 }));
 
-const Benchmarks = props => {
+const Help = props => {
   const classes = useStyles();
 
   return (
@@ -34,8 +34,8 @@ const Benchmarks = props => {
       <Box marginTop={3} marginBottom={3}>
         <Container className={classes.container}>
           <DataStudioEmbed
-            title="Water Quality Benchmarks & Rationale"
-            src="https://docs.google.com/spreadsheets/d/1dgbxyrcfqlL6E0Ewd0tP5wCNML7NbMiOmZ1_gNxRNBM/edit#gid=0"
+            title="Watershed Tool Quickstart Guide"
+            src="https://docs.google.com/document/d/1iZunrfovQyuiXLZELZJHc5jh1AeHrzzeEgoh-Gb2Lao/edit?usp=sharing"
             width="100%"
             height="100%"
             frameBorder={0}
@@ -46,4 +46,4 @@ const Benchmarks = props => {
   );
 };
 
-export default Benchmarks;
+export default Help;

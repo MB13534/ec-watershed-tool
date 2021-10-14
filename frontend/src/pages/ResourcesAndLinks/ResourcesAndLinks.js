@@ -40,6 +40,14 @@ const ResourcesAndLinks = props => {
       icon: LinkIcon,
       loginRequired: true,
     },
+    {
+      link: 'resources-links/help',
+      title: 'Watershed Tool Quickstart Guide',
+      exact: true,
+      rolesRequired: false,
+      icon: LinkIcon,
+      loginRequired: true,
+    },
   ];
 
   const returnLinkItem = (item, isAuthenticated, user) => {

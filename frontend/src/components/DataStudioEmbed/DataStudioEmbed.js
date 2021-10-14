@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const DataStudioEmbed = ({ src, title, width = '100%', height = 1200 }) => {
+const DataStudioEmbed = ({ src, title, width = '100%', height = '100%' }) => {
   return <iframe title={title} src={src} width={width} height={height} frameBorder={0} />;
 };
 

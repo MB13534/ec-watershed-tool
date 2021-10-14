@@ -14,6 +14,7 @@ const MapPage = React.lazy(() => import('./pages/Map'));
 const StreamflowExplorePage = React.lazy(() => import('./pages/Stories/StreamflowExplore'));
 const ResourcesAndLinksPage = React.lazy(() => import('./pages/ResourcesAndLinks'));
 const BenchmarksPage = React.lazy(() => import('./pages/ResourcesAndLinks/Benchmarks'));
+const HelpPage = React.lazy(() => import('./pages/ResourcesAndLinks/Help'));
 const DataListInputsPage = React.lazy(() => import('./pages/DataManagement/Inputs'));
 const DataListInputTypesPage = React.lazy(() => import('./pages/DataManagement/InputTypes'));
 const DataListInputBinsPage = React.lazy(() => import('./pages/DataManagement/InputBins'));
@@ -44,6 +45,7 @@ const App = () => {
             <PrivateRoute path="/resources-links" exact render={() => <ResourcesAndLinksPage />} />
             <PrivateRoute path="/streamflow-explore" exact render={() => <StreamflowExplorePage />} />
             <PrivateRoute path="/resources-links/benchmarks" exact render={() => <BenchmarksPage />} />
+            <PrivateRoute path="/resources-links/help" exact render={() => <HelpPage />} />
             <PrivateRoute path="/data/inputs" exact render={() => <DataListInputsPage />} />
             <PrivateRoute path="/data/input-types" exact render={() => <DataListInputTypesPage />} />
             <PrivateRoute path="/data/input-bins" exact render={() => <DataListInputBinsPage />} />
