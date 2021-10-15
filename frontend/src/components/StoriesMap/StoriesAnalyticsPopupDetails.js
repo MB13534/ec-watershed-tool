@@ -109,9 +109,18 @@ export default function StoriesAnalyticsPopupDetails({
     </div>
   );
 
+  /*
   function convertToPercent(x, y) {
     return ((parseInt(x.trim()) / parseInt(y.trim())) * 100).toFixed(1);
   }
+*/
+// KKC added replace function to remove commas - the parse function was
+// lopping off the number after the comma so a 3,456 for instance ended
+// up being just a 3 for the division
+function convertToPercent(x, y) {
+  //  console.log(x.replace(",","").trim());
+      return ((parseInt(x.replace(",","").trim()) / parseInt(y.replace(",","").trim())) * 100).toFixed(1);
+    }
 
   return (
     <>
