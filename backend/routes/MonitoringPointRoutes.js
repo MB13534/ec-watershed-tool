@@ -55,12 +55,54 @@ router.post('/table/:id', (req, res, next) => {
 });
 
 /**
+ * POST /api/monitoring-point/table
+ */
+router.post('/table', (req, res, next) => {
+  const where = {};
+
+  where.parameter_index = {
+    [Op.in]: req.body.parameters,
+  };
+
+  DynamicFinalForPortalTableModel.findAll({
+    where: where,
+  })
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+/**
  * POST /api/monitoring-point/time-series-line
  */
 router.post('/time-series-line/:id', (req, res, next) => {
   const where = {};
 
   where.location_index = req.params.id;
+  where.parameter_index = {
+    [Op.in]: req.body.parameters,
+  };
+
+  DynamicFinalForPortalTimeSeriesModel.findAll({
+    where: where,
+  })
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
+/**
+ * POST /api/monitoring-point/time-series-line
+ */
+router.post('/time-series-line', (req, res, next) => {
+  const where = {};
+
   where.parameter_index = {
     [Op.in]: req.body.parameters,
   };

@@ -44,6 +44,24 @@ module.exports = (sequelize, DataTypes) => {
       organizations: {
         type: TEXT,
       },
+      source: {
+        type: TEXT,
+      },
+      location_id: {
+        type: TEXT,
+      },
+      bmk_0_1: {
+        type: REAL,
+      },
+      bmk_1_2: {
+        type: REAL,
+      },
+      bmk_2_3: {
+        type: REAL,
+      },
+      bmk_3_4: {
+        type: REAL,
+      },
     },
     {
       timestamps: false,

@@ -666,8 +666,8 @@ function TimeSeriesGraphRow(props) {
   //create the dataset for the time series graph
   const filteredData = map.timeSeriesResults?.line?.filter(r => r.parameter_index === row.parameter_index);
   const filteredBarData = map.timeSeriesResults?.bar?.filter(r => r.parameter_index === row.parameter_index);
-  console.log('filtered data TS: ', filteredData);
-  console.log('filtered data BAR: ', filteredBarData);
+  // console.log('filtered data TS: ', filteredData);
+  // console.log('filtered data BAR: ', filteredBarData);
 
   const dateToInt = data => {
     const mutatedData = data.map(({ ...el }) => {

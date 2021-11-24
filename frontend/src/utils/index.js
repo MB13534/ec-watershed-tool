@@ -1,6 +1,7 @@
-import { lighten } from "@material-ui/core/styles";
-import copy from "copy-to-clipboard";
-import Papa from "papaparse";
+import { lighten } from '@material-ui/core/styles';
+import copy from 'copy-to-clipboard';
+import Papa from 'papaparse';
+import moment from 'moment';
 
 /**
  * utility function used to check
@@ -23,14 +24,14 @@ export const checkActive = (history, url, exact = false) => {
  * @param {function} callback
  */
 export const copyToClipboard = (data, columns, callback) => {
-  const columnOrder = columns.map((d) => d.field);
+  const columnOrder = columns.map(d => d.field);
   copy(
     Papa.unparse(data, {
-      delimiter: "\t",
+      delimiter: '\t',
       columns: columnOrder,
     }),
     {
-      format: "text/plain",
+      format: 'text/plain',
     }
   );
   callback();
@@ -44,7 +45,7 @@ export const copyToClipboard = (data, columns, callback) => {
  * @param {number} lightenFactor factor to lighten color by
  */
 export const setInputColor = (color, theme, lightenFactor) => {
-  const validColorOptions = ["primary", "secondary", "info", "error"];
+  const validColorOptions = ['primary', 'secondary', 'info', 'error'];
   if (validColorOptions.includes(color)) {
     if (lightenFactor) {
       return lighten(theme.palette[color].main, lightenFactor);
@@ -59,10 +60,10 @@ export const setInputColor = (color, theme, lightenFactor) => {
  * class based on the variant
  * @param {string} variant i.e. standard, outlined, filled
  */
-export const setClass = (classes, variant, classSuffix = "TextField") => {
-  if (variant === "outlined") {
+export const setClass = (classes, variant, classSuffix = 'TextField') => {
+  if (variant === 'outlined') {
     return classes[`outlined${classSuffix}`];
-  } else if (variant === "filled") {
+  } else if (variant === 'filled') {
     return classes[`filled${classSuffix}`];
   } else {
     return classes[classSuffix];
@@ -77,10 +78,19 @@ export const setClass = (classes, variant, classSuffix = "TextField") => {
  */
 export const setWidth = (width, fullWidth) => {
   if (fullWidth) {
-    return "100%";
+    return '100%';
   } else if (width) {
     return width;
   } else {
-    return ("inherit");
+    return 'inherit';
   }
+};
+
+/**
+ * Utility function used to return the a formatted data
+ * @param {date} "new Date"
+ * @param {text} "YYYY MM DD, h:mm A"
+ */
+export const dateFormatter = (date, format) => {
+  return moment(date).format(format);
 };

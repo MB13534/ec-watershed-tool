@@ -3,6 +3,8 @@ import matchSorter from 'match-sorter';
 
 import useFetchData from '../../hooks/useFetchData';
 
+import { dateFormatter } from '../../utils';
+
 import StreetsImg from '../../images/streets.png';
 import OutdoorsImg from '../../images/outdoors.png';
 import SatelliteImg from '../../images/satellite.jpg';
@@ -177,6 +179,144 @@ export const MapProvider = props => {
   const handleScenarioSaveClick = () => {
     setScenarioDialogMode('save');
     setScenarioDialogIsOpen(true);
+  };
+
+  const handleExportClick = () => {
+    async function send() {
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+
+        //make sure the current dates are written to the DB
+        let query = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/controls-list-param/submit`,
+          {
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+          },
+          { headers }
+        );
+
+        let timeseriesResults = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series-line`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers }
+        );
+        const { data: timeseriesData } = timeseriesResults;
+        const timeseriesDataCsvString = [
+          [
+            `Results for paramaters: ${filters.parameters.join(' + ')}; between ${filters.startDate} and ${
+              filters.endDate
+            }`,
+          ],
+          [
+            'Location Index',
+            'Location ID',
+            'Location Name',
+            'Parameter',
+            'Activity Date',
+            'Data Value',
+            'Units',
+            'Source',
+            'Organization',
+          ],
+          ...timeseriesData.map(item => [
+            item.location_index,
+            item.location_id,
+            item.location_name.replaceAll(',', '.'),
+            item.parameter_abbrev,
+            item.activity_date,
+            item.data_value,
+            item.units,
+            item.source,
+            item.org_name,
+          ]),
+        ]
+          .map(e => e.join(','))
+          .join('\n');
+
+        var a = document.createElement('a');
+        a.href = 'data:attachment/csv,' + encodeURIComponent(timeseriesDataCsvString);
+        a.target = '_blank';
+        a.download = `Time Series Data (${filters.startDate} - ${filters.endDate}).csv`;
+        document.body.appendChild(a);
+        a.click();
+        // return csvString;
+
+        let tableResults = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table`,
+          {
+            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+          },
+          { headers }
+        );
+        const { data: tableData } = tableResults;
+        const tableDataCsvString = [
+          [
+            `Results for paramaters: ${filters.parameters.join(' + ')}; between ${filters.startDate} and ${
+              filters.endDate
+            }`,
+          ],
+          [
+            'Location ID',
+            'Location Name',
+            'Parameter',
+            'Units',
+            'Record Count',
+            'Stat 85',
+            'Bval 85',
+            'Stat Median',
+            'Bval Median',
+            'Analysis Period',
+            'Trend (all data)',
+            'Benchmark 0-1',
+            'Benchmark 1-2',
+            'Benchmark 2-3',
+            'Benchmark 3-4',
+            'Source',
+            'Organizations',
+          ],
+          ...tableData.map(item => [
+            item.location_id,
+            item.location_name.replaceAll(',', '.'),
+            item.parameter_abbrev,
+            item.units,
+            item.recordcount,
+            item.stat_85,
+            item.bval_85,
+            item.stat_median,
+            item.bval_median,
+            item.analysis_period,
+            item.trend,
+            item.bmk_0_1,
+            item.bmk_1_2,
+            item.bmk_2_3,
+            item.bmk_3_4,
+            item.source,
+            item.organizations.replaceAll(',', '.'),
+          ]),
+        ]
+          .map(e => e.join(','))
+          .join('\n');
+
+        var a = document.createElement('a');
+        a.href = 'data:attachment/csv,' + encodeURIComponent(tableDataCsvString);
+        a.target = '_blank';
+        a.download = `Stats & Benchmarks Data (${filters.startDate} - ${filters.endDate}).csv`;
+        document.body.appendChild(a);
+        a.click();
+      } catch (err) {
+        // Is this error because we cancelled it ourselves?
+        if (axios.isCancel(err)) {
+          console.log(`call was cancelled`);
+        } else {
+          console.error(err);
+        }
+      }
+    }
+    send();
   };
 
   useEffect(() => {
@@ -517,7 +657,6 @@ export const MapProvider = props => {
   const handleControlsSubmit = () => {
     async function send() {
       try {
-        console.log(filters);
         const token = await getTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
         let query = await axios.post(
@@ -1096,6 +1235,7 @@ export const MapProvider = props => {
         handleRefresh,
         handleScenarioLoadClick,
         handleScenarioSaveClick,
+        handleExportClick,
         updateRenderedPoints,
         getHexColorForScore,
         fetchAnalyticsTableForLocation,

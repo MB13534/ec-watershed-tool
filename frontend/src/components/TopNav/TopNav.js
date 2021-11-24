@@ -15,6 +15,7 @@ import { useMap } from '../../pages/Map/MapProvider';
 import { DatePicker } from '@lrewater/lre-react';
 import clsx from 'clsx';
 import SubmitIcon from '@material-ui/icons/Forward';
+import DownloadIcon from '@material-ui/icons/GetApp';
 import Flex from '../Flex/Flex';
 import useTheme from '@material-ui/core/styles/useTheme';
 import ScenarioDialog from '../ScenarioDialog/ScenarioDialog';
@@ -316,7 +317,6 @@ const TopNav = props => {
                 variant="outlined"
                 disableElevation
                 onClick={map.handleScenarioLoadClick}
-                fullWidth
                 startIcon={<LoadIcon />}
                 style={{
                   marginLeft: theme.spacing(0),
@@ -330,13 +330,24 @@ const TopNav = props => {
                 variant="outlined"
                 disableElevation
                 onClick={map.handleScenarioSaveClick}
-                fullWidth
                 startIcon={<SaveIcon />}
                 style={{
                   marginLeft: theme.spacing(1),
                 }}
               >
                 Save Scenario
+              </Button>
+              <Button
+                color="secondary"
+                variant="outlined"
+                disableElevation
+                onClick={map.handleExportClick}
+                startIcon={<DownloadIcon />}
+                style={{
+                  marginLeft: theme.spacing(1),
+                }}
+              >
+                Export Data
               </Button>
             </Flex>
             {map.mapMode === 'analyze' && (
@@ -375,6 +386,7 @@ const TopNav = props => {
                     marginLeft: theme.spacing(1),
                   }}
                 />
+
                 <Button
                   color="secondary"
                   variant="contained"
