@@ -337,6 +337,7 @@ const TopNav = props => {
               >
                 Save Scenario
               </Button>
+              {map.mapMode === 'analyze' && (
               <Button
                 color="secondary"
                 variant="outlined"
@@ -349,6 +350,7 @@ const TopNav = props => {
               >
                 Export Data
               </Button>
+              )}
             </Flex>
             {map.mapMode === 'analyze' && (
               <Flex justifyContent={'end'}>

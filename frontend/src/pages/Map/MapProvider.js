@@ -207,12 +207,13 @@ export const MapProvider = props => {
         const { data: timeseriesData } = timeseriesResults;
         const timeseriesDataCsvString = [
           [
-            `Results for paramaters: ${filters.parameters.join(' + ')}; between ${filters.startDate} and ${
-              filters.endDate
-            }`,
+            `"Results for parameters: ${filters.parameters.join(', ')}"`
           ],
           [
-            'Location Index',
+            `"Dates: ${filters.startDate} to ${filters.endDate}"`
+          ],
+          [
+            // 'Location Index',
             'Location ID',
             'Location Name',
             'Parameter',
@@ -223,7 +224,7 @@ export const MapProvider = props => {
             'Organization',
           ],
           ...timeseriesData.map(item => [
-            item.location_index,
+            // item.location_index,
             item.location_id,
             item.location_name.replaceAll(',', '.'),
             item.parameter_abbrev,
@@ -255,26 +256,27 @@ export const MapProvider = props => {
         const { data: tableData } = tableResults;
         const tableDataCsvString = [
           [
-            `Results for paramaters: ${filters.parameters.join(' + ')}; between ${filters.startDate} and ${
-              filters.endDate
-            }`,
+            `"Results for parameters: ${filters.parameters.join(', ')}"`
+          ],
+          [
+            `"Dates: ${filters.startDate} to ${filters.endDate}"`
           ],
           [
             'Location ID',
             'Location Name',
             'Parameter',
             'Units',
-            'Record Count',
-            'Stat 85',
-            'Bval 85',
-            'Stat Median',
-            'Bval Median',
-            'Analysis Period',
-            'Trend (all data)',
+            'Count of Results (Statistics)',
+            '85th or 15th percentile',
+            'Benchmark Classification: 85th/15th',
+            'Median',
+            'Benchamrk Classification: Median',
+            'Analysis Period (Statistics)',
             'Benchmark 0-1',
             'Benchmark 1-2',
             'Benchmark 2-3',
             'Benchmark 3-4',
+            'Trend (all data)',
             'Source',
             'Organizations',
           ],
@@ -289,11 +291,11 @@ export const MapProvider = props => {
             item.stat_median,
             item.bval_median,
             item.analysis_period,
-            item.trend,
             item.bmk_0_1,
             item.bmk_1_2,
             item.bmk_2_3,
             item.bmk_3_4,
+            item.trend,
             item.source,
             item.organizations.replaceAll(',', '.'),
           ]),
