@@ -126,6 +126,7 @@ const StreamflowExplorePage = () => {
       setWaterYear={setWaterYear}
       setStartMonth={setStartMonth}
       setEndMonth={setEndMonth}
+      tableStatsInfo={tableStatsInfo}
     >
       <div className={classes.root}>
         <div className={classes.content}>

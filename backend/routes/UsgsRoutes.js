@@ -1,6 +1,6 @@
 const express = require('express');
 const { checkAccessToken } = require('../middleware/auth.js');
-const { DynamicFinalForPortalPointsModel } = require('../models');
+
 const {
   ListUsgsGradientModel,
   WaterMonthsList,
@@ -60,12 +60,16 @@ router.post('/hydrograph', (req, res, next) => {
  * POST /api/usgs/tablestats-data/
  */
 router.post('/tablestats-data', (req, res, next) => {
+  let where = {
+    wateryear: req.body.properties.year,
+    watermonth: req.body.properties.endMonth,
+  };
+  if (req.body.properties.station_ndx) {
+    where['station_ndx'] = req.body.properties.station_ndx;
+  }
+
   ListUsgsTableStatsModel.findAll({
-    where: {
-      wateryear: req.body.properties.year,
-      watermonth: req.body.properties.endMonth,
-      station_ndx: req.body.properties.station_ndx,
-    },
+    where,
     // order: [['waterdayofyear', 'ASC']],
   })
     .then(data => {

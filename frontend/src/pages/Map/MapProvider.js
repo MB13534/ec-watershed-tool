@@ -181,7 +181,8 @@ export const MapProvider = props => {
     setScenarioDialogIsOpen(true);
   };
 
-  const handleExportClick = () => {
+  const handleExportClick = index => {
+    if (![0, 1].includes(index)) return;
     async function send() {
       try {
         const token = await getTokenSilently();
@@ -197,118 +198,114 @@ export const MapProvider = props => {
           { headers }
         );
 
-        let timeseriesResults = await axios.post(
-          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series-line`,
-          {
-            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
-          },
-          { headers }
-        );
-        const { data: timeseriesData } = timeseriesResults;
-        const timeseriesDataCsvString = [
-          [
-            `"Results for parameters: ${filters.parameters.join(', ')}"`
-          ],
-          [
-            `"Dates: ${filters.startDate} to ${filters.endDate}"`
-          ],
-          [
-            // 'Location Index',
-            'Location ID',
-            'Location Name',
-            'Parameter',
-            'Activity Date',
-            'Data Value',
-            'Units',
-            'Source',
-            'Organization',
-          ],
-          ...timeseriesData.map(item => [
-            // item.location_index,
-            item.location_id,
-            item.location_name.replaceAll(',', '.'),
-            item.parameter_abbrev,
-            item.activity_date,
-            item.data_value,
-            item.units,
-            item.source,
-            item.org_name,
-          ]),
-        ]
-          .map(e => e.join(','))
-          .join('\n');
+        if (index === 0) {
+          let timeseriesResults = await axios.post(
+            `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/time-series-line`,
+            {
+              parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+            },
+            { headers }
+          );
+          const { data: timeseriesData } = timeseriesResults;
+          const timeseriesDataCsvString = [
+            [`"Results for parameters: ${filters.parameters.join(', ')}"`],
+            [`"Dates: ${filters.startDate} to ${filters.endDate}"`],
+            [
+              // 'Location Index',
+              'Location ID',
+              'Location Name',
+              'Parameter',
+              'Activity Date',
+              'Data Value',
+              'Units',
+              'Source',
+              'Organization',
+            ],
+            ...timeseriesData.map(item => [
+              // item.location_index,
+              item.location_id,
+              item.location_name.replaceAll(',', '.'),
+              item.parameter_abbrev,
+              item.activity_date,
+              item.data_value,
+              item.units,
+              item.source,
+              item.org_name,
+            ]),
+          ]
+            .map(e => e.join(','))
+            .join('\n');
 
-        var a = document.createElement('a');
-        a.href = 'data:attachment/csv,' + encodeURIComponent(timeseriesDataCsvString);
-        a.target = '_blank';
-        a.download = `Time Series Data (${filters.startDate} - ${filters.endDate}).csv`;
-        document.body.appendChild(a);
-        a.click();
-        // return csvString;
+          var a = document.createElement('a');
+          a.href = 'data:attachment/csv,' + encodeURIComponent(timeseriesDataCsvString);
+          a.target = '_blank';
+          a.download = `Time Series Data (${filters.startDate} - ${filters.endDate}).csv`;
+          document.body.appendChild(a);
+          a.click();
+          // return csvString;
+        }
 
-        let tableResults = await axios.post(
-          `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table`,
-          {
-            parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
-          },
-          { headers }
-        );
-        const { data: tableData } = tableResults;
-        const tableDataCsvString = [
-          [
-            `"Results for parameters: ${filters.parameters.join(', ')}"`
-          ],
-          [
-            `"Dates: ${filters.startDate} to ${filters.endDate}"`
-          ],
-          [
-            'Location ID',
-            'Location Name',
-            'Parameter',
-            'Units',
-            'Count of Results (Statistics)',
-            '85th or 15th percentile',
-            'Benchmark Classification: 85th/15th',
-            'Median',
-            'Benchamrk Classification: Median',
-            'Analysis Period (Statistics)',
-            'Benchmark 0-1',
-            'Benchmark 1-2',
-            'Benchmark 2-3',
-            'Benchmark 3-4',
-            'Trend (all data)',
-            'Source',
-            'Organizations',
-          ],
-          ...tableData.map(item => [
-            item.location_id,
-            item.location_name.replaceAll(',', '.'),
-            item.parameter_abbrev,
-            item.units,
-            item.recordcount,
-            item.stat_85,
-            item.bval_85,
-            item.stat_median,
-            item.bval_median,
-            item.analysis_period,
-            item.bmk_0_1,
-            item.bmk_1_2,
-            item.bmk_2_3,
-            item.bmk_3_4,
-            item.trend,
-            item.source,
-            item.organizations.replaceAll(',', '.'),
-          ]),
-        ]
-          .map(e => e.join(','))
-          .join('\n');
+        if (index === 1) {
+          let tableResults = await axios.post(
+            `${process.env.REACT_APP_ENDPOINT}/api/monitoring-point/table`,
+            {
+              parameters: cleanParams(filters.parameters).map(x => getParameterIndexByName(x)),
+            },
+            { headers }
+          );
+          const { data: tableData } = tableResults;
+          const tableDataCsvString = [
+            [`"Results for parameters: ${filters.parameters.join(', ')}"`],
+            [`"Dates: ${filters.startDate} to ${filters.endDate}"`],
+            [
+              'Location ID',
+              'Location Name',
+              'Parameter',
+              'Units',
+              'Count of Results (Statistics)',
+              '85th or 15th percentile',
+              'Benchmark Classification: 85th/15th',
+              'Median',
+              'Benchamrk Classification: Median',
+              'Analysis Period (Statistics)',
+              'Benchmark 0-1',
+              'Benchmark 1-2',
+              'Benchmark 2-3',
+              'Benchmark 3-4',
+              'Trend (all data)',
+              'Source',
+              'Organizations',
+            ],
+            ...tableData.map(item => [
+              item.location_id,
+              item.location_name.replaceAll(',', '.'),
+              item.parameter_abbrev,
+              item.units,
+              item.recordcount,
+              item.stat_85,
+              item.bval_85,
+              item.stat_median,
+              item.bval_median,
+              item.analysis_period,
+              item.bmk_0_1,
+              item.bmk_1_2,
+              item.bmk_2_3,
+              item.bmk_3_4,
+              item.trend,
+              item.source,
+              item.organizations.replaceAll(',', '.'),
+            ]),
+          ]
+            .map(e => e.join(','))
+            .join('\n');
 
-        var a = document.createElement('a');
-        a.href = 'data:attachment/csv,' + encodeURIComponent(tableDataCsvString);
-        a.target = '_blank';
-        a.download = `Stats & Benchmarks Data (${filters.startDate} - ${filters.endDate}).csv`;
-        document.body.appendChild(a);
-        a.click();
+          var a = document.createElement('a');
+          a.href = 'data:attachment/csv,' + encodeURIComponent(tableDataCsvString);
+          a.target = '_blank';
+          a.download = `Stats & Benchmarks Data (${filters.startDate} - ${filters.endDate}).csv`;
+          document.body.appendChild(a);
+          a.click();
+        }
       } catch (err) {
         // Is this error because we cancelled it ourselves?
         if (axios.isCancel(err)) {

@@ -15,12 +15,12 @@ import { useMap } from '../../pages/Map/MapProvider';
 import { DatePicker } from '@lrewater/lre-react';
 import clsx from 'clsx';
 import SubmitIcon from '@material-ui/icons/Forward';
-import DownloadIcon from '@material-ui/icons/GetApp';
 import Flex from '../Flex/Flex';
 import useTheme from '@material-ui/core/styles/useTheme';
 import ScenarioDialog from '../ScenarioDialog/ScenarioDialog';
 import LoadIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
+import SplitButton from '../SplitButton';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -337,20 +337,7 @@ const TopNav = props => {
               >
                 Save Scenario
               </Button>
-              {map.mapMode === 'analyze' && (
-              <Button
-                color="secondary"
-                variant="outlined"
-                disableElevation
-                onClick={map.handleExportClick}
-                startIcon={<DownloadIcon />}
-                style={{
-                  marginLeft: theme.spacing(1),
-                }}
-              >
-                Export Data
-              </Button>
-              )}
+              {map.mapMode === 'analyze' && <SplitButton handleExportClick={map.handleExportClick} />}
             </Flex>
             {map.mapMode === 'analyze' && (
               <Flex justifyContent={'end'}>

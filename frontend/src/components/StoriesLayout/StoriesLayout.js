@@ -17,7 +17,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const StoriesLayout = ({ children, waterYear, startMonth, endMonth, setWaterYear, setStartMonth, setEndMonth }) => {
+const StoriesLayout = ({
+  children,
+  tableStatsInfo,
+  waterYear,
+  startMonth,
+  endMonth,
+  setWaterYear,
+  setStartMonth,
+  setEndMonth,
+}) => {
   const classes = useStyles();
 
   const theme = useTheme();
@@ -32,6 +41,7 @@ const StoriesLayout = ({ children, waterYear, startMonth, endMonth, setWaterYear
           setWaterYear={setWaterYear}
           setStartMonth={setStartMonth}
           setEndMonth={setEndMonth}
+          tableStatsInfo={tableStatsInfo}
         />
       ) : (
         <Sidebar />

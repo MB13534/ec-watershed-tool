@@ -7,8 +7,9 @@ import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import { HourglassEmpty } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { Grid, Card, List, ListItem, ListItemText, Divider } from '@material-ui/core';
+import { Grid, Card, List, ListItem, ListItemText, Divider, Button } from '@material-ui/core';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import DownloadIcon from '@material-ui/icons/GetApp';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,11 +58,16 @@ const useStyles = makeStyles(theme => ({
     zIndex: 1300,
     borderRadius: '4px',
   },
-
   hsBar: {
     borderTopLeftRadius: '4px',
     borderTopRightRadius: '4px',
     overflow: 'hidden',
+  },
+  exportButton: {
+    position: 'absolute',
+    zIndex: 1,
+    top: '20px',
+    left: '10px',
   },
 }));
 
@@ -75,6 +81,92 @@ export default function StoriesAnalyticsPopupDetails({
 }) {
   const classes = useStyles();
   const theme = useTheme();
+
+  const tableStatsTitleLookup = {
+    cumulative_af: 'Cumulative AF',
+    highest_year_cumulative_af: 'Highest Year Cumulative AF',
+    lowest_year_cumulative_af: 'Lowest Year Cumulative AF',
+    median_year_cumulative_af: 'Median Year Cumulative AF',
+    month_abbrev: 'Month Abbreviation',
+    month_name: 'Month Name',
+    pct_of_normal: 'Percentage of Normal',
+    station_desc: 'Station Description',
+    station_ndx: 'Station Index',
+    usgs_site_no: 'USGS Site Number',
+    watermonth: 'Water Month',
+    wateryear: 'Water Year',
+  };
+
+  const handleExportClick = () => {
+    const statsLookup1 = `"${tableStatsInfo[tableStatsData.station_ndx].lowest_year} Flows, Oct - ${
+      tableStatsData.month_abbrev
+    }"`;
+
+    const statsLookup2 = `"${tableStatsInfo[tableStatsData.station_ndx].highest_year} Flows, Oct - ${
+      tableStatsData.month_abbrev
+    }"`;
+
+    const tableStats = {
+      Name: tableStatsData.station_desc,
+      'USGS Gauge': tableStatsData.usgs_site_no,
+      'Selected Water Year Statistics': `October - ${tableStatsData.month_name} ${tableStatsData.wateryear}`,
+      'Cumulative Flows': tableStatsData.cumulative_af + ' AF',
+      'Percent of Median': tableStatsData.pct_of_normal,
+      'Period of Record':
+        tableStatsInfo[tableStatsData.station_ndx].porminyear +
+        ' - ' +
+        tableStatsInfo[tableStatsData.station_ndx].pormaxyear,
+      'Driest Year on Record':
+        tableStatsInfo[tableStatsData.station_ndx].lowest_year +
+        ' (' +
+        convertToPercent(tableStatsData.lowest_year_cumulative_af, tableStatsData.median_year_cumulative_af) +
+        '% of Med)',
+      [statsLookup1]: tableStatsData.lowest_year_cumulative_af + ' AF',
+      'Wettest Year on Record':
+        tableStatsInfo[tableStatsData.station_ndx].highest_year +
+        ' (' +
+        convertToPercent(tableStatsData.highest_year_cumulative_af, tableStatsData.median_year_cumulative_af) +
+        '% of Med)',
+      [statsLookup2]: tableStatsData.highest_year_cumulative_af + ' AF',
+      'For More Info': `https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${tableStatsData.usgs_site_no}`,
+    };
+
+    const hydrographDataCsvString = [
+      ['Table Stats Data'],
+      ...Object.entries(tableStats).map(item => [item[0], '"' + item[1] + '"']),
+      [],
+      [],
+      [],
+      ['Hydrograph Data'],
+      [`Selected Start Month: ${hydrographData[0].month_abbrev}`],
+      [`Selected End Month: ${hydrographData[hydrographData.length - 1].month_abbrev}`],
+      [
+        'Date',
+        'Daily Average CFS',
+        `Wettest Year (${tableStatsInfo[tableStatsData.station_ndx].highest_year})`,
+        `Driest Year (${tableStatsInfo[tableStatsData.station_ndx].lowest_year})`,
+        `Record Median (${tableStatsInfo[tableStatsData.station_ndx].porminyear} - ${
+          tableStatsInfo[tableStatsData.station_ndx].pormaxyear
+        })`,
+      ],
+      ...hydrographData.map(item => [
+        `"${item.month_num}/${item.dayofmonth}"`,
+        item.flow_cfs,
+        item.high_cfs,
+        item.low_cfs,
+        item.median_cfs,
+      ]),
+    ]
+      .map(e => e.join(','))
+      .join('\n');
+
+    var a = document.createElement('a');
+    a.href = 'data:attachment/csv,' + encodeURIComponent(hydrographDataCsvString);
+    a.target = '_blank';
+    a.download = `Daily Flow Hydrograph for ${tableStatsData.station_desc}.csv`;
+    document.body.appendChild(a);
+    a.click();
+  };
 
   const Loader = () => (
     <div className={classes.loader}>
@@ -114,13 +206,13 @@ export default function StoriesAnalyticsPopupDetails({
     return ((parseInt(x.trim()) / parseInt(y.trim())) * 100).toFixed(1);
   }
 */
-// KKC added replace function to remove commas - the parse function was
-// lopping off the number after the comma so a 3,456 for instance ended
-// up being just a 3 for the division
-function convertToPercent(x, y) {
-  //  console.log(x.replace(",","").trim());
-      return ((parseInt(x.replace(",","").trim()) / parseInt(y.replace(",","").trim())) * 100).toFixed(1);
-    }
+  // KKC added replace function to remove commas - the parse function was
+  // lopping off the number after the comma so a 3,456 for instance ended
+  // up being just a 3 for the division
+  function convertToPercent(x, y) {
+    //  console.log(x.replace(",","").trim());
+    return ((parseInt(x.replace(',', '').trim()) / parseInt(y.replace(',', '').trim())) * 100).toFixed(1);
+  }
 
   return (
     <>
@@ -152,7 +244,20 @@ function convertToPercent(x, y) {
           <>
             {isDataLoading && <Loader />}
 
-            <Paper elevation={2}>
+            <Paper style={{ position: 'relative' }}>
+              <Button
+                className={classes.exportButton}
+                color="secondary"
+                variant="outlined"
+                disableElevation
+                onClick={handleExportClick}
+                startIcon={<DownloadIcon />}
+                style={{
+                  marginLeft: theme.spacing(1),
+                }}
+              >
+                Export Selected Gauge
+              </Button>
               <Grid container elevation={0} className={classes.root}>
                 <Grid item xs={8}>
                   <Card style={{ margin: '12px' }}>

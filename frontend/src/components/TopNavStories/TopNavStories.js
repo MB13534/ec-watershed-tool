@@ -15,7 +15,10 @@ import Flex from '../Flex/Flex';
 import MonthPicker from '../FilterBar/MonthPicker';
 import YearPicker from '../FilterBar/YearPicker';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Menu } from '@material-ui/core';
+import { Button, Menu } from '@material-ui/core';
+import DownloadIcon from '@material-ui/icons/GetApp';
+import useTheme from '@material-ui/core/styles/useTheme';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,9 +89,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStartMonth, setEndMonth }) => {
+const TopNavStories = ({
+  tableStatsInfo,
+  waterYear,
+  startMonth,
+  endMonth,
+  setWaterYear,
+  setStartMonth,
+  setEndMonth,
+}) => {
   const classes = useStyles();
   let history = useHistory();
+  const theme = useTheme();
+  const { getTokenSilently } = useAuth0();
 
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
@@ -249,6 +262,82 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
     }
   };
 
+  function convertToPercent(x, y) {
+    //  console.log(x.replace(",","").trim());
+    return ((parseInt(x.replace(',', '').trim()) / parseInt(y.replace(',', '').trim())) * 100).toFixed(1);
+  }
+
+  const fetchTableStatsData = () => {
+    async function send() {
+      // setIsDataLoading(true);
+      try {
+        const token = await getTokenSilently();
+        const headers = { Authorization: `Bearer ${token}` };
+        const { data: results } = await axios.post(
+          `${process.env.REACT_APP_ENDPOINT}/api/usgs/tablestats-data/`,
+          {
+            properties: {
+              year: waterYear.wateryear,
+              endMonth: endMonth.watermonth,
+            },
+          },
+          { headers }
+        );
+
+        const allTableStatsDataCsvString = [
+          [
+            'Name',
+            'USGS Gauge',
+            'Selected Water Year Statistics',
+            'Cumulative Flows (AF)',
+            'Percent of Median',
+            'Start of Record',
+            'End of Record',
+            'Driest Year on Record',
+            'Driest % of Median',
+            [`"Driest Flows, Oct - ${endMonth.month_abbrev} (AF)"`],
+            'Wettest Year on Record',
+            'Wettest % of Median',
+            [`"Wettest Flows, Oct - ${endMonth.month_abbrev} (AF)"`],
+            'For More Info',
+          ],
+          ...results.map(item => [
+            '"' + item.station_desc + '"',
+            '"' + item.usgs_site_no + '"',
+            `"Oct - ${endMonth.month_abbrev} ${waterYear.wateryear}"`,
+            '"' + item.cumulative_af + '"',
+            '"' + item.pct_of_normal + '"',
+            '"' + tableStatsInfo[item.station_ndx].porminyear + '"',
+            '"' + tableStatsInfo[item.station_ndx].pormaxyear + '"',
+            '"' + tableStatsInfo[item.station_ndx].lowest_year + '"',
+            '"' + convertToPercent(item.lowest_year_cumulative_af, item.median_year_cumulative_af) + '"',
+            '"' + item.lowest_year_cumulative_af + '"',
+            '"' + tableStatsInfo[item.station_ndx].highest_year + '"',
+            '"' + convertToPercent(item.highest_year_cumulative_af, item.median_year_cumulative_af) + '"',
+            '"' + item.highest_year_cumulative_af + '"',
+            `"https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${item.usgs_site_no}"`,
+          ]),
+        ]
+          .map(e => e.join(','))
+          .join('\n');
+
+        var a = document.createElement('a');
+        a.href = 'data:attachment/csv,' + encodeURIComponent(allTableStatsDataCsvString);
+        a.target = '_blank';
+        a.download = `Hydrograph Statistics - All Gauges - Oct-${endMonth.month_abbrev} ${waterYear.wateryear}.csv`;
+        document.body.appendChild(a);
+        a.click();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    send();
+  };
+
+  const handleExportClick = () => {
+    fetchTableStatsData();
+  };
+
   return (
     <div className={classes.root}>
       <AppBar position="fixed" elevation={0}>
@@ -282,7 +371,21 @@ const TopNavStories = ({ waterYear, startMonth, endMonth, setWaterYear, setStart
           )}
         </Toolbar>
         <Toolbar className={clsx(classes.subNav, 'subnav')}>
-          <Flex justifyContent={'start'}></Flex>
+          <Flex justifyContent={'start'}>
+            <Button
+              disabled={!tableStatsInfo}
+              color="secondary"
+              variant="outlined"
+              disableElevation
+              onClick={handleExportClick}
+              startIcon={<DownloadIcon />}
+              style={{
+                marginLeft: theme.spacing(1),
+              }}
+            >
+              Export All Gauge Statistics
+            </Button>
+          </Flex>
           <Flex justifyContent={'end'}>
             <YearPicker
               endpoint="usgs/years"
