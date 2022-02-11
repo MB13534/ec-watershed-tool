@@ -215,7 +215,7 @@ const Layers = [
   },
   {
     id: 'lakes',
-    name: 'Lakes',
+    name: 'CDPHE Lake Classifications',
     geometry_type: 'fill',
     source: {
       id: 'CDPHE_Lakes_2020-ba4d1y',
@@ -237,7 +237,7 @@ const Layers = [
   },
   {
     id: 'streams',
-    name: 'Streams',
+    name: 'CDPHE Stream Classifications',
     geometry_type: 'line',
     source: {
       id: 'CDPHE_StreamSegment_2020-b54cte',
@@ -259,17 +259,19 @@ const Layers = [
       'line-color': [
         'interpolate',
         ['linear'],
-        ['get', 'Cat_ID'],
+        ['get', 'CAT_ID'],
         1,
-        '#005CE6',
+        '#2875ea',
         2,
-        '#737300',
+        '#9728b6',
         3,
-        '#38A800',
+        '#86b628',
         4,
-        '#A900E6',
+        '#488928',
         5,
-        '#FF0000',
+        '#ffaa00',
+        6,
+        '#ea2828',
       ],
     },
   },
@@ -317,7 +319,7 @@ const Layers = [
   },
   {
     id: 'hucs',
-    name: 'HUCs',
+    name: 'Hydrogeologic Unit Codes',
     geometry_type: 'fill',
     source: {
       id: 'HUC12-5ax4za',
@@ -578,7 +580,7 @@ const Layers = [
   },
   {
     id: 'cpw-crucial-habitat',
-    name: 'CPW Crucial Habitat',
+    name: 'Crucial Habitats',
     geometry_type: 'fill',
     source: {
       id: 'CPW_CrucialHabitat-4pqkii',
@@ -648,7 +650,7 @@ const Layers = [
   },
   {
     id: 'nwi-wetlands',
-    name: 'NWI Wetlands',
+    name: 'Wetlands',
     geometry_type: 'fill',
     source: {
       id: 'NWI_Wetlands-2buppm',
@@ -684,7 +686,7 @@ const Layers = [
   },
   {
     id: 'ec-wildfire-hazard',
-    name: 'Wildfire Hazard',
+    name: 'Wildfire Hazard Ratings',
     geometry_type: 'fill',
     source: {
       id: 'EC_Wildfire-8641wc',
@@ -734,7 +736,7 @@ const Layers = [
   },
   {
     id: 'fema-floodhazard',
-    name: 'FEMA Flood Hazard',
+    name: 'FEMA Floodplain',
     geometry_type: 'fill',
     source: {
       id: 'FEMA_FloodHazard_EagleCounty-23d76i',
@@ -774,7 +776,7 @@ const Layers = [
   },
   {
     id: 'nlcd-developed',
-    name: 'NLCD Developed',
+    name: 'NLCD Developed Areas',
     geometry_type: 'fill',
     source: {
       id: 'NLCD_Developed-bx720i',
@@ -808,7 +810,7 @@ const Layers = [
   },
   {
     id: 'nlcd-vegetation',
-    name: 'NLCD Vegetation',
+    name: 'NLCD Vegetated Areas',
     geometry_type: 'fill',
     source: {
       id: 'NLCD_Vegetation-4rqtdp',
@@ -916,7 +918,7 @@ const Layers = [
   },
   {
     id: 'epa-hydrologically-connected-zone',
-    name: 'Hydrologically-Connected Zone',
+    name: 'Hydrologically Connected Zone',
     geometry_type: 'fill',
     source: {
       id: 'EC_HCZ-daypvg',
@@ -1066,7 +1068,7 @@ const Layers = [
   },
   {
     id: 'cdss-structures-reservoir',
-    name: 'Structures | Reservoir',
+    name: 'Structures | Reservoirs',
     geometry_type: 'circle',
     source: {
       id: 'CDSS_Structures_Reservoir-da67y7',
@@ -1288,7 +1290,7 @@ const Layers = [
 const ParcelLayers = [
   {
     id: 'parcels-info',
-    name: 'Parcels (Info)',
+    name: 'Parcels Information',
     geometry_type: 'fill',
     source: {
       id: 'EagleCounty_Parcels-852e27',
@@ -1312,7 +1314,7 @@ const ParcelLayers = [
   },
   {
     id: 'parcels',
-    name: 'Parcels',
+    name: 'Parcel Boundaries',
     geometry_type: 'line',
     source: {
       id: 'EagleCounty_Parcels-852e27',
