@@ -128,6 +128,7 @@ export default function StoriesAnalyticsPopupDetails({
         convertToPercent(tableStatsData.highest_year_cumulative_af, tableStatsData.median_year_cumulative_af) +
         '% of Med)',
       [statsLookup2]: tableStatsData.highest_year_cumulative_af + ' AF',
+      [[`"Median Flows, Oct - ${tableStatsData.month_abbrev}"`]]: tableStatsData.median_year_cumulative_af + ' AF',
       'For More Info': `https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${tableStatsData.usgs_site_no}`,
     };
 

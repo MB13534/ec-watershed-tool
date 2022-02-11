@@ -299,6 +299,7 @@ const TopNavStories = ({
             'Wettest Year on Record',
             'Wettest % of Median',
             [`"Wettest Flows, Oct - ${endMonth.month_abbrev} (AF)"`],
+            [`"Median Flows, Oct - ${endMonth.month_abbrev} (AF)"`],
             'For More Info',
           ],
           ...results.map(item => [
@@ -310,11 +311,12 @@ const TopNavStories = ({
             '"' + tableStatsInfo[item.station_ndx].porminyear + '"',
             '"' + tableStatsInfo[item.station_ndx].pormaxyear + '"',
             '"' + tableStatsInfo[item.station_ndx].lowest_year + '"',
-            '"' + convertToPercent(item.lowest_year_cumulative_af, item.median_year_cumulative_af) + '"',
+            '"' + convertToPercent(item.lowest_year_cumulative_af, item.median_year_cumulative_af) + '%"',
             '"' + item.lowest_year_cumulative_af + '"',
             '"' + tableStatsInfo[item.station_ndx].highest_year + '"',
-            '"' + convertToPercent(item.highest_year_cumulative_af, item.median_year_cumulative_af) + '"',
+            '"' + convertToPercent(item.highest_year_cumulative_af, item.median_year_cumulative_af) + '%"',
             '"' + item.highest_year_cumulative_af + '"',
+            '"' + item.median_year_cumulative_af + '"',
             `"https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=${item.usgs_site_no}"`,
           ]),
         ]
