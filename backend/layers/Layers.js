@@ -40,7 +40,7 @@ const defaultFillStyles = {
 const Layers = [
   {
     id: 'stream-stations',
-    name: 'Stream Monitoring Points',
+    name: 'Stream Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -61,7 +61,7 @@ const Layers = [
   },
   {
     id: 'reservoir-stations',
-    name: 'Reservoir Monitoring Points',
+    name: 'Reservoir Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -82,7 +82,7 @@ const Layers = [
   },
   {
     id: 'effluent-stations',
-    name: 'Effluent Monitoring Points',
+    name: 'Effluent Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -103,7 +103,7 @@ const Layers = [
   },
   {
     id: 'mine-discharge-stations',
-    name: 'Mine Discharge Monitoring Points',
+    name: 'Mine Discharge Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -124,7 +124,7 @@ const Layers = [
   },
   {
     id: 'spring-stations',
-    name: 'Spring Monitoring Points',
+    name: 'Spring Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -145,7 +145,7 @@ const Layers = [
   },
   {
     id: 'groundwater-stations',
-    name: 'Groundwater Monitoring Points',
+    name: 'Groundwater Stations',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -319,7 +319,7 @@ const Layers = [
   },
   {
     id: 'hucs',
-    name: 'Hydrogeologic Unit Codes',
+    name: 'HUC 12 Boundaries',
     geometry_type: 'fill',
     source: {
       id: 'HUC12-5ax4za',
@@ -1294,7 +1294,7 @@ const ParcelLayers = [
       url: 'mapbox://ecwatershedtool.bns5v4l3',
     },
     drawOrder: 5,
-    legendOrder: 6,
+    legendOrder: 5,
     enabled: false,
     visible: false,
     toggleGroup: 1,
@@ -1305,7 +1305,7 @@ const ParcelLayers = [
       ...defaultFillStyles,
       'fill-color': 'white',
       'fill-opacity': 0,
-      'fill-outline-color': 'black',
+      'fill-outline-color': '#fffe8f',
     },
   },
   {
@@ -1322,6 +1322,7 @@ const ParcelLayers = [
     enabled: false,
     visible: false,
     toggleGroup: 1,
+    popupType: 'table',
     geometry_type_ndx: 1,
     layer_categories: [3],
     paint: {
