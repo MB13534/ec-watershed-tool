@@ -8,10 +8,11 @@ import DrawerTabPanel from '../DrawerTabPanel/DrawerTabPanel';
 import { MapContext, useMap } from '../../pages/Map/MapProvider';
 import LayersPanel from './LayersPanel';
 import ControlsPanel from './ControlsPanel';
+import { Help } from '@material-ui/icons';
 
 const drawerWidth = 340;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -42,13 +43,13 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   toolbar2: theme.mixins.toolbar,
   lreLogo: {
-    display: "block",
-    width: "100%",
-    textAlign: "center",
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
     bottom: 20,
-    "& img": {
+    '& img': {
       maxWidth: 120,
-    }
+    },
   },
   icon: {
     color: theme.palette.secondary.main,
@@ -72,14 +73,9 @@ const MapDrawer = () => {
   const classes = useStyles();
   const mapProvider = useMap();
 
-  const {
-    controls,
-    handleControlsVisibility,
-  } = useContext(MapContext);
+  const { controls, handleControlsVisibility } = useContext(MapContext);
 
-  const [activeTab, setActiveTab] = useState(
-    parseInt(sessionStorage.getItem('sk_active_drawer_tab')) || 0,
-  );
+  const [activeTab, setActiveTab] = useState(parseInt(sessionStorage.getItem('sk_active_drawer_tab')) || 0);
 
   useEffect(() => {
     if (mapProvider.mapMode === 'explore') {
@@ -106,9 +102,7 @@ const MapDrawer = () => {
       }}
     >
       <div className={classes.toolbar} />
-      {(mapProvider.mapMode === 'analyze' || mapProvider.mapMode === 'explore') && (
-        <div className={classes.toolbar2} />
-      )}
+      {(mapProvider.mapMode === 'analyze' || mapProvider.mapMode === 'explore') && <div className={classes.toolbar2} />}
       {controls.drawer.visible && (
         <div className={classes.drawerContainer}>
           {/*<DrawerTabs activeTab={activeTab} setActiveTab={setActiveTab} />*/}
@@ -123,6 +117,14 @@ const MapDrawer = () => {
 
       {controls.drawer.visible ? (
         <>
+          <Button
+            href="resources-links/map-layer-documentation"
+            color="primary"
+            startIcon={<Help />}
+            style={{ marginTop: '10px' }}
+          >
+            Map Layer Documentation
+          </Button>
           <Button
             color="secondary"
             variant="outlined"

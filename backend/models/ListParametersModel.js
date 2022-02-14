@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const { TEXT, INTEGER } = DataTypes
+  const { TEXT, INTEGER } = DataTypes;
   const Model = sequelize.define(
     'ec_list_parameters',
     {
@@ -16,12 +16,15 @@ module.exports = (sequelize, DataTypes) => {
       risk_index: {
         type: INTEGER,
       },
+      param_long_name: {
+        type: TEXT,
+      },
     },
     {
       timestamps: false,
       schema: 'analysis',
       freezeTableName: true,
-    },
-  )
-  return Model
-}
+    }
+  );
+  return Model;
+};

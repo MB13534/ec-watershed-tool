@@ -287,7 +287,7 @@ const TopNavStories = ({
         const allTableStatsDataCsvString = [
           [
             'Name',
-            'USGS Gauge',
+            'USGS Gage',
             'Selected Water Year Statistics',
             'Cumulative Flows (AF)',
             'Percent of Median',
@@ -326,7 +326,7 @@ const TopNavStories = ({
         var a = document.createElement('a');
         a.href = 'data:attachment/csv,' + encodeURIComponent(allTableStatsDataCsvString);
         a.target = '_blank';
-        a.download = `Hydrograph Statistics - All Gauges - Oct-${endMonth.month_abbrev} ${waterYear.wateryear}.csv`;
+        a.download = `Hydrograph Statistics - All Gages - Oct-${endMonth.month_abbrev} ${waterYear.wateryear}.csv`;
         document.body.appendChild(a);
         a.click();
       } catch (err) {
@@ -385,7 +385,7 @@ const TopNavStories = ({
                 marginLeft: theme.spacing(1),
               }}
             >
-              Export All Gauge Statistics
+              Export All Gage Statistics
             </Button>
           </Flex>
           <Flex justifyContent={'end'}>

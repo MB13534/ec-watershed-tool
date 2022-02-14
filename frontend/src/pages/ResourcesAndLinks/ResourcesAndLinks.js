@@ -41,6 +41,14 @@ const ResourcesAndLinks = props => {
       loginRequired: true,
     },
     {
+      link: 'resources-links/map-layer-documentation',
+      title: 'Map Layer Documentation',
+      exact: true,
+      rolesRequired: false,
+      icon: LinkIcon,
+      loginRequired: true,
+    },
+    {
       link: 'resources-links/help',
       title: 'Watershed Tool Quickstart Guide',
       exact: true,

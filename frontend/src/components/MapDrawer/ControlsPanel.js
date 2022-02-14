@@ -62,9 +62,7 @@ const ControlsPanel = ({}) => {
             data={context.analysisTypes}
             valueField="display"
             displayField="display"
-            handleChipClick={e =>
-              context.handleFilters("analysisType", e.target.textContent)
-            }
+            handleChipClick={e => context.handleFilters('analysisType', e.target.textContent)}
             type="analysis-type"
             activeChips={context.filters.analysisType}
           />
@@ -78,9 +76,7 @@ const ControlsPanel = ({}) => {
             data={context.priorities}
             valueField="priority_desc"
             displayField="priority_desc"
-            handleChipClick={e =>
-              context.handleFilters("priorities", e.target.textContent)
-            }
+            handleChipClick={e => context.handleFilters('priorities', e.target.textContent)}
             type="priority-type"
             activeChips={context.filters.priorities}
           />
@@ -93,9 +89,7 @@ const ControlsPanel = ({}) => {
             data={context.threats}
             valueField="threat_desc"
             displayField="threat_desc"
-            handleChipClick={e =>
-              context.handleFilters("threats", e.target.textContent)
-            }
+            handleChipClick={e => context.handleFilters('threats', e.target.textContent)}
             type="threats"
             activeChips={context.filters.threats}
           />
@@ -130,16 +124,13 @@ const ControlsPanel = ({}) => {
               </Grid>
             </Grid>
           </Box>
-          {context.parameters.length === 0 && (
-            <p>None</p>
-          )}
+          {context.parameters.length === 0 && <p>None</p>}
           <Chips
             data={context.parameters}
             valueField="parameter_abbrev"
             displayField="parameter_abbrev"
-            handleChipClick={e =>
-              context.handleFilters("parameters", e.target.textContent)
-            }
+            tooltipField="param_long_name"
+            handleChipClick={e => context.handleFilters('parameters', e.target.textContent)}
             type="parameters"
             activeChips={context.filters.parameters}
           />

@@ -108,7 +108,7 @@ export default function StoriesAnalyticsPopupDetails({
 
     const tableStats = {
       Name: tableStatsData.station_desc,
-      'USGS Gauge': tableStatsData.usgs_site_no,
+      'USGS Gage': tableStatsData.usgs_site_no,
       'Selected Water Year Statistics': `October - ${tableStatsData.month_name} ${tableStatsData.wateryear}`,
       'Cumulative Flows': tableStatsData.cumulative_af + ' AF',
       'Percent of Median': tableStatsData.pct_of_normal,
@@ -257,7 +257,7 @@ export default function StoriesAnalyticsPopupDetails({
                   marginLeft: theme.spacing(1),
                 }}
               >
-                Export Selected Gauge
+                Export Selected Gage
               </Button>
               <Grid container elevation={0} className={classes.root}>
                 <Grid item xs={8}>

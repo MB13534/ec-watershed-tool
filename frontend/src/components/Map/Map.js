@@ -612,12 +612,12 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
               });
 
             [
-              'Stream Stations',
-              'Reservoir Stations',
-              'Effluent Stations',
-              'Mine Discharge Stations',
-              'Spring Stations',
-              'Groundwater Stations',
+              'Stream Monitoring Points',
+              'Reservoir Monitoring Points',
+              'Effluent Monitoring Points',
+              'Mine Discharge Monitoring Points',
+              'Spring Monitoring Points',
+              'Groundwater Monitoring Points',
             ].forEach(layer => {
               if (!map.getLayer(`${layer}-labels`)) {
                 map.addLayer({

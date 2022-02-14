@@ -361,6 +361,7 @@ export const MapProvider = props => {
           },
           { headers }
         );
+        console.log(query.data);
         setParameters(query.data);
       } catch (err) {
         // Is this error because we cancelled it ourselves?
@@ -869,12 +870,12 @@ export const MapProvider = props => {
 
     let features = map.queryRenderedFeatures({
       layers: [
-        'Stream Stations',
-        'Reservoir Stations',
-        'Effluent Stations',
-        'Mine Discharge Stations',
-        'Spring Stations',
-        'Groundwater Stations',
+        'Stream Monitoring Points',
+        'Reservoir Monitoring Points',
+        'Effluent Monitoring Points',
+        'Mine Discharge Monitoring Points',
+        'Spring Monitoring Points',
+        'Groundwater Monitoring Points',
       ],
       filter: ['match', ['get', 'location_i'], Object.keys(locationValues).map(x => parseInt(x)), true, false],
     });
@@ -981,12 +982,12 @@ export const MapProvider = props => {
 
   const recolorPointsForLayers = (data = null) => {
     const layerIds = [
-      'Stream Stations',
-      'Reservoir Stations',
-      'Effluent Stations',
-      'Mine Discharge Stations',
-      'Spring Stations',
-      'Groundwater Stations',
+      'Stream Monitoring Points',
+      'Reservoir Monitoring Points',
+      'Effluent Monitoring Points',
+      'Mine Discharge Monitoring Points',
+      'Spring Monitoring Points',
+      'Groundwater Monitoring Points',
     ];
 
     if (data === null) {
