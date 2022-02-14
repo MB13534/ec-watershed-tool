@@ -40,7 +40,7 @@ const defaultFillStyles = {
 const Layers = [
   {
     id: 'stream-stations',
-    name: 'Stream Stations',
+    name: 'Stream Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -62,7 +62,7 @@ const Layers = [
   },
   {
     id: 'reservoir-stations',
-    name: 'Reservoir Stations',
+    name: 'Reservoir Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -84,7 +84,7 @@ const Layers = [
   },
   {
     id: 'effluent-stations',
-    name: 'Effluent Stations',
+    name: 'Effluent Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -106,7 +106,7 @@ const Layers = [
   },
   {
     id: 'mine-discharge-stations',
-    name: 'Mine Discharge Stations',
+    name: 'Mine Discharge Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -129,7 +129,7 @@ const Layers = [
   },
   {
     id: 'spring-stations',
-    name: 'Spring Stations',
+    name: 'Spring Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
@@ -151,7 +151,7 @@ const Layers = [
   },
   {
     id: 'groundwater-stations',
-    name: 'Groundwater Stations',
+    name: 'Groundwater Monitoring Points',
     geometry_type: 'circle',
     source: {
       type: 'geojson',
