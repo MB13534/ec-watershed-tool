@@ -23,7 +23,7 @@ import useFormSubmitStatus from '../../hooks/useFormSubmitStatus';
 export const MapContext = React.createContext({
   map: {},
   controls: {},
-  activeZoomToLayer: {},
+  activeZoomToLayerSpatialData: {},
   activeBasemap: {},
   basemapLayers: [],
   layers: [],
@@ -396,7 +396,7 @@ export const MapProvider = props => {
   const [monitoringPointData, setMonitoringPointData] = useState(null);
   const [renderedPointData, setRenderedPointData] = useState(null);
   const [filterActive, setFilterActive] = useState(false);
-  const [activeZoomToLayer, setActiveZoomToLayer] = useState(null);
+  const [activeZoomToLayerSpatialData, setActiveZoomToLayerSpatialData] = useState(null);
   const [activeBasemap, setActiveBasemap] = useState({
     name: 'Streets',
     styleURL: 'mapbox://styles/mapbox/streets-v11',
@@ -1054,7 +1054,7 @@ export const MapProvider = props => {
   const onBasemapChange = val => {
     setActiveBasemap(val);
   };
-  const onZoomToLayerChange = val => setActiveZoomToLayer(val);
+  const onZoomToLayerChange = val => setActiveZoomToLayerSpatialData(val);
   const onLayerChange = val => setLayers(val);
   const onFilteredLayerChange = val => setFilteredLayers(val);
   const onVisibleLayerChange = val => setVisibleLayers(val);
@@ -1185,7 +1185,7 @@ export const MapProvider = props => {
         stationData,
         parcelData,
         controls,
-        activeZoomToLayer,
+        activeZoomToLayerSpatialData,
         activeBasemap,
         basemapLayers,
         filters,

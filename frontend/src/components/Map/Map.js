@@ -82,7 +82,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
     handleControlsVisibility,
     basemapLayers,
     activeBasemap,
-    activeZoomToLayer,
+    activeZoomToLayerSpatialData,
     onBasemapChange,
     filteredLayers,
     visibleLayers,
@@ -474,7 +474,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null && map.isStyleLoaded()) {
       map.setStyle(activeBasemap.styleURL);
-      map.on('style.load', function() {
+      map.on('style.load', function () {
         visibleLayers
           .sort((a, b) => (a.drawOrder > b.drawOrder ? 1 : -1))
           .map(layer => {
@@ -539,11 +539,11 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
 
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null && mapIsLoaded && visibleLayers.length > 0) {
-      map.loadImage('/images/marker_wells.png', function(error, allWellsImg) {
+      map.loadImage('/images/marker_wells.png', function (error, allWellsImg) {
         if (error) throw error;
-        map.loadImage('/images/marker_highcap-wells.png', function(error, highcapWellsImg) {
+        map.loadImage('/images/marker_highcap-wells.png', function (error, highcapWellsImg) {
           if (error) throw error;
-          map.loadImage('/images/usgs-marker.png', function(error, usgsImg) {
+          map.loadImage('/images/usgs-marker.png', function (error, usgsImg) {
             if (error) throw error;
 
             map.addImage('usgs', usgsImg);
@@ -638,7 +638,7 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
               }
             });
 
-            map.on('mousemove', function(e) {
+            map.on('mousemove', function (e) {
               const bbox = [
                 [e.point.x - 5, e.point.y - 5],
                 [e.point.x + 5, e.point.y + 5],
@@ -675,14 +675,12 @@ const Map = ({ setShowQueryTooBigError, setLastQuerySize }) => {
 
   useEffect(() => {
     if (typeof map !== 'undefined' && map !== null && map.isStyleLoaded()) {
-      const layer = filteredLayers.find(d => d.name === activeZoomToLayer);
-      const bbox = turf.bbox(layer.spatial_data);
-
+      const bbox = turf.bbox(activeZoomToLayerSpatialData);
       map.fitBounds(bbox, {
         padding: 100,
       });
     }
-  }, [activeZoomToLayer, map]); //eslint-disable-line
+  }, [activeZoomToLayerSpatialData, map]); //eslint-disable-line
 
   const getFeatureGeometryObj = geometryData => {
     return {
