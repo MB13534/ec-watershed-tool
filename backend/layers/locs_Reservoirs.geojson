@@ -1,6 +1,6 @@
 {
 "type": "FeatureCollection",
-"name": "Reservoir",
+"name": "locs_Reservoir",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 "features": [
 { "type": "Feature", "properties": { "location_i": 2540, "location_1": "21COL001-12752A", "location_n": "RUEDI RESERVOIR NR DAM UPPER", "loc_lat": 39.365121, "loc_long": -106.81537, "huc12": 14010004, "loc_type": "Reservoir", "basin_ndx": 11 }, "geometry": { "type": "Point", "coordinates": [ -106.81537, 39.365121 ] } },
@@ -12,6 +12,7 @@
 { "type": "Feature", "properties": { "location_i": 2724, "location_1": "21COL001_WQX-CPW-050", "location_n": "GREEN MOUNTAIN RESERVOIR", "loc_lat": 39.875918, "loc_long": -106.328998, "huc12": 14010002, "loc_type": "Reservoir", "basin_ndx": 12 }, "geometry": { "type": "Point", "coordinates": [ -106.328998, 39.875918 ] } },
 { "type": "Feature", "properties": { "location_i": 2725, "location_1": "21COL001_WQX-CPW-060", "location_n": "HOMESTAKE RESERVOIR", "loc_lat": 39.365849, "loc_long": -106.46397, "huc12": 14010003, "loc_type": "Reservoir", "basin_ndx": 5 }, "geometry": { "type": "Point", "coordinates": [ -106.46397, 39.365849 ] } },
 { "type": "Feature", "properties": { "location_i": 2726, "location_1": "21COL001_WQX-CPW-115", "location_n": "RUEDI RESERVOIR", "loc_lat": 39.363868, "loc_long": -106.815238, "huc12": 14010004, "loc_type": "Reservoir", "basin_ndx": 11 }, "geometry": { "type": "Point", "coordinates": [ -106.815238, 39.363868 ] } },
+{ "type": "Feature", "properties": { "location_i": 2936, "location_1": "NALMS-F179797", "location_n": "Homestake Reservoir, Pitkin County, CO, USA", "loc_lat": 39.358, "loc_long": -106.468, "huc12": 14010003, "loc_type": "Reservoir", "basin_ndx": 5 }, "geometry": { "type": "Point", "coordinates": [ -106.468, 39.358 ] } },
 { "type": "Feature", "properties": { "location_i": 2940, "location_1": "NARS_WQX-NLA06608-0468", "location_n": "Eagle Lake", "loc_lat": 39.432409357700003, "loc_long": -106.600363488, "huc12": 14010004, "loc_type": "Reservoir", "basin_ndx": 11 }, "geometry": { "type": "Point", "coordinates": [ -106.600363487999971, 39.432409358000029 ] } },
 { "type": "Feature", "properties": { "location_i": 3062, "location_1": "USGS-393716106033201", "location_n": "DILLON RESERVOIR D100 NEAR DAM ABOVE DILLON, CO", "loc_lat": 39.6211, "loc_long": -106.0589, "huc12": 14010002, "loc_type": "Reservoir", "basin_ndx": 12 }, "geometry": { "type": "Point", "coordinates": [ -106.0589, 39.6211 ] } }
 ]
