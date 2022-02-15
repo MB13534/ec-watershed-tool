@@ -1018,7 +1018,7 @@ const Layers = [
   //  },
   {
     id: 'owts',
-    name: 'OWTS',
+    name: 'OWTS Permits',
     geometry_type: 'circle',
     source: {
       id: 'OWTS_EagleCounty-4e0p9w',
@@ -1221,10 +1221,10 @@ const Layers = [
     layer_categories: [1, 3],
     paint: {
       ...defaultCircleStyles,
-      'circle-radius': 4,
+      'circle-radius': 3,
       'circle-opacity': 1,
       'circle-stroke-opacity': 1,
-      'circle-color': '#006400',
+      'circle-color': '#808080',
       'circle-stroke-color': '#000000',
       'circle-stroke-width': 1,
     },
@@ -1258,7 +1258,7 @@ const Layers = [
   },
   {
     id: 'cpw-trails',
-    name: 'CPW Trails',
+    name: 'COTREX Trails',
     geometry_type: 'line',
     source: {
       id: 'CPW_COTREX_Trails-d0vt4n',
@@ -1271,12 +1271,13 @@ const Layers = [
     enabled: false,
     visible: false,
     toggleGroup: 1,
+    popupType: 'table',
     geometry_type_ndx: 1,
     layer_categories: [3],
     paint: {
       ...defaultLineStyles,
       'line-color': '#6B8E23',
-      'line-width': 1,
+      'line-width': 1.0,
     },
   },
   {
@@ -1294,12 +1295,13 @@ const Layers = [
     enabled: false,
     visible: false,
     toggleGroup: 1,
+    popupType: 'table',
     geometry_type_ndx: 1,
     layer_categories: [3],
     paint: {
       ...defaultLineStyles,
-      'line-color': '#8FBC8F',
-      'line-width': 1,
+      'line-color': '#DAA520',
+      'line-width': 2,
     },
   },
   {
@@ -1317,11 +1319,12 @@ const Layers = [
     enabled: false,
     visible: false,
     toggleGroup: 1,
+    popupType: 'table',
     geometry_type_ndx: 1,
     layer_categories: [3],
     paint: {
       ...defaultLineStyles,
-      'line-color': '#008080',
+      'line-color': '#00A3E0',
       'line-width': 2,
     },
   },
