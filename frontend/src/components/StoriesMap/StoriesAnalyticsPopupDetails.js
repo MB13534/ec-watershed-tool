@@ -212,7 +212,7 @@ export default function StoriesAnalyticsPopupDetails({
   // up being just a 3 for the division
   function convertToPercent(x, y) {
     //  console.log(x.replace(",","").trim());
-    return ((parseInt(x.replace(',', '').trim()) / parseInt(y.replace(',', '').trim())) * 100).toFixed(1);
+    return ((parseInt(x.replaceAll(',', '').trim()) / parseInt(y.replaceAll(',', '').trim())) * 100).toFixed(1);
   }
 
   return (
